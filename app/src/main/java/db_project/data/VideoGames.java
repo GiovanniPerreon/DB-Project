@@ -6,17 +6,26 @@ import java.util.List;
 import java.util.Optional;
 
 public class VideoGames {
-    private final int id;
+    private final int gameID;
+    private final int userID;
     private final String title;
     private final String price;
-    private final String releaseDate;
     private final String description;
-    public VideoGames(int id, String title, String price, String releaseDate, String description) {
-        this.id = id;
+    private final String requirements;
+    private final String averageRating;
+    private final String releaseDate;
+    private final String discount;
+    public VideoGames(int gameID, int userID, String title, String price, String description,
+            String requirements, String averageRating, String releaseDate, String discount) {
+        this.gameID = gameID;
+        this.userID = userID;
         this.title = title;
         this.price = price;
-        this.releaseDate = releaseDate;
         this.description = description;
+        this.requirements = requirements;
+        this.averageRating = averageRating;
+        this.releaseDate = releaseDate;
+        this.discount = discount;
     }
 
     /**
@@ -27,11 +36,15 @@ public class VideoGames {
         return Printer.stringify(
             "VideoGame",
             List.of(
-                Printer.field("id", this.id),
+                Printer.field("gameID", this.gameID),
+                Printer.field("userID", this.userID),
                 Printer.field("title", this.title),
                 Printer.field("price", this.price),
-                Printer.field("release_date", this.releaseDate),
-                Printer.field("description", this.description)
+                Printer.field("description", this.description),
+                Printer.field("requirements", this.requirements),
+                Printer.field("averageRating", this.averageRating),
+                Printer.field("releaseDate", this.releaseDate),
+                Printer.field("discount", this.discount)
             )
         );
     }
@@ -48,11 +61,15 @@ public class VideoGames {
                 var videogames = new ArrayList<Optional<VideoGames>>();
                 while (resultSet.next()) {
                     videogames.add(Optional.of(new VideoGames(
-                        resultSet.getInt("id"),
+                        resultSet.getInt("gameID"),
+                        resultSet.getInt("userID"),
                         resultSet.getString("title"),
                         resultSet.getString("price"),
+                        resultSet.getString("description"),
+                        resultSet.getString("requirements"),
+                        resultSet.getString("average_rating"),
                         resultSet.getString("release_date"),
-                        resultSet.getString("description")
+                        resultSet.getString("discount")
                     )));
                 }
                 return videogames;
@@ -63,21 +80,25 @@ public class VideoGames {
         /**
          * Finds a video game by its ID.
          * @param connection the database connection
-         * @param id the ID of the video game
+         * @param gameID the ID of the video game
          * @return an Optional containing the video game if found, or empty if not found
          */
-        public static Optional<VideoGames> find(Connection connection, int id) {
+        public static Optional<VideoGames> find(Connection connection, int gameID) {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.FIND_VIDEOGAME);
                 var resultSet = statement.executeQuery()
                 ) {
                     if (resultSet.next()) {
                         return Optional.of(new VideoGames(
-                            resultSet.getInt("id"),
+                            resultSet.getInt("gameID"),
+                            resultSet.getInt("userID"),
                             resultSet.getString("title"),
                             resultSet.getString("price"),
+                            resultSet.getString("description"),
+                            resultSet.getString("requirements"),
+                            resultSet.getString("average_rating"),
                             resultSet.getString("release_date"),
-                            resultSet.getString("description")
+                            resultSet.getString("discount")
                         ));
                     } else {
                         return Optional.empty();

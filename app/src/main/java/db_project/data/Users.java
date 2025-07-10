@@ -7,20 +7,27 @@ import java.util.Optional;
 
 public class Users {
 
-    private final int id;
+    private final int userID;
     private final String email;
     private final String password;
     private final String name;
     private final String surname;
     private final String birth_date;
+    private final boolean is_administrator;
+    private final boolean is_publisher;
+    private final boolean is_developer;
 
-    public Users(int id, String email, String password, String name, String surname, String birth_date) {
-        this.id = id;
+    public Users(int userID, String email, String password, String name, String surname,
+            String birth_date,boolean is_administrator, boolean is_publisher, boolean is_developer) {
+        this.userID = userID;
         this.email = email;
         this.password = password;
         this.name = name;
         this.surname = surname;
         this.birth_date = birth_date;
+        this.is_administrator = is_administrator;
+        this.is_publisher = is_publisher;
+        this.is_developer = is_developer;
     }
     /**
      * Returns a string representation of the user.
@@ -30,12 +37,15 @@ public class Users {
         return Printer.stringify(
             "User",
             List.of(
-                Printer.field("id", this.id),
+                Printer.field("id", this.userID),
                 Printer.field("email", this.email),
                 Printer.field("password", this.password),
                 Printer.field("name", this.name),
                 Printer.field("surname", this.surname),
-                Printer.field("birth_date", this.birth_date)
+                Printer.field("birth_date", this.birth_date),
+                Printer.field("is_administrator", this.is_administrator),
+                Printer.field("is_publisher", this.is_publisher),
+                Printer.field("is_developer", this.is_developer)
             )
         );
     }
@@ -52,12 +62,15 @@ public class Users {
                 var users = new ArrayList<Optional<Users>>();
                 while (resultSet.next()) {
                     users.add(Optional.of(new Users(
-                        resultSet.getInt("id"),
+                        resultSet.getInt("userID"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
                         resultSet.getString("name"),
                         resultSet.getString("surname"),
-                        resultSet.getString("birth_date")
+                        resultSet.getString("birth_date"),
+                        resultSet.getBoolean("is_administrator"),
+                        resultSet.getBoolean("is_publisher"),
+                        resultSet.getBoolean("is_developer")
                     )));
                 }
                 return users;
@@ -66,19 +79,22 @@ public class Users {
             }
         }
 
-        public static Optional<Users> find(Connection connection, int id) {
+        public static Optional<Users> find(Connection connection, int userID) {
             try (
-                var statement = DAOUtils.prepare(connection, Queries.FIND_USER, id);
+                var statement = DAOUtils.prepare(connection, Queries.FIND_USER, userID);
                 var resultSet = statement.executeQuery()
             ) {
                 if (resultSet.next()) {
                     return Optional.of(new Users(
-                        resultSet.getInt("id"),
+                        resultSet.getInt("userID"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
                         resultSet.getString("name"),
                         resultSet.getString("surname"),
-                        resultSet.getString("birth_date")
+                        resultSet.getString("birth_date"),
+                        resultSet.getBoolean("is_administrator"),
+                        resultSet.getBoolean("is_publisher"),
+                        resultSet.getBoolean("is_developer")
                     ));
                 } else {
                     return Optional.empty();
