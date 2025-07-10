@@ -18,7 +18,7 @@ CREATE TABLE if NOT EXISTS users (
 );
 
 CREATE TABLE if NOT EXISTS videogames (
-    id INT NOT NULL AUTO_INCREMENT,
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(64) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     release_date DATE NOT NULL,
@@ -56,7 +56,8 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- Inserts --------------------------------------------------------------------
 
 INSERT INTO users (email, password, name, surname, birth_date) VALUES
-('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15');
+('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15'),
+('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13');
 
 INSERT INTO videogames (title, price, release_date, description) VALUES
 ('Elden Ring', 59.99, '2020-06-19', 'An open-world action RPG set in a dark fantasy world.');

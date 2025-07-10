@@ -1,7 +1,12 @@
 package db_project;
 
+import db_project.data.Users;
 import db_project.model.Model;
+
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 // The controller provides a holistic description of how the outside world can
 // interact with our application: each public method is written as
@@ -21,5 +26,16 @@ public final class Controller {
         Objects.requireNonNull(view, "Controller created with null view");
         this.view = view;
         this.model = model;
+    }
+    
+    public void testAllTables() {
+        var users = this.model.getUsers();
+        var videoGames = this.model.getVideoGames();
+        Stream.of(users, videoGames)
+            .flatMap(List::stream)
+            .forEach(optional -> optional.ifPresentOrElse(
+                item -> System.out.println("Item: " + item),
+                () -> System.out.println("Item not found")
+            ));
     }
 }

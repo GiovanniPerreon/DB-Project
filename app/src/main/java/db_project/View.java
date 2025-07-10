@@ -10,6 +10,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import db_project.data.Users;
+import db_project.data.VideoGames;
+
 public final class View {
 
     private Optional<Controller> controller;
@@ -23,7 +26,7 @@ public final class View {
     }
 
     private JFrame setupMainFrame(Runnable onClose) {
-        var frame = new JFrame("Tessiland");
+        var frame = new JFrame("SteamDB");
         var padding = BorderFactory.createEmptyBorder(10, 10, 10, 10);
         ((JComponent) frame.getContentPane()).setBorder(padding);
         frame.setMinimumSize(new Dimension(300, 100));
@@ -42,7 +45,7 @@ public final class View {
 
         return frame;
     }
-
+    
     private Controller getController() {
         if (this.controller.isPresent()) {
             return this.controller.get();
@@ -50,9 +53,25 @@ public final class View {
             throw new IllegalStateException("Controller not set in view");
         }
     }
-
+    /**
+     * @param controller
+     */
     public void setController(Controller controller) {
         Objects.requireNonNull(controller, "Set null controller in view");
         this.controller = Optional.of(controller);
+    }
+    /**
+     * Show a user in the view.
+     * @param user
+     */
+    public void showUser(Users user) {
+        System.out.println("Showing user: " + user);
+    }
+    /**
+     * Show a videogame in the view.
+     * @param videogame
+     */
+    public void showVideoGame(VideoGames videogame) {
+        System.out.println("Showing video game: " + videogame);
     }
 }
