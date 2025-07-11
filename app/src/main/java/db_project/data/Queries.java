@@ -341,4 +341,67 @@ public final class Queries {
         ORDER BY v.average_rating DESC
         LIMIT 10
         """;
+    
+    // Queries for ALL games sorted (not just top 10)
+    public static final String ALL_NEWEST_GAMES =
+        """
+        SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
+        FROM videogames
+        ORDER BY release_date DESC
+        """;
+    
+    public static final String ALL_OLDEST_GAMES =
+        """
+        SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
+        FROM videogames
+        ORDER BY release_date ASC
+        """;
+    
+    public static final String ALL_HIGHEST_RATED_GAMES =
+        """
+        SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
+        FROM videogames
+        WHERE average_rating IS NOT NULL
+        ORDER BY average_rating DESC
+        """;
+    
+    public static final String ALL_LOWEST_RATED_GAMES =
+        """
+        SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
+        FROM videogames
+        WHERE average_rating IS NOT NULL
+        ORDER BY average_rating ASC
+        """;
+    
+    public static final String ALL_MOST_EXPENSIVE_GAMES =
+        """
+        SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
+        FROM videogames
+        ORDER BY price DESC
+        """;
+    
+    public static final String ALL_CHEAPEST_GAMES =
+        """
+        SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
+        FROM videogames
+        ORDER BY price ASC
+        """;
+    
+    public static final String ALL_MOST_SOLD_GAMES =
+        """
+        SELECT v.gameID, v.publisherID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount, COUNT(ti.gameID) as sales_count
+        FROM videogames v
+        JOIN transaction_items ti ON v.gameID = ti.gameID
+        GROUP BY v.gameID, v.publisherID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount
+        ORDER BY sales_count DESC
+        """;
+    
+    public static final String ALL_GAMES_BY_GENRE =
+        """
+        SELECT v.gameID, v.publisherID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount
+        FROM videogames v
+        JOIN videogame_genres vg ON v.gameID = vg.gameID
+        WHERE vg.genre = ?
+        ORDER BY v.average_rating DESC
+        """;
 }

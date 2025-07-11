@@ -354,6 +354,47 @@ public final class DBModel implements Model {
         return VideoGames.DAO.getTop10GamesByGenre(connection, genre);
     }
     
+    // Implementation of methods to get ALL games sorted (not just top 10)
+    @Override
+    public List<Optional<VideoGames>> getAllNewestGames() {
+        return VideoGames.DAO.getAllNewestGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllOldestGames() {
+        return VideoGames.DAO.getAllOldestGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllHighestRatedGames() {
+        return VideoGames.DAO.getAllHighestRatedGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllLowestRatedGames() {
+        return VideoGames.DAO.getAllLowestRatedGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllMostExpensiveGames() {
+        return VideoGames.DAO.getAllMostExpensiveGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllCheapestGames() {
+        return VideoGames.DAO.getAllCheapestGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllMostSoldGames() {
+        return VideoGames.DAO.getAllMostSoldGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getAllGamesByGenre(String genre) {
+        return VideoGames.DAO.getAllGamesByGenre(connection, genre);
+    }
+    
     @Override
     public boolean updateGameAverageRating(int gameId) {
         try (PreparedStatement stmt = connection.prepareStatement(Queries.UPDATE_GAME_AVERAGE_RATING)) {

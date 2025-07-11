@@ -250,4 +250,46 @@ public interface Model {
      * @return top 10 games by genre.
      */
     List<Optional<VideoGames>> getTop10GamesByGenre(String genre);
+    
+    // Methods to get ALL games sorted (not just top 10)
+    /**
+     * @return all games sorted by newest first.
+     */
+    List<Optional<VideoGames>> getAllNewestGames();
+    
+    /**
+     * @return all games sorted by oldest first.
+     */
+    List<Optional<VideoGames>> getAllOldestGames();
+    
+    /**
+     * @return all games sorted by highest rated first.
+     */
+    List<Optional<VideoGames>> getAllHighestRatedGames();
+    
+    /**
+     * @return all games sorted by lowest rated first.
+     */
+    List<Optional<VideoGames>> getAllLowestRatedGames();
+    
+    /**
+     * @return all games sorted by most expensive first.
+     */
+    List<Optional<VideoGames>> getAllMostExpensiveGames();
+    
+    /**
+     * @return all games sorted by cheapest first.
+     */
+    List<Optional<VideoGames>> getAllCheapestGames();
+    
+    /**
+     * @return all games sorted by most sold first.
+     */
+    List<Optional<VideoGames>> getAllMostSoldGames();
+    
+    /**
+     * @param genre the genre to filter by
+     * @return all games by genre.
+     */
+    List<Optional<VideoGames>> getAllGamesByGenre(String genre);
 }

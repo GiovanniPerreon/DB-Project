@@ -662,4 +662,37 @@ public final class Controller {
     public List<Optional<VideoGames>> getTop10GamesByGenre(String genre) {
         return model.getTop10GamesByGenre(genre);
     }
+    
+    // Methods that return ALL games sorted (not just top 10)
+    public List<Optional<VideoGames>> getAllNewestGames() {
+        return model.getAllNewestGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllOldestGames() {
+        return model.getAllOldestGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllHighestRatedGames() {
+        return model.getAllHighestRatedGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllLowestRatedGames() {
+        return model.getAllLowestRatedGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllMostExpensiveGames() {
+        return model.getAllMostExpensiveGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllCheapestGames() {
+        return model.getAllCheapestGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllMostSoldGames() {
+        return model.getAllMostSoldGames();
+    }
+    
+    public List<Optional<VideoGames>> getAllGamesByGenre(String genre) {
+        return model.getAllGamesByGenre(genre);
+    }
 }

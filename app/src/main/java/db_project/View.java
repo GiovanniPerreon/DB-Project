@@ -887,29 +887,10 @@ public final class View {
         gameListPanel.add(titleLabel);
         gameListPanel.add(javax.swing.Box.createVerticalStrut(10));
         
-        int rank = 1;
         for (VideoGames game : topGames) {
-            // Create a panel for each game
-            JPanel gamePanel = new JPanel();
-            gamePanel.setLayout(new java.awt.BorderLayout());
-            gamePanel.setBorder(BorderFactory.createEtchedBorder());
-            gamePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
-            
-            // Game info with ranking
-            JLabel gameLabel = new JLabel("<html><b>#" + rank + " - " + game.getTitle() + "</b><br>" + 
-                                          "Rating: " + game.getAverageRating() + "/5 - Price: $" + game.getPrice() + "</html>");
-            
-            // Click to view details
-            JButton viewDetailsButton = new JButton("View Details");
-            viewDetailsButton.addActionListener(e -> showGameDetails(game));
-            
-            gamePanel.add(gameLabel, java.awt.BorderLayout.CENTER);
-            gamePanel.add(viewDetailsButton, java.awt.BorderLayout.EAST);
-            
+            JPanel gamePanel = createGameListItem(game);
             gameListPanel.add(gamePanel);
             gameListPanel.add(javax.swing.Box.createVerticalStrut(5));
-            
-            rank++;
         }
         
         gameListPanel.revalidate();
@@ -946,25 +927,7 @@ public final class View {
         
         if (mostBoughtGame.isPresent()) {
             VideoGames game = mostBoughtGame.get();
-            
-            // Create a panel for the game
-            JPanel gamePanel = new JPanel();
-            gamePanel.setLayout(new java.awt.BorderLayout());
-            gamePanel.setBorder(BorderFactory.createEtchedBorder());
-            gamePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-            
-            // Game info
-            JLabel gameLabel = new JLabel("<html><b>" + game.getTitle() + "</b><br>" + 
-                                          "Price: $" + game.getPrice() + "<br>" +
-                                          "Rating: " + game.getAverageRating() + "/5</html>");
-            
-            // Click to view details
-            JButton viewDetailsButton = new JButton("View Details");
-            viewDetailsButton.addActionListener(e -> showGameDetails(game));
-            
-            gamePanel.add(gameLabel, java.awt.BorderLayout.CENTER);
-            gamePanel.add(viewDetailsButton, java.awt.BorderLayout.EAST);
-            
+            JPanel gamePanel = createGameListItem(game);
             gameListPanel.add(gamePanel);
         } else {
             JLabel noGameLabel = new JLabel("No games found");
@@ -1519,46 +1482,116 @@ public final class View {
      */
     private JPanel createGameListItem(VideoGames game) {
         JPanel panel = new JPanel(new BorderLayout());
+        
+        // Create a modern card-like appearance with colors
         panel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            BorderFactory.createLineBorder(new Color(70, 130, 180), 2), // Steel blue border
+            BorderFactory.createEmptyBorder(15, 15, 15, 15)
         ));
-        panel.setBackground(Color.WHITE);
+        
+        // Gradient background effect with a nice blue color
+        panel.setBackground(new Color(240, 248, 255)); // Alice blue background
         panel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         
-        // Game title
-        JLabel titleLabel = new JLabel(game.getTitle());
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        // Left side - colored accent
+        JPanel colorAccent = new JPanel();
+        colorAccent.setBackground(new Color(70, 130, 180)); // Steel blue accent
+        colorAccent.setPreferredSize(new Dimension(5, 80));
+        panel.add(colorAccent, BorderLayout.WEST);
         
-        // Game price
-        JLabel priceLabel = new JLabel("$" + game.getPrice());
-        priceLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        priceLabel.setForeground(new Color(0, 120, 0));
+        // Main content area
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false);
+        
+        // Game title with larger, bold font
+        JLabel titleLabel = new JLabel(game.getTitle());
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        titleLabel.setForeground(new Color(25, 25, 112)); // Midnight blue
+        
+        // Price with attractive styling
+        JLabel priceLabel;
+        if (game.getPrice().equals("0.00")) {
+            priceLabel = new JLabel("FREE");
+            priceLabel.setForeground(new Color(34, 139, 34)); // Forest green for free games
+        } else {
+            priceLabel = new JLabel("$" + game.getPrice());
+            priceLabel.setForeground(new Color(220, 20, 60)); // Crimson for paid games
+        }
+        priceLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
+        // Rating if available
+        JLabel ratingLabel = new JLabel();
+        double rating = game.getAverageRating();
+        if (rating > 0.0) {
+            ratingLabel.setText(String.format("%.1f", rating) + "/5");
+            ratingLabel.setForeground(new Color(255, 140, 0)); // Dark orange for rating
+            ratingLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        }
         
         // Game description (truncated)
         String description = game.getDescription();
-        if (description.length() > 100) {
-            description = description.substring(0, 100) + "...";
+        if (description != null && description.length() > 120) {
+            description = description.substring(0, 120) + "...";
         }
-        JLabel descLabel = new JLabel(description);
-        descLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+        JLabel descLabel = new JLabel("<html><div style='width: 350px'>" + description + "</div></html>");
+        descLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        descLabel.setForeground(new Color(105, 105, 105)); // Dim gray
         
-        // Info panel
+        // Release date
+        JLabel dateLabel = new JLabel("Released: " + game.getReleaseDate());
+        dateLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        dateLabel.setForeground(new Color(128, 128, 128)); // Gray
+        
+        // Top panel for title and price
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false);
+        topPanel.add(titleLabel, BorderLayout.WEST);
+        
+        JPanel rightInfoPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightInfoPanel.setOpaque(false);
+        if (!ratingLabel.getText().isEmpty()) {
+            rightInfoPanel.add(ratingLabel);
+        }
+        rightInfoPanel.add(priceLabel);
+        topPanel.add(rightInfoPanel, BorderLayout.EAST);
+        
+        // Info panel for description and date
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.add(titleLabel);
-        infoPanel.add(priceLabel);
+        infoPanel.setOpaque(false);
+        infoPanel.add(Box.createVerticalStrut(8));
         infoPanel.add(descLabel);
+        infoPanel.add(Box.createVerticalStrut(5));
+        infoPanel.add(dateLabel);
         
-        panel.add(infoPanel, BorderLayout.CENTER);
+        contentPanel.add(topPanel, BorderLayout.NORTH);
+        contentPanel.add(infoPanel, BorderLayout.CENTER);
         
-        // Click listener to show game details
+        panel.add(contentPanel, BorderLayout.CENTER);
+        
+        // Hover effect
         panel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                panel.setBackground(new Color(230, 240, 250)); // Lighter blue on hover
+                panel.repaint();
+            }
+            
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                panel.setBackground(new Color(240, 248, 255)); // Original color
+                panel.repaint();
+            }
+            
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 showGameDetails(game);
             }
         });
+        
+        // Set preferred size for consistency
+        panel.setPreferredSize(new Dimension(500, 100));
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         
         return panel;
     }
@@ -1580,24 +1613,7 @@ public final class View {
         for (Optional<VideoGames> gameOpt : games) {
             if (gameOpt.isPresent()) {
                 VideoGames game = gameOpt.get();
-                
-                // Create a panel for each game
-                JPanel gamePanel = new JPanel();
-                gamePanel.setLayout(new java.awt.BorderLayout());
-                gamePanel.setBorder(BorderFactory.createEtchedBorder());
-                gamePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-                
-                // Game info
-                JLabel gameLabel = new JLabel("<html><b>" + game.getTitle() + "</b><br>" + 
-                                              "Price: $" + game.getPrice() + "</html>");
-                
-                // Click to view details
-                JButton viewDetailsButton = new JButton("View Details");
-                viewDetailsButton.addActionListener(e -> showGameDetails(game));
-                
-                gamePanel.add(gameLabel, java.awt.BorderLayout.CENTER);
-                gamePanel.add(viewDetailsButton, java.awt.BorderLayout.EAST);
-                
+                JPanel gamePanel = createGameListItem(game);
                 gameListPanel.add(gamePanel);
                 gameListPanel.add(javax.swing.Box.createVerticalStrut(5));
             }
@@ -1790,18 +1806,18 @@ public final class View {
     
     private String getFilterTitle(String filterType) {
         switch (filterType) {
-            case "newest": return "TOP 10 NEWEST GAMES";
-            case "oldest": return "TOP 10 OLDEST GAMES";
-            case "highest_rated": return "TOP 10 HIGHEST RATED GAMES";
-            case "lowest_rated": return "TOP 10 LOWEST RATED GAMES";
-            case "most_expensive": return "TOP 10 MOST EXPENSIVE GAMES";
-            case "cheapest": return "TOP 10 CHEAPEST GAMES";
-            case "most_sold": return "TOP 10 MOST SOLD GAMES";
+            case "newest": return "NEWEST GAMES";
+            case "oldest": return "OLDEST GAMES";
+            case "highest_rated": return "HIGHEST RATED GAMES";
+            case "lowest_rated": return "LOWEST RATED GAMES";
+            case "most_expensive": return "MOST EXPENSIVE GAMES";
+            case "cheapest": return "CHEAPEST GAMES";
+            case "most_sold": return "MOST SOLD GAMES";
             case "all": return "ALL VIDEOGAMES";
             default:
                 if (filterType.startsWith("genre:")) {
                     String genre = filterType.substring(6);
-                    return "TOP 10 " + genre.toUpperCase() + " GAMES";
+                    return genre.toUpperCase() + " GAMES";
                 }
                 return "VIDEOGAMES";
         }
@@ -1817,25 +1833,25 @@ public final class View {
             // Get games based on filter type
             switch (filterType) {
                 case "newest":
-                    games = getController().getTop10NewestGames();
+                    games = getController().getAllNewestGames();
                     break;
                 case "oldest":
-                    games = getController().getTop10OldestGames();
+                    games = getController().getAllOldestGames();
                     break;
                 case "highest_rated":
-                    games = getController().getTop10HighestRatedGames();
+                    games = getController().getAllHighestRatedGames();
                     break;
                 case "lowest_rated":
-                    games = getController().getTop10LowestRatedGames();
+                    games = getController().getAllLowestRatedGames();
                     break;
                 case "most_expensive":
-                    games = getController().getTop10MostExpensiveGames();
+                    games = getController().getAllMostExpensiveGames();
                     break;
                 case "cheapest":
-                    games = getController().getTop10CheapestGames();
+                    games = getController().getAllCheapestGames();
                     break;
                 case "most_sold":
-                    games = getController().getTop10MostSoldGames();
+                    games = getController().getAllMostSoldGames();
                     break;
                 case "all":
                     games = getController().getAllGames();
@@ -1843,7 +1859,7 @@ public final class View {
                 default:
                     if (filterType.startsWith("genre:")) {
                         String genre = filterType.substring(6);
-                        games = getController().getTop10GamesByGenre(genre);
+                        games = getController().getAllGamesByGenre(genre);
                     } else {
                         games = getController().getAllGames();
                     }

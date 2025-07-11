@@ -230,6 +230,84 @@ public class VideoGames {
             }
         }
         
+        // Methods for ALL games sorted (not just top 10)
+        /**
+         * Returns all games sorted by newest first.
+         */
+        public static List<Optional<VideoGames>> getAllNewestGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_NEWEST_GAMES);
+        }
+        
+        /**
+         * Returns all games sorted by oldest first.
+         */
+        public static List<Optional<VideoGames>> getAllOldestGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_OLDEST_GAMES);
+        }
+        
+        /**
+         * Returns all games sorted by highest rated first.
+         */
+        public static List<Optional<VideoGames>> getAllHighestRatedGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_HIGHEST_RATED_GAMES);
+        }
+        
+        /**
+         * Returns all games sorted by lowest rated first.
+         */
+        public static List<Optional<VideoGames>> getAllLowestRatedGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_LOWEST_RATED_GAMES);
+        }
+        
+        /**
+         * Returns all games sorted by most expensive first.
+         */
+        public static List<Optional<VideoGames>> getAllMostExpensiveGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_MOST_EXPENSIVE_GAMES);
+        }
+        
+        /**
+         * Returns all games sorted by cheapest first.
+         */
+        public static List<Optional<VideoGames>> getAllCheapestGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_CHEAPEST_GAMES);
+        }
+        
+        /**
+         * Returns all games sorted by most sold first.
+         */
+        public static List<Optional<VideoGames>> getAllMostSoldGames(Connection connection) {
+            return executeTop10Query(connection, Queries.ALL_MOST_SOLD_GAMES);
+        }
+        
+        /**
+         * Returns all games by genre.
+         */
+        public static List<Optional<VideoGames>> getAllGamesByGenre(Connection connection, String genre) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.ALL_GAMES_BY_GENRE, genre);
+                var resultSet = statement.executeQuery()
+            ) {
+                var videogames = new ArrayList<Optional<VideoGames>>();
+                while (resultSet.next()) {
+                    videogames.add(Optional.of(new VideoGames(
+                        resultSet.getInt("gameID"),
+                        resultSet.getInt("publisherID"),
+                        resultSet.getString("title"),
+                        resultSet.getString("price"),
+                        resultSet.getString("description"),
+                        resultSet.getString("requirements"),
+                        resultSet.getString("average_rating"),
+                        resultSet.getString("release_date"),
+                        resultSet.getString("discount")
+                    )));
+                }
+                return videogames;
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
+        
         /**
          * Helper method to execute top 10 queries.
          */
