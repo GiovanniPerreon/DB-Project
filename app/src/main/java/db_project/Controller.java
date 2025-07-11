@@ -59,8 +59,9 @@ public final class Controller {
             ));
     }
 
-    public boolean loginUser(int userId) {
-        Optional<Users> user = model.find(userId);
+    // Authentication methods
+    public boolean loginUser(String email, String password) {
+        Optional<Users> user = model.findByEmailPassword(email, password);
         if (user.isPresent()) {
             this.currentUser = user.get();
             return true;
@@ -74,8 +75,7 @@ public final class Controller {
 
     public boolean registerUser(String email, String password, String name, String surname, String birthDate) {
         try {
-
-            return false;
+            return model.registerUser(email, password, name, surname, birthDate);
         } catch (Exception e) {
             return false;
         }
@@ -182,7 +182,7 @@ public final class Controller {
 
     public List<VideoGames> getTopGames(int limit) {
         try {
-            
+
             List<Optional<VideoGames>> allGames = model.getVideoGames();
             return allGames.stream()
                 .filter(Optional::isPresent)
