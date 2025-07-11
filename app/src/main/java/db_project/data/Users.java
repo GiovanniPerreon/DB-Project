@@ -94,6 +94,29 @@ public class Users {
         return is_blocked;
     }
 
+    /**
+     * Returns a string representation of all user types/roles
+     */
+    public String getUserTypes() {
+        List<String> types = new ArrayList<>();
+        
+        if (is_administrator) {
+            types.add("Admin");
+        }
+        if (is_publisher) {
+            types.add("Publisher");
+        }
+        if (is_developer) {
+            types.add("Developer");
+        }
+        
+        if (types.isEmpty()) {
+            return "User";
+        }
+        
+        return String.join(", ", types);
+    }
+
     public static final class DAO {
         /**
          * Returns a list of all users in the database.
@@ -154,9 +177,9 @@ public class Users {
         /**
          * Adds a new user to the database.
          */
-        public static boolean addUser(Connection connection, String email, String password, String name, String surname, String birthDate, boolean isAdmin, boolean isPublisher, boolean isDeveloper) {
+        public static boolean addUser(Connection connection, String email, String password, String name, String surname, String birthDate, boolean isAdmin, boolean isPublisher, boolean isDeveloper, boolean isBlocked) {
             try (
-                var statement = DAOUtils.prepare(connection, Queries.ADD_USER, email, password, name, surname, birthDate, isAdmin, isPublisher, isDeveloper)
+                var statement = DAOUtils.prepare(connection, Queries.ADD_USER, email, password, name, surname, birthDate, isAdmin, isPublisher, isDeveloper, isBlocked)
             ) {
                 int rowsAffected = statement.executeUpdate();
                 return rowsAffected > 0;

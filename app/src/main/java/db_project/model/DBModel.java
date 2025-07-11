@@ -136,7 +136,7 @@ public final class DBModel implements Model {
      */
     @Override
     public boolean registerUser(String email, String password, String name, String surname, String birthDate) {
-        return Users.DAO.addUser(this.connection, email, password, name, surname, birthDate, false, false, false);
+        return Users.DAO.addUser(this.connection, email, password, name, surname, birthDate, false, false, false, false);
     }
 
     @Override
