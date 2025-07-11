@@ -702,7 +702,7 @@ public final class View {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(new JLabel("Game ID:"));
         panel.add(gameIdField);
-        panel.add(new JLabel("Rating (1-10):"));
+        panel.add(new JLabel("Rating (1-5):"));
         panel.add(ratingField);
         panel.add(new JLabel("Comment:"));
         panel.add(new JScrollPane(commentArea));
@@ -712,13 +712,20 @@ public final class View {
             try {
                 int gameId = Integer.parseInt(gameIdField.getText());
                 int rating = Integer.parseInt(ratingField.getText());
+                
+                // Validate rating range
+                if (rating < 1 || rating > 5) {
+                    showError("Rating must be between 1 and 5!");
+                    return;
+                }
+                
                 if (getController().addReview(currentUser, gameId, rating, commentArea.getText())) {
                     showMessage("Review added successfully!");
                 } else {
                     showError("Failed to add review!");
                 }
             } catch (NumberFormatException e) {
-                showError("Please enter valid numbers for Game ID and Rating");
+                showError("Please enter valid numbers for Game ID and Rating (1-5)");
             }
         }
     }
@@ -1085,7 +1092,7 @@ public final class View {
                 
                 // User info
                 JLabel userLabel = new JLabel(String.format(
-                    "<html><b>%s %s</b><br>Role: %s<br>Average Rating: %.2f/10<br>Email: %s</html>",
+                    "<html><b>%s %s</b><br>Role: %s<br>Average Rating: %.2f/5<br>Email: %s</html>",
                     user.getName(), user.getSurname(), user.getRole(), user.getAvgRating(), user.getEmail()
                 ));
                 
@@ -1123,7 +1130,7 @@ public final class View {
         infoArea.setEditable(false);
         infoArea.setText("Title: " + game.getTitle() + "\n" +
                         "Price: $" + game.getPrice() + "\n" +
-                        "Rating: " + game.getAverageRating() + "/10\n" +
+                        "Rating: " + game.getAverageRating() + "/5\n" +
                         "Release Date: " + game.getReleaseDate());
         infoPanel.add(infoArea);
         
@@ -1197,8 +1204,10 @@ public final class View {
         reviewsPanel.setBorder(BorderFactory.createTitledBorder("REVIEWS"));
         reviewsPanel.setLayout(new BoxLayout(reviewsPanel, BoxLayout.Y_AXIS));
         
-        JTextArea reviewsArea = new JTextArea(3, 20);
+        JTextArea reviewsArea = new JTextArea(5, 30);
         reviewsArea.setEditable(false);
+        reviewsArea.setLineWrap(true);
+        reviewsArea.setWrapStyleWord(true);
         
         // Get real reviews for this game
         List<Reviews> reviews = getController().getGameReviews(game.getGameID());
@@ -1208,13 +1217,33 @@ public final class View {
         } else {
             for (Reviews review : reviews) {
                 // Convert rating to stars
-                String stars = "★".repeat(review.getRating()) + "☆".repeat(10 - review.getRating());
-                reviewsText.append(stars).append(" ").append(review.getComment()).append("\n");
+                String stars = "★".repeat(review.getRating()) + "☆".repeat(5 - review.getRating());
+                
+                // Get reviewer name
+                String reviewerName = getController().getReviewerName(review.getUserID());
+                
+                // Truncate long comments for readability
+                String comment = review.getComment();
+                if (comment.length() > 100) {
+                    comment = comment.substring(0, 97) + "...";
+                }
+                
+                reviewsText.append(stars)
+                          .append(" by ")
+                          .append(reviewerName)
+                          .append("\n")
+                          .append("\"")
+                          .append(comment)
+                          .append("\"")
+                          .append("\n\n");
             }
         }
         
         reviewsArea.setText(reviewsText.toString());
-        reviewsPanel.add(reviewsArea);
+        JScrollPane reviewsScrollPane = new JScrollPane(reviewsArea);
+        reviewsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        reviewsScrollPane.setPreferredSize(new java.awt.Dimension(350, 120));
+        reviewsPanel.add(reviewsScrollPane);
         
         // Add action buttons
         JPanel buttonPanel = new JPanel();
@@ -1232,9 +1261,14 @@ public final class View {
         // Check if user can add review
         boolean canAddReview = getController().canUserAddReview(currentUser, game.getGameID());
         
-        // Enable/disable buttons based on wishlist status
-        addToWishlistButton.setEnabled(!isInWishlist);
+        // Enable/disable buttons based on wishlist status and ownership
+        addToWishlistButton.setEnabled(!isInWishlist && !userOwnsGame);
         removeFromWishlistButton.setEnabled(isInWishlist);
+        
+        // Update button text if user owns the game
+        if (userOwnsGame) {
+            addToWishlistButton.setText("Already Owned");
+        }
         
         // Enable/disable buy button based on ownership
         buyButton.setEnabled(!userOwnsGame);
@@ -1322,7 +1356,7 @@ public final class View {
         
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel("Rating (1-10):"));
+        panel.add(new JLabel("Rating (1-5):"));
         panel.add(ratingField);
         panel.add(new JLabel("Comment:"));
         panel.add(new JScrollPane(commentArea));
@@ -1331,8 +1365,8 @@ public final class View {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 int rating = Integer.parseInt(ratingField.getText());
-                if (rating < 1 || rating > 10) {
-                    showError("Rating must be between 1 and 10.");
+                if (rating < 1 || rating > 5) {
+                    showError("Rating must be between 1 and 5.");
                     return;
                 }
                 
@@ -1343,13 +1377,18 @@ public final class View {
                     showError("Failed to add review!");
                 }
             } catch (NumberFormatException e) {
-                showError("Please enter a valid rating (1-10)");
+                showError("Please enter a valid rating (1-5)");
             }
         }
     }
     
     private void addToWishlist(VideoGames game) {
-        // Check if game is already in wishlist
+        // Check if game is already in wishlist or owned
+        if (getController().userOwnsGame(currentUser, game.getGameID())) {
+            showError("Cannot add '" + game.getTitle() + "' to wishlist: You already own this game!");
+            return;
+        }
+        
         if (getController().isGameInWishlist(currentUser, game.getGameID())) {
             showError("'" + game.getTitle() + "' is already in your wishlist!");
             return;
@@ -1357,6 +1396,7 @@ public final class View {
         
         if (getController().addToWishlist(currentUser, game.getGameID())) {
             showMessage("'" + game.getTitle() + "' added to your wishlist!");
+            showGameDetails(game); // Refresh the view to update buttons
         } else {
             showError("Failed to add '" + game.getTitle() + "' to wishlist!");
         }
@@ -1371,6 +1411,7 @@ public final class View {
         
         if (getController().removeFromWishlist(currentUser, game.getGameID())) {
             showMessage("'" + game.getTitle() + "' removed from your wishlist!");
+            showGameDetails(game); // Refresh the view to update buttons
         } else {
             showError("Failed to remove '" + game.getTitle() + "' from wishlist!");
         }

@@ -69,8 +69,18 @@ public class LeastRatedUser {
 
     @Override
     public String toString() {
-        return String.format("%s %s (%s) - Average Rating: %.2f - Role: %s", 
-                           name, surname, email, avgRating, getRole());
+        return Printer.stringify(
+            "LeastRatedUser",
+            List.of(
+                Printer.field("userID", this.userID),
+                Printer.field("name", this.name),
+                Printer.field("surname", this.surname),
+                Printer.field("email", this.email),
+                Printer.field("isPublisher", this.isPublisher),
+                Printer.field("isDeveloper", this.isDeveloper),
+                Printer.field("avgRating", this.avgRating)
+            )
+        );
     }
 
     public static final class DAO {

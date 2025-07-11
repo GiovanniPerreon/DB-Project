@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import db_project.data.Genres;
 import db_project.data.Languages;
+import db_project.data.LeastRatedUser;
 import db_project.data.Reviews;
+import db_project.data.TransactionItems;
 import db_project.data.Transactions;
 import db_project.data.Users;
 import db_project.data.VideoGameGenres;
@@ -199,7 +201,14 @@ public interface Model {
     /**
      * @return all the least rated users in the database.
      */
-    List<db_project.data.LeastRatedUser> getLeastRatedUsers();
+    List<LeastRatedUser> getLeastRatedUsers();
+    
+    /**
+     * Updates the average rating for a game based on all its reviews.
+     * @param gameId the game ID
+     * @return true if average rating was updated successfully, false otherwise
+     */
+    boolean updateGameAverageRating(int gameId);
     
     /**
      * @return top 10 newest games.

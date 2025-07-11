@@ -261,7 +261,17 @@ public final class Queries {
         ORDER BY avg_rating ASC
         """;
     
-    // Top 10 Games Filters
+    public static final String UPDATE_GAME_AVERAGE_RATING =
+        """
+        UPDATE videogames 
+        SET average_rating = (
+            SELECT AVG(rating) 
+            FROM reviews 
+            WHERE gameID = ?
+        ) 
+        WHERE gameID = ?
+        """;
+
     public static final String TOP_10_NEWEST_GAMES =
         """
         SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount

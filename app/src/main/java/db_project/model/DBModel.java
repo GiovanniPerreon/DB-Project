@@ -216,7 +216,12 @@ public final class DBModel implements Model {
             stmt.setString(4, comment);
             
             int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+            if (rowsAffected > 0) {
+                // Automatically update the game's average rating
+                updateGameAverageRating(gameId);
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
             System.err.println("Error adding review: " + e.getMessage());
             return false;
@@ -261,7 +266,7 @@ public final class DBModel implements Model {
             stmt.setDouble(3, price);
             stmt.setString(4, description);
             stmt.setString(5, requirements);
-            stmt.setNull(6, java.sql.Types.DECIMAL); // average_rating starts as NULL
+            stmt.setDouble(6, 2.5); // Use default rating of 2.5
             stmt.setString(7, releaseDate);
             stmt.setInt(8, 0); // discount starts at 0
             
@@ -388,5 +393,20 @@ public final class DBModel implements Model {
     @Override
     public List<Optional<VideoGames>> getAllGamesByGenre(String genre) {
         return VideoGames.DAO.getAllGamesByGenre(connection, genre);
+    }
+    
+    @Override
+    public boolean updateGameAverageRating(int gameId) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.UPDATE_GAME_AVERAGE_RATING)) {
+            stmt.setInt(1, gameId);
+            stmt.setInt(2, gameId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("DEBUG: Updated average rating for game " + gameId + ", rows affected: " + rowsAffected);
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating game average rating: " + e.getMessage());
+            return false;
+        }
     }
 }

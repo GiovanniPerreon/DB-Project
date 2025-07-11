@@ -104,12 +104,10 @@ public final class Controller {
                 System.out.println("DEBUG: User is not a publisher, cannot create game");
                 return false;
             }
-            
             System.out.println("DEBUG: Creating game for publisher " + user.getUserID());
             boolean result = model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
             System.out.println("DEBUG: Game creation result: " + result);
             return result;
-            
         } catch (Exception e) {
             System.err.println("Error creating game: " + e.getMessage());
             e.printStackTrace();
@@ -121,6 +119,19 @@ public final class Controller {
     public boolean addToWishlist(Users user, int gameId) {
         try {
             System.out.println("DEBUG: Controller.addToWishlist called with user=" + user.getUserID() + ", gameId=" + gameId);
+            
+            // Check if user already owns the game
+            if (userOwnsGame(user, gameId)) {
+                System.out.println("DEBUG: User already owns game " + gameId + ", cannot add to wishlist");
+                return false;
+            }
+            
+            // Check if game is already in wishlist
+            if (isGameInWishlist(user, gameId)) {
+                System.out.println("DEBUG: Game " + gameId + " is already in user's wishlist");
+                return false;
+            }
+            
             boolean result = model.addToWishlist(user.getUserID(), gameId);
             System.out.println("DEBUG: Controller.addToWishlist result: " + result);
             return result;
@@ -288,6 +299,14 @@ public final class Controller {
     }
     
     /**
+     * Checks if a user can add a game to their wishlist
+     * (user must not own the game and game must not already be in wishlist)
+     */
+    public boolean canAddToWishlist(Users user, int gameId) {
+        return !userOwnsGame(user, gameId) && !isGameInWishlist(user, gameId);
+    }
+    
+    /**
      * Gets the user's collection of owned games
      */
     public List<VideoGames> getUserCollection(Users user) {
@@ -391,6 +410,12 @@ public final class Controller {
             // Add the game to transaction items
             boolean itemAdded = model.addTransactionItem(transactionId, gameId);
             System.out.println("DEBUG: Game purchase result: " + itemAdded);
+            
+            // If purchase was successful, remove the game from wishlist (if it's there)
+            if (itemAdded && isGameInWishlist(user, gameId)) {
+                boolean removedFromWishlist = removeFromWishlist(user, gameId);
+                System.out.println("DEBUG: Removed game from wishlist after purchase: " + removedFromWishlist);
+            }
             
             return itemAdded;
             
@@ -587,6 +612,22 @@ public final class Controller {
         } catch (Exception e) {
             System.err.println("Error getting least rated users: " + e.getMessage());
             return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Gets the reviewer name for a review
+     */
+    public String getReviewerName(int userId) {
+        try {
+            Optional<Users> user = model.find(userId);
+            if (user.isPresent()) {
+                Users u = user.get();
+                return u.getName() + " " + u.getSurname();
+            }
+            return "Unknown User";
+        } catch (Exception e) {
+            return "Unknown User";
         }
     }
     

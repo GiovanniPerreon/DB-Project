@@ -28,7 +28,7 @@ CREATE TABLE if NOT EXISTS videogames (
     price DECIMAL(10, 2) NOT NULL,
     description VARCHAR(5000),
     requirements VARCHAR(5000),
-    average_rating DECIMAL(2,1) CHECK (average_rating IS NULL OR (average_rating >= 1 AND average_rating <= 5)),
+    average_rating DECIMAL(2,1) DEFAULT 2.5 CHECK (average_rating >= 1 AND average_rating <= 5),
     release_date DATE NOT NULL, 
     discount INT,
     FOREIGN KEY (publisherID) REFERENCES users(userID)
@@ -131,20 +131,23 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13', false, false, false, false),
 ('blocked.user@email.com', 'blocked123', 'Blocked', 'User', '1995-03-20', false, false, false, true);
 
-INSERT INTO videogames (publisherID, title, price, description, requirements, average_rating, release_date, discount)
-SELECT u.userID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount
+INSERT INTO videogames (publisherID, title, price, description, requirements, release_date, discount)
+SELECT u.userID, v.title, v.price, v.description, v.requirements, v.release_date, v.discount
 FROM (
-    SELECT 2 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970' AS requirements, 4.9 AS average_rating, '2015-05-19' AS release_date, 0 AS discount
+    SELECT 1 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970' AS requirements, '2015-05-19' AS release_date, 0 AS discount
     UNION ALL
-    SELECT 6, 'Among Us', 4.99, 'Un gioco multiplayer di deduzione sociale ambientato nello spazio.',
-           'CPU: Intel Core i3, RAM: 2GB, GPU: NVIDIA GTX 660', 4.5, '2018-06-15', 0
+    SELECT 2, 'Among Us', 4.99, 'Un gioco multiplayer di deduzione sociale ambientato nello spazio.',
+           'CPU: Intel Core i3, RAM: 2GB, GPU: NVIDIA GTX 660', '2018-06-15', 0
     UNION ALL
     SELECT 1, 'Sekiro: Shadows Die Twice', 59.99, 'Un gioco di azione-avventura con combattimenti impegnativi e una trama avvincente.',
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', 4.7, '2019-03-22', 20
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2019-03-22', 20
     UNION ALL
     SELECT 1, 'Elden Ring', 59.99, 'Un gioco di ruolo d''azione con un vasto mondo aperto e combattimenti impegnativi.',
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', 4.8, '2022-02-25', 30
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2022-02-25', 30
+    UNION ALL
+    SELECT 2, 'Dragon Age: Veilguard', 39.99, 'Un gioco di ruolo fantasy con una trama avvincente e personaggi memorabili.',
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2023-05-10', 90
 ) v
 JOIN users u ON u.userID = v.publisherID
 WHERE u.is_publisher = TRUE;
@@ -269,16 +272,20 @@ WHERE w.userID IS NULL;
 INSERT INTO wishlist_items (wishlistID, gameID)
 SELECT w.wishlistID, g.gameID
 FROM (
-    SELECT 1 AS wishlistID, 1 AS gameID
-    UNION ALL
-    SELECT 1, 2
-    UNION ALL
-    SELECT 1, 3
-    UNION ALL
-    SELECT 2, 4
+    -- All possible combinations of wishlists and games
+    SELECT wl.wishlistID, vg.gameID, wl.userID
+    FROM wishlists wl
+    CROSS JOIN videogames vg
 ) w
-JOIN wishlists wl ON w.wishlistID = wl.wishlistID
-JOIN videogames g ON w.gameID = g.gameID;
+JOIN videogames g ON w.gameID = g.gameID
+-- Exclude games that the user already owns
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM transactions t
+    JOIN transaction_items ti ON t.transactionID = ti.transactionID
+    WHERE t.userID = w.userID 
+    AND ti.gameID = w.gameID
+);
 
 INSERT INTO reviews (userID, gameID, rating, comment)
 SELECT r.userID, r.gameID, r.rating, r.comment 
@@ -303,6 +310,18 @@ FROM (
 ) a
 JOIN users u ON a.userID = u.userID
 JOIN achievements ach ON a.achievementID = ach.achievementID AND a.gameID = ach.gameID;
+
+-- Update average ratings based on the inserted reviews
+UPDATE videogames 
+SET average_rating = (
+    SELECT AVG(rating) 
+    FROM reviews 
+    WHERE reviews.gameID = videogames.gameID
+) 
+WHERE gameID IN (
+    SELECT DISTINCT gameID 
+    FROM reviews
+);
 
 -- Additional users to reach 50 total (we have 4, adding 46 more)
 INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked) VALUES
