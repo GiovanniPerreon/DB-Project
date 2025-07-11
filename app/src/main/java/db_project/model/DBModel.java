@@ -5,17 +5,22 @@ import java.sql.Connection;
 import java.util.Objects;
 import java.util.Optional;
 
+import db_project.data.Genres;
+import db_project.data.Languages;
+import db_project.data.Reviews;
+import db_project.data.Transactions;
 import db_project.data.Users;
+import db_project.data.VideoGameGenres;
 import db_project.data.VideoGames;
 import db_project.data.Achievements;
 import db_project.data.VideogameDevelopers;
+import db_project.data.VideogameLanguages;
 import db_project.data.TransactionItems;
 import db_project.data.WishlistItems;
+import db_project.data.Wishlists;
 
 public final class DBModel implements Model {
     private final Connection connection;
-    private List<Optional<Users>> users;
-    private List<Optional<VideoGames>> videogames;
 
     public DBModel(Connection connection) {
         Objects.requireNonNull(connection, "Model created with null connection");
@@ -34,44 +39,14 @@ public final class DBModel implements Model {
      */
     @Override
     public List<Optional<Users>> getUsers() {
-        this.users = Users.DAO.list(this.connection);
-        return this.users;
+        return Users.DAO.list(this.connection);
     }
     /**
      * @return all the videogames in the database.
      */
     @Override
     public List<Optional<VideoGames>> getVideoGames() {
-        this.videogames = VideoGames.DAO.list(this.connection);
-        return this.videogames;
-    }
-    /**
-     * @return all the transactions in the database.
-     */
-    @Override
-    public List<Optional<db_project.data.Transactions>> getTransactions() {
-        return db_project.data.Transactions.DAO.list(this.connection);
-    }
-    /*
-     * @return all the reviews in the database.
-     */
-    @Override
-    public List<Optional<db_project.data.Reviews>> getReviews() {
-        return db_project.data.Reviews.DAO.list(this.connection);
-    }
-    /**
-     * @return all the wishlists in the database.
-     */
-    @Override
-    public List<Optional<db_project.data.Wishlists>> getWishlists() {
-        return db_project.data.Wishlists.DAO.list(this.connection);
-    }
-    /**
-     * @return all the achievements in the database.
-     */
-    @Override
-    public List<Optional<Achievements>> getAchievements() {
-        return Achievements.DAO.list(this.connection);
+        return VideoGames.DAO.list(this.connection);
     }
     /**
      * @return all the videogame developers in the database.
@@ -81,6 +56,41 @@ public final class DBModel implements Model {
         return VideogameDevelopers.DAO.list(this.connection);
     }
     /**
+     * @return all the genres in the database.
+     */
+    @Override
+    public List<Optional<Genres>> getGenres() {
+        return Genres.DAO.list(this.connection);
+    }
+    /**
+     * @return all the videogame genres in the database.
+     */
+    @Override
+    public List<Optional<VideoGameGenres>> getVideoGameGenres() {
+        return VideoGameGenres.DAO.list(this.connection);
+    }
+    /**
+     * @return all the languages in the database.
+     */
+    @Override
+    public List<Optional<Languages>> getLanguages() {
+        return Languages.DAO.list(this.connection);
+    }
+    /**
+     * @return all the videogame languages in the database.
+     */
+    @Override
+    public List<Optional<VideogameLanguages>> getVideogameLanguages() {
+        return VideogameLanguages.DAO.list(this.connection);
+    }
+    /**
+     * @return all the transactions in the database.
+     */
+    @Override
+    public List<Optional<Transactions>> getTransactions() {
+        return Transactions.DAO.list(this.connection);
+    }
+    /**
      * @return all the transaction items in the database.
      */
     @Override
@@ -88,10 +98,31 @@ public final class DBModel implements Model {
         return TransactionItems.DAO.list(this.connection);
     }
     /**
+     * @return all the reviews in the database.
+     */
+    @Override
+    public List<Optional<Reviews>> getReviews() {
+        return Reviews.DAO.list(this.connection);
+    }
+    /**
+     * @return all the wishlists in the database.
+     */
+    @Override
+    public List<Optional<Wishlists>> getWishlists() {
+        return Wishlists.DAO.list(this.connection);
+    }
+    /**
      * @return all the wishlist items in the database.
      */
     @Override
     public List<Optional<WishlistItems>> getWishlistItems() {
         return WishlistItems.DAO.list(this.connection);
+    }
+    /**
+     * @return all the achievements in the database.
+     */
+    @Override
+    public List<Optional<Achievements>> getAchievements() {
+        return Achievements.DAO.list(this.connection);
     }
 }

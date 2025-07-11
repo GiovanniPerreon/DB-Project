@@ -3,13 +3,17 @@ package db_project.model;
 import java.util.List;
 import java.util.Optional;
 
+import db_project.data.Genres;
+import db_project.data.Languages;
 import db_project.data.Reviews;
 import db_project.data.Transactions;
 import db_project.data.Users;
+import db_project.data.VideoGameGenres;
 import db_project.data.VideoGames;
 import db_project.data.Wishlists;
 import db_project.data.Achievements;
 import db_project.data.VideogameDevelopers;
+import db_project.data.VideogameLanguages;
 import db_project.data.TransactionItems;
 import db_project.data.WishlistItems;
 
@@ -27,6 +31,22 @@ public interface Model {
      * @return all the videogames in the database.
      */
     List<Optional<VideoGames>> getVideoGames();
+    /**
+     * @return all the genres in the database.
+     */
+    List<Optional<Genres>> getGenres();
+    /**
+     * @return all the videogame genres in the database.
+     */
+    List<Optional<VideoGameGenres>> getVideoGameGenres();
+    /**
+     * @return all the languages in the database.
+     */
+    List<Optional<Languages>> getLanguages();
+    /**
+     * @return all the videogame languages in the database.
+     */
+    List<Optional<VideogameLanguages>> getVideogameLanguages();
     /**
      * @return all the transactions in the database.
      */
