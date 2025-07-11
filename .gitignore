@@ -9,6 +9,9 @@ build/
 .gradle/
 gradle-wrapper.jar
 *.lock
+.gradle/*/
+.gradle/file-system.probe
+.gradle/8.7/fileHashes/fileHashes.lock
 
 # IDE files
 .vscode/

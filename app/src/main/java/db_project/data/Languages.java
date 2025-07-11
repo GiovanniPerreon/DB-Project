@@ -60,7 +60,6 @@ public class Languages {
             } catch (Exception e) {
                 throw new DAOException(e);
             }
-            
         }
     }
 }
