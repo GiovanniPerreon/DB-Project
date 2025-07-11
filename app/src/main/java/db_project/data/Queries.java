@@ -46,6 +46,28 @@ public final class Queries {
         from   VIDEOGAME_GENRES
         where  gameID = ? and genre = ?
         """;
+    public static final String LANGUAGE_LIST =
+        """
+        select language_name
+        from   LANGUAGES
+        """;
+    public static final String FIND_LANGUAGE =
+        """
+        select language_name
+        from   LANGUAGES
+        where  language_name = ?
+        """;
+    public static final String VIDEOGAME_LANGUAGE_LIST =
+        """
+        select gameID, language_name
+        from   VIDEOGAME_LANGUAGES
+        """;
+    public static final String FIND_VIDEOGAME_LANGUAGE =
+        """
+        select gameID, language_name
+        from   VIDEOGAME_LANGUAGES
+        where  gameID = ? and language_name = ?
+        """;
     public static final String WISHLIST_LIST =
         """
         select wishlistID, userID
