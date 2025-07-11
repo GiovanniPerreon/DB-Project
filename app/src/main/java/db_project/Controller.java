@@ -92,6 +92,10 @@ public final class Controller {
         return user.isAdministrator();
     }
 
+    public String getUserTypes(Users user) {
+        return user.getUserTypes();
+    }
+
     public boolean createGame(Users user, String title, double price, String description, String requirements, String releaseDate) {
         try {
             // Check if user is a publisher

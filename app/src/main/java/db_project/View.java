@@ -686,8 +686,7 @@ public final class View {
             userInfoArea.setText("Name: " + currentUser.getName() + " " + currentUser.getSurname() + 
                                 "\nEmail: " + currentUser.getEmail() + 
                                 "\nBirth Date: " + currentUser.getBirthDate() + 
-                                "\nType: " + (getController().isPublisher(currentUser) ? "Publisher" : 
-                                           getController().isAdmin(currentUser) ? "Admin" : "User"));
+                                "\nPermissions: " + getController().getUserTypes(currentUser));
         }
     }
     
