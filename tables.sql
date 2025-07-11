@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS transaction_items (
     transactionID INT NOT NULL,
     gameID INT NOT NULL,
     PRIMARY KEY (transactionID, gameID),
-    FOREIGN KEY (transactionID) REFERENCES transactions(transactionsID),
+    FOREIGN KEY (transactionID) REFERENCES transactions(transactionID),
     FOREIGN KEY (gameID) REFERENCES videogames(gameID)
 );
 
@@ -234,9 +234,9 @@ FROM (
 JOIN users u ON u.userID = t.userID;
 
 INSERT INTO transaction_items (transactionID, gameID)
-SELECT t.transactionsID, g.gameID
+SELECT t.transactionID, g.gameID
 FROM (
-    SELECT 1 AS transactionsID, 1 AS gameID
+    SELECT 1 AS transactionID, 1 AS gameID
     UNION ALL
     SELECT 1, 2
     UNION ALL
@@ -244,7 +244,7 @@ FROM (
     UNION ALL
     SELECT 2, 4
 ) t
-JOIN transactions tr ON t.transactionsID = tr.transactionsID
+JOIN transactions tr ON t.transactionID = tr.transactionID
 JOIN videogames g ON t.gameID = g.gameID;
 
 INSERT INTO wishlists (userID)

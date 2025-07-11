@@ -3,8 +3,11 @@ package db_project.model;
 import java.util.List;
 import java.util.Optional;
 
+import db_project.data.Reviews;
+import db_project.data.Transactions;
 import db_project.data.Users;
 import db_project.data.VideoGames;
+import db_project.data.Wishlists;
 
 public interface Model {
     /**
@@ -23,13 +26,13 @@ public interface Model {
     /**
      * @return all the transactions in the database.
      */
-    List<Optional<db_project.data.Transactions>> getTransactions();
+    List<Optional<Transactions>> getTransactions();
     /**
      * @return all the reviews in the database.
      */
-    List<Optional<db_project.data.Reviews>> getReviews();
+    List<Optional<Reviews>> getReviews();
     /**
      * @return all the wishlists in the database.
      */
-    List<Optional<db_project.data.Wishlists>> getWishlists();
+    List<Optional<Wishlists>> getWishlists();
 }
