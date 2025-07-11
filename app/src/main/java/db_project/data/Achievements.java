@@ -101,6 +101,30 @@ public class Achievements {
         }
 
         /**
+         * Finds all achievements for a specific user.
+         */
+        public static List<Optional<Achievements>> getUserAchievements(Connection connection, int userID) {
+            List<Optional<Achievements>> achievements = new ArrayList<>();
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.USER_ACHIEVEMENTS_LIST, userID);
+                var resultSet = statement.executeQuery()
+            ) {
+                while (resultSet.next()) {
+                    Achievements achievement = new Achievements(
+                        resultSet.getInt("achievementID"),
+                        resultSet.getInt("gameID"),
+                        resultSet.getString("title"),
+                        resultSet.getString("description")
+                    );
+                    achievements.add(Optional.of(achievement));
+                }
+                return achievements;
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
+
+        /**
          * Adds a new achievement to the database.
          */
         public static void addAchievement(Connection connection, int achievementID, int gameID, String title, String description) {

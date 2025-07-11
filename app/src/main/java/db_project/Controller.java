@@ -346,7 +346,10 @@ public final class Controller {
      */
     public List<Achievements> getUserAchievements(Users user) {
         try {
-            return model.getUserAchievements(user.getUserID());
+            return model.getUserAchievements(user.getUserID()).stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(java.util.stream.Collectors.toList());
         } catch (Exception e) {
             return new ArrayList<>();
         }
@@ -581,5 +584,37 @@ public final class Controller {
             System.err.println("Error getting least rated users: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+    
+    public List<Optional<VideoGames>> getTop10NewestGames() {
+        return model.getTop10NewestGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10OldestGames() {
+        return model.getTop10OldestGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10HighestRatedGames() {
+        return model.getTop10HighestRatedGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10LowestRatedGames() {
+        return model.getTop10LowestRatedGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10MostExpensiveGames() {
+        return model.getTop10MostExpensiveGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10CheapestGames() {
+        return model.getTop10CheapestGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10MostSoldGames() {
+        return model.getTop10MostSoldGames();
+    }
+    
+    public List<Optional<VideoGames>> getTop10GamesByGenre(String genre) {
+        return model.getTop10GamesByGenre(genre);
     }
 }

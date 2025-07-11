@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -44,12 +45,25 @@ public final class View {
     private Optional<Controller> controller;
     private final JFrame mainFrame;
     private JPanel mainPanel;
-    private JTextArea outputArea;
     private Users currentUser;
     
     // Admin and publisher buttons
     private JButton publisherOpsButton;
     private JButton adminOpsButton;
+    
+    // Filter buttons for game browser
+    private JButton newestGamesButton;
+    private JButton oldestGamesButton;
+    private JButton highestRatedButton;
+    private JButton lowestRatedButton;
+    private JButton mostExpensiveButton;
+    private JButton cheapestButton;
+    private JButton mostSoldButton;
+    private JButton allGamesButton;
+    private JComboBox<String> genreComboBox;
+    
+    // UI panels
+    private JPanel filtersPanel;
 
     // We take an action to run before closing the view so that one can gracefully
     // deal with open resources.
@@ -62,7 +76,8 @@ public final class View {
 
     private JFrame setupMainFrame(Runnable onClose) {
         var frame = new JFrame("SteamDB - Videogames Store");
-        frame.setMinimumSize(new Dimension(800, 600));
+        frame.setMinimumSize(new Dimension(1200, 700));
+        frame.setPreferredSize(new Dimension(1300, 750));
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(
             new WindowAdapter() {
@@ -91,9 +106,6 @@ public final class View {
 
         // Main menu (initially hidden)
         setupMainMenu();
-
-        // Output area
-        setupOutputArea();
 
         mainFrame.add(mainPanel);
         mainFrame.pack();
@@ -140,7 +152,7 @@ public final class View {
         // Left panel - Navigation (Single column of buttons)
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setPreferredSize(new Dimension(220, 500));
+        leftPanel.setPreferredSize(new Dimension(280, 700));
         
         // USER button (main dashboard view)
         JButton userButton = new JButton("USER");
@@ -156,7 +168,7 @@ public final class View {
         JButton viewAllGamesButton = new JButton("Browse Games");
         JButton topGamesButton = new JButton("Top Games");
         JButton mostBoughtButton = new JButton("Most Bought");
-        JButton leastRatedButton = new JButton("Least Rated");
+        JButton leastRatedButton = new JButton("Least rated developers");
         
         // Make buttons bigger
         viewAllGamesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -178,8 +190,8 @@ public final class View {
         otherPanel.setLayout(new BoxLayout(otherPanel, BoxLayout.Y_AXIS));
         otherPanel.setPreferredSize(new Dimension(200, 120));
         
-        publisherOpsButton = new JButton("Publisher Ops");
-        adminOpsButton = new JButton("Admin Ops");
+        publisherOpsButton = new JButton("Publish Game");
+        adminOpsButton = new JButton("View All Users");
         
         // Make buttons bigger
         publisherOpsButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -201,7 +213,7 @@ public final class View {
         JPanel rightPanel = new JPanel();
         rightPanel.setBorder(BorderFactory.createTitledBorder("USER"));
         rightPanel.setLayout(new java.awt.BorderLayout());
-        rightPanel.setPreferredSize(new Dimension(400, 400));
+        rightPanel.setPreferredSize(new Dimension(600, 600));
         
         // Create card layout for switching between views
         java.awt.CardLayout cardLayout = new java.awt.CardLayout();
@@ -273,12 +285,50 @@ public final class View {
         JPanel gameListPanel = new JPanel();
         gameListPanel.setLayout(new BoxLayout(gameListPanel, BoxLayout.Y_AXIS));
         JScrollPane gameListScrollPane = new JScrollPane(gameListPanel);
-        gameListScrollPane.setPreferredSize(new Dimension(380, 350));
+        gameListScrollPane.setPreferredSize(new Dimension(580, 500));
         
         // Back button
         JButton backToUserButton = new JButton("Back to User Dashboard");
         
-        gameBrowserPanel.add(backToUserButton, java.awt.BorderLayout.NORTH);
+        // Filters Panel
+        JPanel filtersPanel = new JPanel();
+        filtersPanel.setLayout(new java.awt.FlowLayout());
+        filtersPanel.setBorder(BorderFactory.createTitledBorder("Filters"));
+        
+        JButton newestGamesButton = new JButton("Newest");
+        JButton oldestGamesButton = new JButton("Oldest");
+        JButton highestRatedButton = new JButton("Top Rated");
+        JButton lowestRatedButton = new JButton("Low Rated");
+        JButton mostExpensiveButton = new JButton("Expensive");
+        JButton cheapestButton = new JButton("Cheap");
+        JButton mostSoldButton = new JButton("Best Selling");
+        JButton allGamesButton = new JButton("All Games");
+        
+        // Genre filter
+        JComboBox<String> genreComboBox = new JComboBox<>();
+        genreComboBox.addItem("Select Genre...");
+        // Genres will be loaded when controller is set
+        
+        filtersPanel.add(new JLabel("Sort by:"));
+        filtersPanel.add(newestGamesButton);
+        filtersPanel.add(oldestGamesButton);
+        filtersPanel.add(highestRatedButton);
+        filtersPanel.add(lowestRatedButton);
+        filtersPanel.add(mostExpensiveButton);
+        filtersPanel.add(cheapestButton);
+        filtersPanel.add(mostSoldButton);
+        filtersPanel.add(new JLabel("|"));
+        filtersPanel.add(genreComboBox);
+        filtersPanel.add(new JLabel("|"));
+        filtersPanel.add(allGamesButton);
+        
+        // Create top panel with back button and filters
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new java.awt.BorderLayout());
+        topPanel.add(backToUserButton, java.awt.BorderLayout.NORTH);
+        topPanel.add(filtersPanel, java.awt.BorderLayout.CENTER);
+        
+        gameBrowserPanel.add(topPanel, java.awt.BorderLayout.NORTH);
         gameBrowserPanel.add(gameListScrollPane, java.awt.BorderLayout.CENTER);
         
         // Game Detail Panel (for individual game view)
@@ -312,6 +362,16 @@ public final class View {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
         this.gameListPanel = gameListPanel;
+        this.newestGamesButton = newestGamesButton;
+        this.oldestGamesButton = oldestGamesButton;
+        this.highestRatedButton = highestRatedButton;
+        this.lowestRatedButton = lowestRatedButton;
+        this.mostExpensiveButton = mostExpensiveButton;
+        this.cheapestButton = cheapestButton;
+        this.mostSoldButton = mostSoldButton;
+        this.allGamesButton = allGamesButton;
+        this.genreComboBox = genreComboBox;
+        this.filtersPanel = filtersPanel;
         this.gameDetailPanel = gameDetailPanel;
         this.collectionViewPanel = collectionViewPanel;
         this.wishlistViewPanel = wishlistViewPanel;
@@ -324,11 +384,27 @@ public final class View {
         mostBoughtButton.addActionListener(e -> showMostBoughtBrowser());
         leastRatedButton.addActionListener(e -> showLeastRatedBrowser());
         publisherOpsButton.addActionListener(e -> showPublisherOperations());
-        adminOpsButton.addActionListener(e -> showAdminOperations());
+        adminOpsButton.addActionListener(e -> showAllUsersBrowser());
         viewCollectionButton.addActionListener(e -> showUserCollectionView());
         viewWishlistButton.addActionListener(e -> showUserWishlistView());
         viewAchievementsButton.addActionListener(e -> showAchievementsView());
         backToUserButton.addActionListener(e -> showUserDashboard());
+        
+        // Filter action listeners
+        newestGamesButton.addActionListener(e -> showFilteredGames("newest"));
+        oldestGamesButton.addActionListener(e -> showFilteredGames("oldest"));
+        highestRatedButton.addActionListener(e -> showFilteredGames("highest_rated"));
+        lowestRatedButton.addActionListener(e -> showFilteredGames("lowest_rated"));
+        mostExpensiveButton.addActionListener(e -> showFilteredGames("most_expensive"));
+        cheapestButton.addActionListener(e -> showFilteredGames("cheapest"));
+        mostSoldButton.addActionListener(e -> showFilteredGames("most_sold"));
+        allGamesButton.addActionListener(e -> showFilteredGames("all"));
+        genreComboBox.addActionListener(e -> {
+            String selectedGenre = (String) genreComboBox.getSelectedItem();
+            if (selectedGenre != null && !selectedGenre.equals("Select Genre...")) {
+                showFilteredGames("genre:" + selectedGenre);
+            }
+        });
         
         // Store references to text areas for updates
         this.userInfoArea = userInfoArea;
@@ -357,17 +433,6 @@ public final class View {
     private JPanel collectionViewPanel;
     private JPanel wishlistViewPanel;
     private JPanel achievementsViewPanel;
-
-    private void setupOutputArea() {
-        outputArea = new JTextArea(15, 70);
-        outputArea.setEditable(false);
-        outputArea.setFont(outputArea.getFont().deriveFont(12f));
-        
-        JScrollPane scrollPane = new JScrollPane(outputArea);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Output"));
-        
-        mainPanel.add(scrollPane);
-    }
 
     private void login(String email, String password) {
         if (getController().loginUser(email, password)) {
@@ -408,10 +473,8 @@ public final class View {
                 publisherOpsButton.setEnabled(currentUser.isPublisher());
             }
             if (adminOpsButton != null) {
-                adminOpsButton.setEnabled(currentUser.isAdministrator());
+                adminOpsButton.setVisible(currentUser.isAdministrator());
             }
-            
-            appendOutput("Welcome to your dashboard, " + currentUser.getName() + "!");
         }
         
         mainFrame.revalidate();
@@ -617,76 +680,6 @@ public final class View {
         }
     }
 
-    // View methods
-    private void viewUserCollection() {
-        List<VideoGames> collection = getController().getUserCollection(currentUser);
-        appendOutput("=== YOUR COLLECTION ===");
-        for (VideoGames game : collection) {
-            appendOutput(game.toString());
-        }
-        appendOutput("========================");
-    }
-
-    private void viewUserWishlist() {
-        List<VideoGames> wishlist = getController().getUserWishlist(currentUser);
-        appendOutput("=== YOUR WISHLIST ===");
-        for (VideoGames game : wishlist) {
-            appendOutput(game.toString());
-        }
-        appendOutput("=====================");
-    }
-
-    private void viewAllGames() {
-        List<Optional<VideoGames>> games = getController().getAllGames();
-        appendOutput("=== ALL GAMES ===");
-        for (Optional<VideoGames> game : games) {
-            if (game.isPresent()) {
-                appendOutput(game.get().toString());
-            }
-        }
-        appendOutput("=================");
-    }
-
-    private void viewAllUsers() {
-        List<Optional<Users>> users = getController().getAllUsers();
-        appendOutput("=== ALL USERS ===");
-        for (Optional<Users> user : users) {
-            if (user.isPresent()) {
-                appendOutput(user.get().toString());
-            }
-        }
-        appendOutput("=================");
-    }
-
-    private void showTopGames() {
-        List<VideoGames> topGames = getController().getTopGames(10);
-        appendOutput("=== TOP 10 GAMES ===");
-        for (VideoGames game : topGames) {
-            appendOutput(game.toString());
-        }
-        appendOutput("====================");
-    }
-
-    private void showLowRatedPublishers() {
-        List<Users> publishers = getController().getLowRatedPublishers();
-        appendOutput("=== LOW-RATED PUBLISHERS ===");
-        for (Users publisher : publishers) {
-            appendOutput(publisher.toString());
-        }
-        appendOutput("============================");
-    }
-
-    private void showMostBoughtGame() {
-        Optional<VideoGames> game = getController().getMostBoughtGame();
-        appendOutput("=== MOST BOUGHT GAME ===");
-        if (game.isPresent()) {
-            appendOutput(game.get().toString());
-        } else {
-            appendOutput("No games found");
-        }
-        appendOutput("========================");
-    }
-
     // Dynamic loading methods for info panels
     private void loadUserInfo() {
         if (userInfoArea != null && currentUser != null) {
@@ -773,7 +766,7 @@ public final class View {
             switch (choice) {
                 case 0: showBlockUserDialog(); break;
                 case 1: showUnblockUserDialog(); break;
-                case 2: viewAllUsers(); break;
+                case 2: showAllUsersBrowser(); break;
             }
         } else {
             showError("Admin access required!");
@@ -781,13 +774,6 @@ public final class View {
     }
 
     // Utility methods
-    private void appendOutput(String text) {
-        SwingUtilities.invokeLater(() -> {
-            outputArea.append(text + "\n");
-            outputArea.setCaretPosition(outputArea.getDocument().getLength());
-        });
-    }
-
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(mainFrame, message, "Information", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -810,14 +796,23 @@ public final class View {
     public void setController(Controller controller) {
         Objects.requireNonNull(controller, "Set null controller in view");
         this.controller = Optional.of(controller);
+        
+        // Initialize UI components that need the controller
+        initializeGenreComboBox();
     }
-
+    
+    private void initializeGenreComboBox() {
+        if (genreComboBox != null && getController() != null) {
+            loadGenresIntoComboBox(genreComboBox);
+        }
+    }
+    
     /**
      * Show a user in the view.
      * @param user
      */
     public void showUser(Users user) {
-        appendOutput("User: " + user.toString());
+        System.out.println("User: " + user.toString());
     }
 
     /**
@@ -825,7 +820,7 @@ public final class View {
      * @param videogame
      */
     public void showVideoGame(VideoGames videogame) {
-        appendOutput("Video Game: " + videogame.toString());
+        System.out.println("Video Game: " + videogame.toString());
     }
 
     private void showUserDashboard() {
@@ -839,7 +834,6 @@ public final class View {
             loadUserCollection(ownedGamesArea);
             loadUserWishlist(wishlistArea);
             loadUserAchievements(achievementsArea);
-            appendOutput("User dashboard refreshed");
         } else {
             showError("No user logged in!");
         }
@@ -850,6 +844,11 @@ public final class View {
         cardLayout.show(cardPanel, "GAME_BROWSER");
         rightPanel.setBorder(BorderFactory.createTitledBorder("VIDEOGAMES"));
         
+        // Show filters panel for this view
+        if (filtersPanel != null) {
+            filtersPanel.setVisible(true);
+        }
+        
         // Load games into the list
         loadAllGamesList();
     }
@@ -858,6 +857,11 @@ public final class View {
         // Switch to game browser view
         cardLayout.show(cardPanel, "GAME_BROWSER");
         rightPanel.setBorder(BorderFactory.createTitledBorder("TOP GAMES"));
+        
+        // Hide filters panel for this view
+        if (filtersPanel != null) {
+            filtersPanel.setVisible(false);
+        }
         
         // Load top games into the list
         loadTopGamesList();
@@ -910,6 +914,11 @@ public final class View {
         // Switch to game browser view
         cardLayout.show(cardPanel, "GAME_BROWSER");
         rightPanel.setBorder(BorderFactory.createTitledBorder("MOST BOUGHT"));
+        
+        // Hide filters panel for this view
+        if (filtersPanel != null) {
+            filtersPanel.setVisible(false);
+        }
         
         // Load most bought game into the list
         loadMostBoughtGameList();
@@ -964,7 +973,12 @@ public final class View {
     private void showLeastRatedBrowser() {
         // Switch to game browser view
         cardLayout.show(cardPanel, "GAME_BROWSER");
-        rightPanel.setBorder(BorderFactory.createTitledBorder("LEAST RATED PUBLISHERS & DEVELOPERS"));
+        rightPanel.setBorder(BorderFactory.createTitledBorder("LOWEST RATED DEVELOPERS"));
+        
+        // Hide filters panel for this view
+        if (filtersPanel != null) {
+            filtersPanel.setVisible(false);
+        }
         
         // Load least rated users into the list
         loadLeastRatedUsersList();
@@ -978,7 +992,7 @@ public final class View {
         List<db_project.data.LeastRatedUser> leastRatedUsers = getController().getLeastRatedUsers();
         
         // Add title
-        JLabel titleLabel = new JLabel("LEAST RATED PUBLISHERS & DEVELOPERS");
+        JLabel titleLabel = new JLabel("LOWEST RATED DEVELOPERS");
         titleLabel.setFont(titleLabel.getFont().deriveFont(16f));
         titleLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
         gameListPanel.add(titleLabel);
@@ -1553,6 +1567,92 @@ public final class View {
         gameListPanel.repaint();
     }
     
+    private void showAllUsersBrowser() {
+        // Switch to game browser view but use it for users
+        cardLayout.show(cardPanel, "GAME_BROWSER");
+        rightPanel.setBorder(BorderFactory.createTitledBorder("ALL USERS MANAGEMENT"));
+        
+        // Load all users into the list
+        loadAllUsersList();
+    }
+    
+    private void loadAllUsersList() {
+        // Clear existing content
+        gameListPanel.removeAll();
+        
+        // Get all users from controller
+        List<Optional<db_project.data.Users>> allUsersOptional = getController().getAllUsers();
+        
+        // Filter out empty optionals
+        List<db_project.data.Users> allUsers = allUsersOptional.stream()
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(java.util.stream.Collectors.toList());
+        
+        // Add title
+        JLabel titleLabel = new JLabel("ALL USERS MANAGEMENT");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(16f));
+        titleLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        gameListPanel.add(titleLabel);
+        gameListPanel.add(javax.swing.Box.createVerticalStrut(10));
+        
+        if (allUsers.isEmpty()) {
+            JLabel noDataLabel = new JLabel("No users found");
+            noDataLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            gameListPanel.add(noDataLabel);
+        } else {
+            for (db_project.data.Users user : allUsers) {
+                // Create a panel for each user
+                JPanel userPanel = new JPanel();
+                userPanel.setLayout(new java.awt.BorderLayout());
+                userPanel.setBorder(BorderFactory.createEtchedBorder());
+                userPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+                
+                // User info
+                String blockedStatus = user.isBlocked() ? " (BLOCKED)" : " (ACTIVE)";
+                JLabel userLabel = new JLabel(String.format(
+                    "<html><b>%s %s</b>%s<br>Email: %s<br>Role: %s</html>",
+                    user.getName(), user.getSurname(), blockedStatus, user.getEmail(), user.getRole()
+                ));
+                
+                // Create buttons panel
+                JPanel buttonsPanel = new JPanel();
+                buttonsPanel.setLayout(new java.awt.FlowLayout());
+                
+                JButton blockButton = new JButton("Block");
+                JButton unblockButton = new JButton("Unblock");
+                
+                // Enable/disable buttons based on user's blocked status
+                blockButton.setEnabled(!user.isBlocked());
+                unblockButton.setEnabled(user.isBlocked());
+                
+                // Add action listeners
+                blockButton.addActionListener(e -> {
+                    getController().blockUser(user.getUserID());
+                    loadAllUsersList(); // Refresh the list
+                });
+                
+                unblockButton.addActionListener(e -> {
+                    getController().unblockUser(user.getUserID());
+                    loadAllUsersList(); // Refresh the list
+                });
+                
+                buttonsPanel.add(blockButton);
+                buttonsPanel.add(unblockButton);
+                
+                userPanel.add(userLabel, java.awt.BorderLayout.CENTER);
+                userPanel.add(buttonsPanel, java.awt.BorderLayout.EAST);
+                userPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+                
+                gameListPanel.add(userPanel);
+                gameListPanel.add(javax.swing.Box.createVerticalStrut(5));
+            }
+        }
+        
+        gameListPanel.revalidate();
+        gameListPanel.repaint();
+    }
+    
     private void showAddGenreDialog(VideoGames game) {
         List<String> allGenres = getController().getAllGenres();
         List<String> currentGenres = getController().getGameGenres(game.getGameID());
@@ -1618,5 +1718,129 @@ public final class View {
                 showError("Failed to remove genre from game!");
             }
         }
+    }
+    
+    private void loadGenresIntoComboBox(JComboBox<String> comboBox) {
+        try {
+            List<String> genres = getController().getAllGenres();
+            for (String genre : genres) {
+                comboBox.addItem(genre);
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading genres: " + e.getMessage());
+        }
+    }
+    
+    private void showFilteredGames(String filterType) {
+        // Switch to game browser view
+        cardLayout.show(cardPanel, "GAME_BROWSER");
+        
+        // Show filters panel for this view
+        if (filtersPanel != null) {
+            filtersPanel.setVisible(true);
+        }
+        
+        // Set appropriate title based on filter
+        String title = getFilterTitle(filterType);
+        rightPanel.setBorder(BorderFactory.createTitledBorder(title));
+        
+        // Load filtered games
+        loadFilteredGamesList(filterType);
+    }
+    
+    private String getFilterTitle(String filterType) {
+        switch (filterType) {
+            case "newest": return "TOP 10 NEWEST GAMES";
+            case "oldest": return "TOP 10 OLDEST GAMES";
+            case "highest_rated": return "TOP 10 HIGHEST RATED GAMES";
+            case "lowest_rated": return "TOP 10 LOWEST RATED GAMES";
+            case "most_expensive": return "TOP 10 MOST EXPENSIVE GAMES";
+            case "cheapest": return "TOP 10 CHEAPEST GAMES";
+            case "most_sold": return "TOP 10 MOST SOLD GAMES";
+            case "all": return "ALL VIDEOGAMES";
+            default:
+                if (filterType.startsWith("genre:")) {
+                    String genre = filterType.substring(6);
+                    return "TOP 10 " + genre.toUpperCase() + " GAMES";
+                }
+                return "VIDEOGAMES";
+        }
+    }
+    
+    private void loadFilteredGamesList(String filterType) {
+        // Clear existing games
+        gameListPanel.removeAll();
+        
+        List<Optional<db_project.data.VideoGames>> games = null;
+        
+        try {
+            // Get games based on filter type
+            switch (filterType) {
+                case "newest":
+                    games = getController().getTop10NewestGames();
+                    break;
+                case "oldest":
+                    games = getController().getTop10OldestGames();
+                    break;
+                case "highest_rated":
+                    games = getController().getTop10HighestRatedGames();
+                    break;
+                case "lowest_rated":
+                    games = getController().getTop10LowestRatedGames();
+                    break;
+                case "most_expensive":
+                    games = getController().getTop10MostExpensiveGames();
+                    break;
+                case "cheapest":
+                    games = getController().getTop10CheapestGames();
+                    break;
+                case "most_sold":
+                    games = getController().getTop10MostSoldGames();
+                    break;
+                case "all":
+                    games = getController().getAllGames();
+                    break;
+                default:
+                    if (filterType.startsWith("genre:")) {
+                        String genre = filterType.substring(6);
+                        games = getController().getTop10GamesByGenre(genre);
+                    } else {
+                        games = getController().getAllGames();
+                    }
+                    break;
+            }
+            
+            // Add title
+            JLabel titleLabel = new JLabel(getFilterTitle(filterType));
+            titleLabel.setFont(titleLabel.getFont().deriveFont(16f));
+            titleLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            gameListPanel.add(titleLabel);
+            gameListPanel.add(javax.swing.Box.createVerticalStrut(10));
+            
+            // Display games
+            if (games == null || games.isEmpty()) {
+                JLabel noGamesLabel = new JLabel("No games found");
+                noGamesLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+                gameListPanel.add(noGamesLabel);
+            } else {
+                for (Optional<db_project.data.VideoGames> gameOpt : games) {
+                    if (gameOpt.isPresent()) {
+                        db_project.data.VideoGames game = gameOpt.get();
+                        JPanel gamePanel = createGameListItem(game);
+                        gameListPanel.add(gamePanel);
+                        gameListPanel.add(javax.swing.Box.createVerticalStrut(5));
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            JLabel errorLabel = new JLabel("Error loading games: " + e.getMessage());
+            errorLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            gameListPanel.add(errorLabel);
+            System.err.println("Error loading filtered games: " + e.getMessage());
+        }
+        
+        gameListPanel.revalidate();
+        gameListPanel.repaint();
     }
 }
