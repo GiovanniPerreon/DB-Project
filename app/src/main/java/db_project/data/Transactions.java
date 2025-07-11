@@ -89,5 +89,32 @@ public class Transactions {
                 throw new DAOException(e);
             }
         }
+
+        /**
+         * Adds a new transaction and returns the generated transaction ID.
+         */
+        public static int add(Connection connection, int userID, double totalCost) {
+            try (
+                var statement = connection.prepareStatement(Queries.ADD_TRANSACTION, java.sql.Statement.RETURN_GENERATED_KEYS);
+            ) {
+                statement.setInt(1, userID);
+                statement.setDouble(2, totalCost);
+                
+                int affectedRows = statement.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new DAOException("Creating transaction failed, no rows affected.");
+                }
+
+                try (var generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    } else {
+                        throw new DAOException("Creating transaction failed, no ID obtained.");
+                    }
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
     }
 }

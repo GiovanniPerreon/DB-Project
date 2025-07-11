@@ -17,7 +17,8 @@ CREATE TABLE if NOT EXISTS users (
     birth_date DATE,
     is_administrator BOOLEAN NOT NULL,
     is_publisher BOOLEAN NOT NULL,
-    is_developer BOOLEAN NOT NULL
+    is_developer BOOLEAN NOT NULL,
+    is_blocked BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE if NOT EXISTS videogames (
@@ -74,6 +75,16 @@ CREATE TABLE if NOT EXISTS achievements (
     FOREIGN KEY (gameID) REFERENCES videogames(gameID)
 );
 
+CREATE TABLE if NOT EXISTS achievements_user (
+    achievementID INT NOT NULL,
+    userID INT NOT NULL,
+    gameID INT NOT NULL,
+    PRIMARY KEY (achievementID, userID, gameID),
+    FOREIGN KEY (achievementID) REFERENCES achievements(achievementID),
+    FOREIGN KEY (userID) REFERENCES users(userID),
+    FOREIGN KEY (gameID) REFERENCES achievements(gameID)
+);
+
 CREATE TABLE if NOT EXISTS transactions (
 	transactionID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	userID INT NOT NULL,
@@ -114,9 +125,10 @@ CREATE TABLE IF NOT EXISTS reviews (
 );
 -- Inserts --------------------------------------------------------------------
 
-INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer) VALUES
-('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15', true, true, true),
-('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13', false, false, false);
+INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked) VALUES
+('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
+('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13', false, false, false, false),
+('blocked.user@email.com', 'blocked123', 'Blocked', 'User', '1995-03-20', false, false, false, true);
 
 INSERT INTO videogames (publisherID, title, price, description, requirements, average_rating, release_date, discount)
 SELECT u.userID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount
@@ -276,3 +288,17 @@ FROM (
 ) r
 JOIN users u ON r.userID = u.userID
 JOIN videogames g ON r.gameID = g.gameID;
+
+INSERT INTO achievements_user (achievementID, userID, gameID)
+SELECT a.achievementID, u.userID, a.gameID
+FROM (
+    SELECT 1 AS achievementID, 1 AS userID, 1 AS gameID
+    UNION ALL
+    SELECT 2, 1, 1
+    UNION ALL
+    SELECT 1, 1, 2
+    UNION ALL
+    SELECT 1, 2, 3
+) a
+JOIN users u ON a.userID = u.userID
+JOIN achievements ach ON a.achievementID = ach.achievementID AND a.gameID = ach.gameID;

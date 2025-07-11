@@ -4,24 +4,35 @@ public final class Queries {
 
     public static final String USER_LIST =
         """
-        select userID, email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer
+        select userID, email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked
         from   USERS
         """;
     public static final String FIND_USER =
         """
-        select userID, email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer
+        select userID, email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked
         from   USERS
         where  userID = ?
         """;
     public static final String FIND_USER_BY_EMAIL_PASSWORD =
         """
-        select userID, email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer
+        select userID, email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked
         from   USERS
         where  email = ? AND password = ?
         """;
     public static final String ADD_USER =
         """
-        insert into USERS (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer)
+        insert into USERS (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked)
+        values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+    public static final String UPDATE_USER_BLOCKED =
+        """
+        update USERS 
+        set is_blocked = ?
+        where userID = ?
+        """;
+    public static final String ADD_VIDEOGAME =
+        """
+        insert into VIDEOGAMES (publisherID, title, price, description, requirements, average_rating, release_date, discount)
         values (?, ?, ?, ?, ?, ?, ?, ?)
         """;
     public static final String VIDEOGAME_LIST =
@@ -90,6 +101,17 @@ public final class Queries {
         from   WISHLISTS
         where  wishlistID = ?
         """;
+    public static final String FIND_WISHLIST_BY_USER =
+        """
+        select wishlistID, userID
+        from   WISHLISTS
+        where  userID = ?
+        """;
+    public static final String ADD_WISHLIST =
+        """
+        insert into WISHLISTS (userID)
+        values (?)
+        """;
     public static final String TRANSACTION_LIST =
         """
         select transactionID, userID, total_cost
@@ -100,6 +122,11 @@ public final class Queries {
         select transactionID, userID, total_cost
         from   TRANSACTIONS
         where  transactionID = ?
+        """;
+    public static final String ADD_TRANSACTION =
+        """
+        insert into TRANSACTIONS (userID, total_cost)
+        values (?, ?)
         """;
     public static final String REVIEW_LIST =
         """
@@ -148,6 +175,24 @@ public final class Queries {
         """
         insert into achievements (achievementID, gameID, title, description)
         values (?, ?, ?, ?)
+        """;
+    public static final String USER_ACHIEVEMENTS_LIST =
+        """
+        select a.achievementID, a.gameID, a.title, a.description
+        from achievements a
+        join achievements_user au on a.achievementID = au.achievementID and a.gameID = au.gameID
+        where au.userID = ?
+        """;
+    public static final String FIND_USER_ACHIEVEMENT =
+        """
+        select achievementID, userID, gameID
+        from achievements_user
+        where userID = ? and achievementID = ? and gameID = ?
+        """;
+    public static final String ADD_USER_ACHIEVEMENT =
+        """
+        insert into achievements_user (achievementID, userID, gameID)
+        values (?, ?, ?)
         """;
     public static final String TRANSACTION_ITEMS_LIST =
         """

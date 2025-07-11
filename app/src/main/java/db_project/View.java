@@ -1,6 +1,9 @@
 package db_project;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +13,9 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -22,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.Box;
 import javax.swing.border.TitledBorder;
 
 import db_project.data.Users;
@@ -29,6 +36,7 @@ import db_project.data.VideoGames;
 import db_project.data.Transactions;
 import db_project.data.Reviews;
 import db_project.data.Wishlists;
+import db_project.data.Achievements;
 
 public final class View {
 
@@ -37,6 +45,10 @@ public final class View {
     private JPanel mainPanel;
     private JTextArea outputArea;
     private Users currentUser;
+    
+    // Admin and publisher buttons
+    private JButton publisherOpsButton;
+    private JButton adminOpsButton;
 
     // We take an action to run before closing the view so that one can gracefully
     // deal with open resources.
@@ -48,7 +60,7 @@ public final class View {
     }
 
     private JFrame setupMainFrame(Runnable onClose) {
-        var frame = new JFrame("SteamDB - Video Game Store");
+        var frame = new JFrame("SteamDB - Videogames Store");
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(
@@ -161,8 +173,8 @@ public final class View {
         otherPanel.setLayout(new BoxLayout(otherPanel, BoxLayout.Y_AXIS));
         otherPanel.setPreferredSize(new Dimension(200, 120));
         
-        JButton publisherOpsButton = new JButton("Publisher Ops");
-        JButton adminOpsButton = new JButton("Admin Ops");
+        publisherOpsButton = new JButton("Publisher Ops");
+        adminOpsButton = new JButton("Admin Ops");
         
         // Make buttons bigger
         publisherOpsButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -223,12 +235,10 @@ public final class View {
         wishlistPanel.setBorder(BorderFactory.createTitledBorder("WISHLIST"));
         wishlistPanel.setLayout(new BoxLayout(wishlistPanel, BoxLayout.Y_AXIS));
         
-        JButton addToWishlistButton = new JButton("Add to Wishlist");
         JButton viewWishlistButton = new JButton("View Wishlist");
         JTextArea wishlistArea = new JTextArea(3, 20);
         wishlistArea.setEditable(false);
         wishlistArea.setOpaque(false);
-        wishlistPanel.add(addToWishlistButton);
         wishlistPanel.add(viewWishlistButton);
         wishlistPanel.add(wishlistArea);
         
@@ -270,10 +280,25 @@ public final class View {
         JPanel gameDetailPanel = new JPanel();
         gameDetailPanel.setLayout(new java.awt.BorderLayout());
         
+        // Collection Panel
+        JPanel collectionViewPanel = new JPanel();
+        collectionViewPanel.setLayout(new java.awt.BorderLayout());
+        
+        // Wishlist Panel
+        JPanel wishlistViewPanel = new JPanel();
+        wishlistViewPanel.setLayout(new java.awt.BorderLayout());
+        
+        // Achievements Panel
+        JPanel achievementsViewPanel = new JPanel();
+        achievementsViewPanel.setLayout(new java.awt.BorderLayout());
+        
         // Add panels to card layout
         cardPanel.add(userDashboardPanel, "USER_DASHBOARD");
         cardPanel.add(gameBrowserPanel, "GAME_BROWSER");
         cardPanel.add(gameDetailPanel, "GAME_DETAIL");
+        cardPanel.add(collectionViewPanel, "USER_COLLECTION");
+        cardPanel.add(wishlistViewPanel, "USER_WISHLIST");
+        cardPanel.add(achievementsViewPanel, "ACHIEVEMENTS");
         
         rightPanel.add(cardPanel, java.awt.BorderLayout.CENTER);
         
@@ -283,6 +308,9 @@ public final class View {
         this.cardPanel = cardPanel;
         this.gameListPanel = gameListPanel;
         this.gameDetailPanel = gameDetailPanel;
+        this.collectionViewPanel = collectionViewPanel;
+        this.wishlistViewPanel = wishlistViewPanel;
+        this.achievementsViewPanel = achievementsViewPanel;
         
         // Add action listeners
         userButton.addActionListener(e -> showUserDashboard());
@@ -291,10 +319,9 @@ public final class View {
         mostBoughtButton.addActionListener(e -> showMostBoughtBrowser());
         publisherOpsButton.addActionListener(e -> showPublisherOperations());
         adminOpsButton.addActionListener(e -> showAdminOperations());
-        viewCollectionButton.addActionListener(e -> loadUserCollection(ownedGamesArea));
-        addToWishlistButton.addActionListener(e -> showAddToWishlistDialog());
-        viewWishlistButton.addActionListener(e -> loadUserWishlist(wishlistArea));
-        viewAchievementsButton.addActionListener(e -> loadUserAchievements(achievementsArea));
+        viewCollectionButton.addActionListener(e -> showUserCollectionView());
+        viewWishlistButton.addActionListener(e -> showUserWishlistView());
+        viewAchievementsButton.addActionListener(e -> showAchievementsView());
         backToUserButton.addActionListener(e -> showUserDashboard());
         
         // Store references to text areas for updates
@@ -321,6 +348,9 @@ public final class View {
     private JPanel cardPanel;
     private JPanel gameListPanel;
     private JPanel gameDetailPanel;
+    private JPanel collectionViewPanel;
+    private JPanel wishlistViewPanel;
+    private JPanel achievementsViewPanel;
 
     private void setupOutputArea() {
         outputArea = new JTextArea(15, 70);
@@ -366,6 +396,15 @@ public final class View {
             loadUserCollection(ownedGamesArea);
             loadUserWishlist(wishlistArea);
             loadUserAchievements(achievementsArea);
+            
+            // Enable/disable admin and publisher buttons based on user type
+            if (publisherOpsButton != null) {
+                publisherOpsButton.setEnabled(currentUser.isPublisher());
+            }
+            if (adminOpsButton != null) {
+                adminOpsButton.setEnabled(currentUser.isAdministrator());
+            }
+            
             appendOutput("Welcome to your dashboard, " + currentUser.getName() + "!");
         }
         
@@ -426,17 +465,50 @@ public final class View {
     }
 
     private void showAddToWishlistDialog() {
-        String gameIdStr = JOptionPane.showInputDialog(mainFrame, "Enter Game ID to add to wishlist:");
-        if (gameIdStr != null) {
-            try {
-                int gameId = Integer.parseInt(gameIdStr);
-                if (getController().addToWishlist(currentUser, gameId)) {
-                    showMessage("Game added to wishlist!");
-                } else {
-                    showError("Failed to add to wishlist!");
+        // Get all available games
+        List<Optional<VideoGames>> allGames = getController().getAllGames();
+        
+        // Create a list of game titles
+        List<String> gameTitles = new ArrayList<>();
+        Map<String, Integer> titleToIdMap = new HashMap<>();
+        
+        for (Optional<VideoGames> gameOpt : allGames) {
+            if (gameOpt.isPresent()) {
+                VideoGames game = gameOpt.get();
+                String displayText = game.getTitle() + " - $" + game.getPrice();
+                gameTitles.add(displayText);
+                titleToIdMap.put(displayText, game.getGameID());
+            }
+        }
+        
+        if (gameTitles.isEmpty()) {
+            showError("No games available to add to wishlist");
+            return;
+        }
+        
+        // Create dropdown selection
+        String[] gameArray = gameTitles.toArray(new String[0]);
+        String selectedGame = (String) JOptionPane.showInputDialog(
+            mainFrame,
+            "Select a game to add to your wishlist:",
+            "Add to Wishlist",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            gameArray,
+            gameArray[0]
+        );
+        
+        if (selectedGame != null) {
+            int gameId = titleToIdMap.get(selectedGame);
+            if (getController().addToWishlist(currentUser, gameId)) {
+                showMessage("Game added to wishlist!");
+                // Refresh wishlist display if currently showing user dashboard
+                if (rightPanel.getBorder() != null && 
+                    rightPanel.getBorder().toString().contains("USER")) {
+                    loadUserWishlist(wishlistArea);
                 }
-            } catch (NumberFormatException e) {
-                showError("Please enter a valid Game ID");
+            } else {
+                showError("Failed to add to wishlist! Game may already be in your wishlist.");
             }
         }
     }
@@ -652,8 +724,26 @@ public final class View {
     
     private void loadUserAchievements(JTextArea area) {
         if (currentUser != null) {
-            // For now, show placeholder data
-            area.setText("Achievements: 5\n• First Purchase\n• Game Reviewer\n... and 3 more");
+            List<Achievements> achievements = getController().getUserAchievements(currentUser);
+            
+            if (achievements.isEmpty()) {
+                area.setText("No achievements unlocked yet.\nPlay some games to earn achievements!");
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Achievements: ").append(achievements.size()).append("\n");
+                
+                // Show first few achievements
+                int maxToShow = Math.min(achievements.size(), 3);
+                for (int i = 0; i < maxToShow; i++) {
+                    sb.append("• ").append(achievements.get(i).getTitle()).append("\n");
+                }
+                
+                if (achievements.size() > 3) {
+                    sb.append("... and ").append(achievements.size() - 3).append(" more");
+                }
+                
+                area.setText(sb.toString());
+            }
         }
     }
     
@@ -898,7 +988,26 @@ public final class View {
         
         JTextArea genresArea = new JTextArea(5, 20);
         genresArea.setEditable(false);
-        genresArea.setText("Genres: Action, Adventure\nLanguages: English, Italian");
+        
+        // Get real genres and languages
+        List<String> genres = getController().getGameGenres(game.getGameID());
+        List<String> languages = getController().getGameLanguages(game.getGameID());
+        
+        StringBuilder genresText = new StringBuilder();
+        genresText.append("Genres: ");
+        if (genres.isEmpty()) {
+            genresText.append("No genres available");
+        } else {
+            genresText.append(String.join(", ", genres));
+        }
+        genresText.append("\nLanguages: ");
+        if (languages.isEmpty()) {
+            genresText.append("No languages available");
+        } else {
+            genresText.append(String.join(", ", languages));
+        }
+        
+        genresArea.setText(genresText.toString());
         genresPanel.add(genresArea);
         
         // Achievements Panel
@@ -908,7 +1017,19 @@ public final class View {
         
         JTextArea achievementsArea = new JTextArea(3, 20);
         achievementsArea.setEditable(false);
-        achievementsArea.setText("• First Victory\n• Master Player\n• Completionist");
+        
+        // Get real achievements for this game
+        List<Achievements> achievements = getController().getGameAchievements(game.getGameID());
+        StringBuilder achievementsText = new StringBuilder();
+        if (achievements.isEmpty()) {
+            achievementsText.append("No achievements available for this game.");
+        } else {
+            for (Achievements achievement : achievements) {
+                achievementsText.append("• ").append(achievement.getTitle()).append("\n");
+            }
+        }
+        
+        achievementsArea.setText(achievementsText.toString());
         achievementsPanel.add(achievementsArea);
         
         // Reviews Panel
@@ -918,18 +1039,77 @@ public final class View {
         
         JTextArea reviewsArea = new JTextArea(3, 20);
         reviewsArea.setEditable(false);
-        reviewsArea.setText("★★★★★ Amazing game!\n★★★★☆ Great story\n★★★☆☆ Good but short");
+        
+        // Get real reviews for this game
+        List<Reviews> reviews = getController().getGameReviews(game.getGameID());
+        StringBuilder reviewsText = new StringBuilder();
+        if (reviews.isEmpty()) {
+            reviewsText.append("No reviews available for this game.");
+        } else {
+            for (Reviews review : reviews) {
+                // Convert rating to stars
+                String stars = "★".repeat(review.getRating()) + "☆".repeat(10 - review.getRating());
+                reviewsText.append(stars).append(" ").append(review.getComment()).append("\n");
+            }
+        }
+        
+        reviewsArea.setText(reviewsText.toString());
         reviewsPanel.add(reviewsArea);
         
         // Add action buttons
         JPanel buttonPanel = new JPanel();
         JButton buyButton = new JButton("Buy Game");
+        JButton addToWishlistButton = new JButton("Add to Wishlist");
+        JButton removeFromWishlistButton = new JButton("Remove from Wishlist");
         JButton addReviewButton = new JButton("Add Review");
         
-        buyButton.addActionListener(e -> buyGame(game));
+        // Check if game is in wishlist to enable/disable appropriate buttons
+        boolean isInWishlist = getController().isGameInWishlist(currentUser, game.getGameID());
+        
+        // Check if user already owns the game
+        boolean userOwnsGame = getController().userOwnsGame(currentUser, game.getGameID());
+        
+        // Check if user can add review
+        boolean canAddReview = getController().canUserAddReview(currentUser, game.getGameID());
+        
+        // Enable/disable buttons based on wishlist status
+        addToWishlistButton.setEnabled(!isInWishlist);
+        removeFromWishlistButton.setEnabled(isInWishlist);
+        
+        // Enable/disable buy button based on ownership
+        buyButton.setEnabled(!userOwnsGame);
+        if (userOwnsGame) {
+            buyButton.setText("Already Owned");
+        }
+        
+        // Enable/disable add review button
+        addReviewButton.setEnabled(canAddReview);
+        if (currentUser.isBlocked()) {
+            addReviewButton.setText("Blocked User");
+        } else if (!userOwnsGame) {
+            addReviewButton.setText("Must Own Game");
+        } else if (getController().hasUserReviewedGame(currentUser, game.getGameID())) {
+            addReviewButton.setText("Already Reviewed");
+        }
+        
+        buyButton.addActionListener(e -> {
+            if (!getController().userOwnsGame(currentUser, game.getGameID())) {
+                buyGame(game);
+            }
+        });
+        addToWishlistButton.addActionListener(e -> {
+            addToWishlist(game);
+            showGameDetails(game); // Refresh the view
+        });
+        removeFromWishlistButton.addActionListener(e -> {
+            removeFromWishlist(game);
+            showGameDetails(game); // Refresh the view
+        });
         addReviewButton.addActionListener(e -> addReview(game));
         
         buttonPanel.add(buyButton);
+        buttonPanel.add(addToWishlistButton);
+        buttonPanel.add(removeFromWishlistButton);
         buttonPanel.add(addReviewButton);
         
         contentPanel.add(infoPanel);
@@ -950,15 +1130,33 @@ public final class View {
     }
     
     private void buyGame(VideoGames game) {
+        // Always succeed since we already check ownership in the UI
         if (getController().buyGame(currentUser, game.getGameID())) {
-            showMessage("Game purchased successfully!");
-            showUserDashboard(); // Return to user dashboard
+            showMessage("Game purchased successfully! Added to your collection.");
+            showGameDetails(game); // Refresh the view to update buttons
         } else {
+            // This should not happen since we ensure purchase always succeeds
             showError("Purchase failed!");
         }
     }
     
     private void addReview(VideoGames game) {
+        // Check if user can add review and show appropriate message
+        if (currentUser.isBlocked()) {
+            showError("Cannot add review: Your account is blocked.");
+            return;
+        }
+        
+        if (!getController().userOwnsGame(currentUser, game.getGameID())) {
+            showError("Cannot add review: You must own the game to review it.");
+            return;
+        }
+        
+        if (getController().hasUserReviewedGame(currentUser, game.getGameID())) {
+            showError("Cannot add review: You have already reviewed this game.");
+            return;
+        }
+        
         JTextField ratingField = new JTextField(10);
         JTextArea commentArea = new JTextArea(5, 20);
         
@@ -973,8 +1171,14 @@ public final class View {
         if (result == JOptionPane.OK_OPTION) {
             try {
                 int rating = Integer.parseInt(ratingField.getText());
+                if (rating < 1 || rating > 10) {
+                    showError("Rating must be between 1 and 10.");
+                    return;
+                }
+                
                 if (getController().addReview(currentUser, game.getGameID(), rating, commentArea.getText())) {
                     showMessage("Review added successfully!");
+                    showGameDetails(game); // Refresh the view to show the new review
                 } else {
                     showError("Failed to add review!");
                 }
@@ -982,6 +1186,254 @@ public final class View {
                 showError("Please enter a valid rating (1-10)");
             }
         }
+    }
+    
+    private void addToWishlist(VideoGames game) {
+        // Check if game is already in wishlist
+        if (getController().isGameInWishlist(currentUser, game.getGameID())) {
+            showError("'" + game.getTitle() + "' is already in your wishlist!");
+            return;
+        }
+        
+        if (getController().addToWishlist(currentUser, game.getGameID())) {
+            showMessage("'" + game.getTitle() + "' added to your wishlist!");
+        } else {
+            showError("Failed to add '" + game.getTitle() + "' to wishlist!");
+        }
+    }
+    
+    private void removeFromWishlist(VideoGames game) {
+        // Check if game is in wishlist
+        if (!getController().isGameInWishlist(currentUser, game.getGameID())) {
+            showError("'" + game.getTitle() + "' is not in your wishlist!");
+            return;
+        }
+        
+        if (getController().removeFromWishlist(currentUser, game.getGameID())) {
+            showMessage("'" + game.getTitle() + "' removed from your wishlist!");
+        } else {
+            showError("Failed to remove '" + game.getTitle() + "' from wishlist!");
+        }
+    }
+    
+    /**
+     * Shows the user's collection of owned games
+     */
+    private void showUserCollectionView() {
+        // Clear and setup the collection panel
+        collectionViewPanel.removeAll();
+        collectionViewPanel.setLayout(new BorderLayout());
+        
+        // Back button
+        JButton backButton = new JButton("Back to Dashboard");
+        backButton.addActionListener(e -> showUserDashboard());
+        collectionViewPanel.add(backButton, BorderLayout.NORTH);
+        
+        // Title
+        JLabel titleLabel = new JLabel("Your Game Collection", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Content panel
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(titleLabel, BorderLayout.NORTH);
+        
+        List<VideoGames> collection = getController().getUserCollection(currentUser);
+        
+        if (collection.isEmpty()) {
+            JLabel emptyLabel = new JLabel("No games in your collection yet. Buy some games!", JLabel.CENTER);
+            contentPanel.add(emptyLabel, BorderLayout.CENTER);
+        } else {
+            JPanel gamesPanel = new JPanel();
+            gamesPanel.setLayout(new BoxLayout(gamesPanel, BoxLayout.Y_AXIS));
+            
+            for (VideoGames game : collection) {
+                JPanel gamePanel = createGameListItem(game);
+                gamesPanel.add(gamePanel);
+                gamesPanel.add(Box.createVerticalStrut(5));
+            }
+            
+            JScrollPane scrollPane = new JScrollPane(gamesPanel);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            contentPanel.add(scrollPane, BorderLayout.CENTER);
+        }
+        
+        collectionViewPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        // Switch to collection view
+        cardLayout.show(cardPanel, "USER_COLLECTION");
+    }
+    
+    /**
+     * Shows the user's wishlist
+     */
+    private void showUserWishlistView() {
+        // Clear and setup the wishlist panel
+        wishlistViewPanel.removeAll();
+        wishlistViewPanel.setLayout(new BorderLayout());
+        
+        // Back button
+        JButton backButton = new JButton("Back to Dashboard");
+        backButton.addActionListener(e -> showUserDashboard());
+        wishlistViewPanel.add(backButton, BorderLayout.NORTH);
+        
+        // Title
+        JLabel titleLabel = new JLabel("Your Wishlist", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Content panel
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(titleLabel, BorderLayout.NORTH);
+        
+        List<VideoGames> wishlist = getController().getUserWishlist(currentUser);
+        
+        if (wishlist.isEmpty()) {
+            JLabel emptyLabel = new JLabel("Your wishlist is empty. Add some games!", JLabel.CENTER);
+            contentPanel.add(emptyLabel, BorderLayout.CENTER);
+        } else {
+            JPanel gamesPanel = new JPanel();
+            gamesPanel.setLayout(new BoxLayout(gamesPanel, BoxLayout.Y_AXIS));
+            
+            for (VideoGames game : wishlist) {
+                JPanel gamePanel = createGameListItem(game);
+                gamesPanel.add(gamePanel);
+                gamesPanel.add(Box.createVerticalStrut(5));
+            }
+            
+            JScrollPane scrollPane = new JScrollPane(gamesPanel);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            contentPanel.add(scrollPane, BorderLayout.CENTER);
+        }
+        
+        wishlistViewPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        // Switch to wishlist view
+        cardLayout.show(cardPanel, "USER_WISHLIST");
+    }
+    
+    /**
+     * Shows all achievements
+     */
+    private void showAchievementsView() {
+        // Clear and setup the achievements panel
+        achievementsViewPanel.removeAll();
+        achievementsViewPanel.setLayout(new BorderLayout());
+        
+        // Back button
+        JButton backButton = new JButton("Back to Dashboard");
+        backButton.addActionListener(e -> showUserDashboard());
+        achievementsViewPanel.add(backButton, BorderLayout.NORTH);
+        
+        // Title
+        JLabel titleLabel = new JLabel("Your Achievements", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Content panel
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(titleLabel, BorderLayout.NORTH);
+        
+        List<Achievements> achievements = getController().getUserAchievements(currentUser);
+        
+        if (achievements.isEmpty()) {
+            JLabel emptyLabel = new JLabel("You haven't unlocked any achievements yet.", JLabel.CENTER);
+            contentPanel.add(emptyLabel, BorderLayout.CENTER);
+        } else {
+            JPanel achievementsPanel = new JPanel();
+            achievementsPanel.setLayout(new BoxLayout(achievementsPanel, BoxLayout.Y_AXIS));
+            
+            for (Achievements achievement : achievements) {
+                JPanel achievementPanel = createAchievementListItem(achievement);
+                achievementsPanel.add(achievementPanel);
+                achievementsPanel.add(Box.createVerticalStrut(5));
+            }
+            
+            JScrollPane scrollPane = new JScrollPane(achievementsPanel);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            contentPanel.add(scrollPane, BorderLayout.CENTER);
+        }
+        
+        achievementsViewPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        // Switch to achievements view
+        cardLayout.show(cardPanel, "ACHIEVEMENTS");
+    }
+    
+    /**
+     * Creates an achievement list item panel
+     */
+    private JPanel createAchievementListItem(Achievements achievement) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        panel.setBackground(Color.WHITE);
+        
+        JLabel titleLabel = new JLabel(achievement.getTitle());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        JLabel descLabel = new JLabel(achievement.getDescription());
+        descLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.add(titleLabel);
+        infoPanel.add(descLabel);
+        
+        panel.add(infoPanel, BorderLayout.CENTER);
+        
+        return panel;
+    }
+    
+    /**
+     * Creates a game list item panel for collection/wishlist views
+     */
+    private JPanel createGameListItem(VideoGames game) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY, 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        panel.setBackground(Color.WHITE);
+        panel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        
+        // Game title
+        JLabel titleLabel = new JLabel(game.getTitle());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        // Game price
+        JLabel priceLabel = new JLabel("$" + game.getPrice());
+        priceLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        priceLabel.setForeground(new Color(0, 120, 0));
+        
+        // Game description (truncated)
+        String description = game.getDescription();
+        if (description.length() > 100) {
+            description = description.substring(0, 100) + "...";
+        }
+        JLabel descLabel = new JLabel(description);
+        descLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+        
+        // Info panel
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.add(titleLabel);
+        infoPanel.add(priceLabel);
+        infoPanel.add(descLabel);
+        
+        panel.add(infoPanel, BorderLayout.CENTER);
+        
+        // Click listener to show game details
+        panel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                showGameDetails(game);
+            }
+        });
+        
+        return panel;
     }
     
     private void loadAllGamesList() {

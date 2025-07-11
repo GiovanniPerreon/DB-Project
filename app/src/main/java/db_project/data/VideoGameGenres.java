@@ -14,6 +14,16 @@ public class VideoGameGenres {
         this.gameID = gameID;
         this.genre = genre;
     }
+    
+    // Getters
+    public int getGameID() {
+        return gameID;
+    }
+    
+    public String getGenre() {
+        return genre;
+    }
+    
     /**
      * Returns a string representation of the video game genre.
      */

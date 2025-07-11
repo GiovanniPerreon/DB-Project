@@ -8,19 +8,12 @@ import java.util.Optional;
 public class Wishlists {
     private final int wishlistID;
     private final int userID;
-    private final List<VideoGames> gameList;
 
     public Wishlists(int wishlistID, int userID) {
         this.wishlistID = wishlistID;
         this.userID = userID;
-        this.gameList = new ArrayList<>();
     }
 
-    public Wishlists(int wishlistID, int userID, List<VideoGames> gameList) {
-        this.wishlistID = wishlistID;
-        this.userID = userID;
-        this.gameList = new ArrayList<>(gameList);
-    }
 
     public int getWishlistID() {
         return wishlistID;
@@ -28,10 +21,6 @@ public class Wishlists {
 
     public int getUserID() {
         return userID;
-    }
-
-    public List<VideoGames> getGameList() {
-        return new ArrayList<>(gameList);
     }
 
     /**
@@ -43,8 +32,7 @@ public class Wishlists {
             "Wishlist",
             List.of(
                 Printer.field("wishlistID", this.wishlistID),
-                Printer.field("userID", this.userID),
-                Printer.field("gameList", this.gameList)
+                Printer.field("userID", this.userID)
             )
         );
     }
@@ -92,5 +80,5 @@ public class Wishlists {
                 throw new DAOException(e);
             }
         }
-    }
+}
 }

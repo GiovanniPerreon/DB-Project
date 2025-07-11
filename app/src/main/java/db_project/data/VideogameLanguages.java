@@ -13,6 +13,16 @@ public class VideogameLanguages {
         this.gameID = gameID;
         this.languageName = languageName;
     }
+    
+    // Getters
+    public int getGameID() {
+        return gameID;
+    }
+    
+    public String getLanguageName() {
+        return languageName;
+    }
+    
     /**
      * Returns a string representation of the videogame language.
      */

@@ -2,17 +2,22 @@ package db_project.model;
 
 import java.util.List;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 
 import db_project.data.Genres;
 import db_project.data.Languages;
+import db_project.data.Queries;
 import db_project.data.Reviews;
 import db_project.data.Transactions;
 import db_project.data.Users;
 import db_project.data.VideoGameGenres;
 import db_project.data.VideoGames;
 import db_project.data.Achievements;
+import db_project.data.AchievementsUser;
 import db_project.data.VideogameDevelopers;
 import db_project.data.VideogameLanguages;
 import db_project.data.TransactionItems;
@@ -137,5 +142,133 @@ public final class DBModel implements Model {
     @Override
     public Optional<Users> findByEmailPassword(String email, String password) {
         return Users.DAO.findByEmailPassword(this.connection, email, password);
+    }
+
+    @Override
+    public boolean addToWishlist(int userId, int gameId) {
+        try {
+            System.out.println("DEBUG: DBModel.addToWishlist called with userId=" + userId + ", gameId=" + gameId);
+            boolean result = WishlistItems.DAO.addToWishlist(this.connection, userId, gameId);
+            System.out.println("DEBUG: DBModel.addToWishlist result: " + result);
+            return result;
+        } catch (Exception e) {
+            System.err.println("DEBUG: DBModel.addToWishlist exception: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeFromWishlist(int userId, int gameId) {
+        try {
+            return WishlistItems.DAO.removeFromWishlist(this.connection, userId, gameId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isGameInWishlist(int userId, int gameId) {
+        try {
+            return WishlistItems.DAO.isGameInWishlist(this.connection, userId, gameId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    @Override
+    public int addTransaction(int userId, double totalCost) {
+        try {
+            // Actually insert the transaction into the database
+            int transactionId = Transactions.DAO.add(connection, userId, totalCost);
+            System.out.println("DEBUG: Transaction created with ID: " + transactionId);
+            return transactionId;
+        } catch (Exception e) {
+            System.out.println("DEBUG: Failed to create transaction: " + e.getMessage());
+            return -1;
+        }
+    }
+    
+    @Override
+    public boolean addTransactionItem(int transactionId, int gameId) {
+        try {
+            // Actually insert the transaction item into the database
+            TransactionItems.DAO.addItem(connection, transactionId, gameId);
+            System.out.println("DEBUG: Transaction item added - transaction " + transactionId + ", game " + gameId);
+            return true;
+        } catch (Exception e) {
+            System.out.println("DEBUG: Failed to add transaction item: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean addReview(int userId, int gameId, int rating, String comment) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_REVIEW)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, gameId);
+            stmt.setInt(3, rating);
+            stmt.setString(4, comment);
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error adding review: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean hasUserReviewedGame(int userId, int gameId) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.FIND_REVIEW)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, gameId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Returns true if a review exists
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking if user has reviewed game: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean updateUserBlockedStatus(int userId, boolean isBlocked) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.UPDATE_USER_BLOCKED)) {
+            stmt.setBoolean(1, isBlocked);
+            stmt.setInt(2, userId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating user blocked status: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean createGame(int publisherId, String title, double price, String description, String requirements, String releaseDate) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME)) {
+            stmt.setInt(1, publisherId);
+            stmt.setString(2, title);
+            stmt.setDouble(3, price);
+            stmt.setString(4, description);
+            stmt.setString(5, requirements);
+            stmt.setDouble(6, 0.0); // average_rating starts at 0
+            stmt.setString(7, releaseDate);
+            stmt.setInt(8, 0); // discount starts at 0
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error creating game: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public List<Achievements> getUserAchievements(int userId) {
+        return db_project.data.AchievementsUser.DAO.getUserAchievements(connection, userId);
     }
 }

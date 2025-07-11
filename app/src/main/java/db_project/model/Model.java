@@ -95,4 +95,88 @@ public interface Model {
      */
     boolean registerUser(String email, String password, String name, String surname, String birthDate);
 
+    /**
+     * Adds a game to user's wishlist.
+     * @param userId the user ID
+     * @param gameId the game ID
+     * @return true if addition was successful, false otherwise
+     */
+    boolean addToWishlist(int userId, int gameId);
+
+    /**
+     * Removes a game from user's wishlist.
+     * @param userId the user ID
+     * @param gameId the game ID
+     * @return true if removal was successful, false otherwise
+     */
+    boolean removeFromWishlist(int userId, int gameId);
+    
+    /**
+     * Checks if a game is in user's wishlist.
+     * @param userId the user ID
+     * @param gameId the game ID
+     * @return true if game is in wishlist, false otherwise
+     */
+    boolean isGameInWishlist(int userId, int gameId);
+    
+    /**
+     * Adds a transaction for a user.
+     * @param userId the user ID
+     * @param totalCost the total cost of the transaction
+     * @return the ID of the created transaction, or -1 if creation failed
+     */
+    int addTransaction(int userId, double totalCost);
+    
+    /**
+     * Adds an item to a transaction.
+     * @param transactionId the transaction ID
+     * @param gameId the game ID
+     * @return true if item was added successfully, false otherwise
+     */
+    boolean addTransactionItem(int transactionId, int gameId);
+    
+    /**
+     * Adds a review for a game.
+     * @param userId the user ID
+     * @param gameId the game ID
+     * @param rating the rating (1-10)
+     * @param comment the review comment
+     * @return true if review was added successfully, false otherwise
+     */
+    boolean addReview(int userId, int gameId, int rating, String comment);
+    
+    /**
+     * Checks if a user has already reviewed a game.
+     * @param userId the user ID
+     * @param gameId the game ID
+     * @return true if user has reviewed the game, false otherwise
+     */
+    boolean hasUserReviewedGame(int userId, int gameId);
+    
+    /**
+     * Updates the blocked status of a user.
+     * @param userId the user ID
+     * @param isBlocked true to block, false to unblock
+     * @return true if update was successful, false otherwise
+     */
+    boolean updateUserBlockedStatus(int userId, boolean isBlocked);
+    
+    /**
+     * Creates a new videogame.
+     * @param publisherId the publisher ID
+     * @param title the game title
+     * @param price the game price
+     * @param description the game description
+     * @param requirements the game requirements
+     * @param releaseDate the release date (YYYY-MM-DD format)
+     * @return true if game was created successfully, false otherwise
+     */
+    boolean createGame(int publisherId, String title, double price, String description, String requirements, String releaseDate);
+    
+    /**
+     * Gets all achievements for a specific user.
+     * @param userId the user ID
+     * @return list of achievements for the user
+     */
+    List<db_project.data.Achievements> getUserAchievements(int userId);
 }

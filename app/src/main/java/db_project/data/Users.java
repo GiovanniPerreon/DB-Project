@@ -16,9 +16,10 @@ public class Users {
     private final boolean is_administrator;
     private final boolean is_publisher;
     private final boolean is_developer;
+    private final boolean is_blocked;
 
     public Users(int userID, String email, String password, String name, String surname,
-            String birth_date,boolean is_administrator, boolean is_publisher, boolean is_developer) {
+            String birth_date,boolean is_administrator, boolean is_publisher, boolean is_developer, boolean is_blocked) {
         this.userID = userID;
         this.email = email;
         this.password = password;
@@ -28,6 +29,7 @@ public class Users {
         this.is_administrator = is_administrator;
         this.is_publisher = is_publisher;
         this.is_developer = is_developer;
+        this.is_blocked = is_blocked;
     }
     /**
      * Returns a string representation of the user.
@@ -45,7 +47,8 @@ public class Users {
                 Printer.field("birth_date", this.birth_date),
                 Printer.field("is_administrator", this.is_administrator),
                 Printer.field("is_publisher", this.is_publisher),
-                Printer.field("is_developer", this.is_developer)
+                Printer.field("is_developer", this.is_developer),
+                Printer.field("is_blocked", this.is_blocked)
             )
         );
     }
@@ -87,6 +90,10 @@ public class Users {
         return is_developer;
     }
 
+    public boolean isBlocked() {
+        return is_blocked;
+    }
+
     public static final class DAO {
         /**
          * Returns a list of all users in the database.
@@ -107,7 +114,8 @@ public class Users {
                         resultSet.getString("birth_date"),
                         resultSet.getBoolean("is_administrator"),
                         resultSet.getBoolean("is_publisher"),
-                        resultSet.getBoolean("is_developer")
+                        resultSet.getBoolean("is_developer"),
+                        resultSet.getBoolean("is_blocked")
                     )));
                 }
                 return users;
@@ -131,7 +139,8 @@ public class Users {
                         resultSet.getString("birth_date"),
                         resultSet.getBoolean("is_administrator"),
                         resultSet.getBoolean("is_publisher"),
-                        resultSet.getBoolean("is_developer")
+                        resultSet.getBoolean("is_developer"),
+                        resultSet.getBoolean("is_blocked")
                     ));
                 } else {
                     return Optional.empty();
@@ -174,7 +183,8 @@ public class Users {
                         resultSet.getString("birth_date"),
                         resultSet.getBoolean("is_administrator"),
                         resultSet.getBoolean("is_publisher"),
-                        resultSet.getBoolean("is_developer")
+                        resultSet.getBoolean("is_developer"),
+                        resultSet.getBoolean("is_blocked")
                     ));
                 } else {
                     return Optional.empty();
