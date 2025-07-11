@@ -24,4 +24,52 @@ public final class Queries {
         from   VIDEOGAMES
         where  gameID = ?
         """;
+    public static final String WISHLIST_LIST =
+        """
+        select wishlistID, userID
+        from   WISHLISTS
+        """;
+    public static final String FIND_WISHLIST =
+        """
+        select wishlistID, userID
+        from   WISHLISTS
+        where  wishlistID = ?
+        """;
+    public static final String WISHLIST_ADD_GAME =
+        """
+        insert into WISHLIST_GAMES (wishlistID, gameID)
+        values (?, ?)
+        """;
+    public static final String WISHLIST_REMOVE_GAME =
+        """
+        delete from WISHLIST_GAMES
+        where wishlistID = ? and gameID = ?
+        """;
+    public static final String TRANSACTION_LIST =
+        """
+        select transactionID, userID, total_cost
+        from   TRANSACTIONS
+        """;
+    public static final String FIND_TRANSACTION =
+        """
+        select transactionID, userID, total_cost
+        from   TRANSACTIONS
+        where  transactionID = ?
+        """;
+    public static final String REVIEW_LIST =
+        """
+        select userID, gameID, rating, comment
+        from   REVIEWS
+        """;
+    public static final String FIND_REVIEW =
+        """
+        select userID, gameID, rating, comment
+        from   REVIEWS
+        where userID = ? and gameID = ?
+        """;
+    public static final String ADD_REVIEW =
+        """
+        insert into REVIEWS (userID, gameID, rating, comment)
+        values (?, ?, ?, ?)
+        """;
 }
