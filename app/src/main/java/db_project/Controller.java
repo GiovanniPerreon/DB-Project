@@ -1,11 +1,9 @@
 package db_project;
 
-import db_project.data.Users;
 import db_project.model.Model;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 // The controller provides a holistic description of how the outside world can
@@ -34,7 +32,12 @@ public final class Controller {
         var transactions = this.model.getTransactions();
         var reviews = this.model.getReviews();
         var wishlists = this.model.getWishlists();
-        Stream.of(users, videogames, transactions, reviews, wishlists)
+        var achievements = this.model.getAchievements();
+        var videogameDevelopers = this.model.getVideogameDevelopers();
+        var transactionItems = this.model.getTransactionItems();
+        var wishlistItems = this.model.getWishlistItems();
+        Stream.of(users, videogames, transactions, reviews, wishlists, 
+                  achievements, videogameDevelopers, transactionItems, wishlistItems)
             .flatMap(List::stream)
             .forEach(optional -> optional.ifPresentOrElse(
                 item -> System.out.println("Item: " + item),

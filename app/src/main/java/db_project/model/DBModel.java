@@ -7,6 +7,10 @@ import java.util.Optional;
 
 import db_project.data.Users;
 import db_project.data.VideoGames;
+import db_project.data.Achievements;
+import db_project.data.VideogameDevelopers;
+import db_project.data.TransactionItems;
+import db_project.data.WishlistItems;
 
 public final class DBModel implements Model {
     private final Connection connection;
@@ -61,5 +65,33 @@ public final class DBModel implements Model {
     @Override
     public List<Optional<db_project.data.Wishlists>> getWishlists() {
         return db_project.data.Wishlists.DAO.list(this.connection);
+    }
+    /**
+     * @return all the achievements in the database.
+     */
+    @Override
+    public List<Optional<Achievements>> getAchievements() {
+        return Achievements.DAO.list(this.connection);
+    }
+    /**
+     * @return all the videogame developers in the database.
+     */
+    @Override
+    public List<Optional<VideogameDevelopers>> getVideogameDevelopers() {
+        return VideogameDevelopers.DAO.list(this.connection);
+    }
+    /**
+     * @return all the transaction items in the database.
+     */
+    @Override
+    public List<Optional<TransactionItems>> getTransactionItems() {
+        return TransactionItems.DAO.list(this.connection);
+    }
+    /**
+     * @return all the wishlist items in the database.
+     */
+    @Override
+    public List<Optional<WishlistItems>> getWishlistItems() {
+        return WishlistItems.DAO.list(this.connection);
     }
 }

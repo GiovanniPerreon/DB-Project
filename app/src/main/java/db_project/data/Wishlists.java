@@ -34,16 +34,6 @@ public class Wishlists {
         return new ArrayList<>(gameList);
     }
 
-    public void addGame(VideoGames game) {
-        if (!gameList.contains(game)) {
-            gameList.add(game);
-        }
-    }
-
-    public void removeGame(VideoGames game) {
-        gameList.remove(game);
-    }
-
     /**
      * Returns a string representation of the wishlist.
      */
@@ -98,32 +88,6 @@ public class Wishlists {
                 } else {
                     return Optional.empty();
                 }
-            } catch (Exception e) {
-                throw new DAOException(e);
-            }
-        }
-
-        /**
-         * Adds a game to a wishlist.
-         */
-        public static void addGameToWishlist(Connection connection, int wishlistID, int gameID) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.WISHLIST_ADD_GAME, wishlistID, gameID)
-            ) {
-                statement.executeUpdate();
-            } catch (Exception e) {
-                throw new DAOException(e);
-            }
-        }
-
-        /**
-         * Removes a game from a wishlist.
-         */
-        public static void removeGameFromWishlist(Connection connection, int wishlistID, int gameID) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.WISHLIST_REMOVE_GAME, wishlistID, gameID)
-            ) {
-                statement.executeUpdate();
             } catch (Exception e) {
                 throw new DAOException(e);
             }
