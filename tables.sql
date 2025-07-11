@@ -28,7 +28,7 @@ CREATE TABLE if NOT EXISTS videogames (
     price DECIMAL(10, 2) NOT NULL,
     description VARCHAR(5000),
     requirements VARCHAR(5000),
-    average_rating DECIMAL(2,1) CHECK (average_rating >= 1 AND average_rating <= 10),
+    average_rating DECIMAL(2,1) CHECK (average_rating IS NULL OR (average_rating >= 1 AND average_rating <= 5)),
     release_date DATE NOT NULL, 
     discount INT,
     FOREIGN KEY (publisherID) REFERENCES users(userID)
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS wishlist_items (
 CREATE TABLE IF NOT EXISTS reviews (
     userID INT NOT NULL,
     gameID INT NOT NULL,
-    rating DECIMAL(2,1) CHECK (rating >= 1 AND rating <= 10),
+    rating DECIMAL(2,1) CHECK (rating >= 1 AND rating <= 5),
     comment VARCHAR(1000),
     PRIMARY KEY (userID, gameID),
     FOREIGN KEY (userID) REFERENCES users(userID),

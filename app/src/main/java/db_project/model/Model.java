@@ -174,6 +174,28 @@ public interface Model {
     boolean createGame(int publisherId, String title, double price, String description, String requirements, String releaseDate);
     
     /**
+     * Adds a genre to a videogame.
+     * @param gameId the game ID
+     * @param genre the genre to add
+     * @return true if genre was added successfully, false otherwise
+     */
+    boolean addGenreToGame(int gameId, String genre);
+    
+    /**
+     * Removes a genre from a videogame.
+     * @param gameId the game ID
+     * @param genre the genre to remove
+     * @return true if genre was removed successfully, false otherwise
+     */
+    boolean removeGenreFromGame(int gameId, String genre);
+    
+    /**
+     * Gets publishers and developers with average rating below the overall average.
+     * @return list of least rated users
+     */
+    List<db_project.data.LeastRatedUser> getLeastRatedUsers();
+    
+    /**
      * Gets all achievements for a specific user.
      * @param userId the user ID
      * @return list of achievements for the user

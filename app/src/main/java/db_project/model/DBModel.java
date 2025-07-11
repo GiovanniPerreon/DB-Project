@@ -249,22 +249,59 @@ public final class DBModel implements Model {
     
     @Override
     public boolean createGame(int publisherId, String title, double price, String description, String requirements, String releaseDate) {
+        System.out.println("DEBUG: Creating game with publisherId=" + publisherId + ", title=" + title + ", price=" + price + ", releaseDate=" + releaseDate);
         try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME)) {
             stmt.setInt(1, publisherId);
             stmt.setString(2, title);
             stmt.setDouble(3, price);
             stmt.setString(4, description);
             stmt.setString(5, requirements);
-            stmt.setDouble(6, 0.0); // average_rating starts at 0
+            stmt.setNull(6, java.sql.Types.DECIMAL); // average_rating starts as NULL
             stmt.setString(7, releaseDate);
             stmt.setInt(8, 0); // discount starts at 0
+            
+            System.out.println("DEBUG: Executing query: " + Queries.ADD_VIDEOGAME);
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("DEBUG: Rows affected: " + rowsAffected);
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error creating game: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean addGenreToGame(int gameId, String genre) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME_GENRE)) {
+            stmt.setInt(1, gameId);
+            stmt.setString(2, genre);
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error creating game: " + e.getMessage());
+            System.err.println("Error adding genre to game: " + e.getMessage());
             return false;
         }
+    }
+    
+    @Override
+    public boolean removeGenreFromGame(int gameId, String genre) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.REMOVE_VIDEOGAME_GENRE)) {
+            stmt.setInt(1, gameId);
+            stmt.setString(2, genre);
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error removing genre from game: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public List<db_project.data.LeastRatedUser> getLeastRatedUsers() {
+        return db_project.data.LeastRatedUser.DAO.getLeastRatedUsers(connection);
     }
     
     @Override

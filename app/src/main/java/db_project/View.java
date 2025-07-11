@@ -3,6 +3,7 @@ package db_project;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -155,17 +156,21 @@ public final class View {
         JButton viewAllGamesButton = new JButton("Browse Games");
         JButton topGamesButton = new JButton("Top Games");
         JButton mostBoughtButton = new JButton("Most Bought");
+        JButton leastRatedButton = new JButton("Least Rated");
         
         // Make buttons bigger
         viewAllGamesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         topGamesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         mostBoughtButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        leastRatedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         
         videogamesPanel.add(viewAllGamesButton);
         videogamesPanel.add(javax.swing.Box.createVerticalStrut(5));
         videogamesPanel.add(topGamesButton);
         videogamesPanel.add(javax.swing.Box.createVerticalStrut(5));
         videogamesPanel.add(mostBoughtButton);
+        videogamesPanel.add(javax.swing.Box.createVerticalStrut(5));
+        videogamesPanel.add(leastRatedButton);
         
         // OTHER section
         JPanel otherPanel = new JPanel();
@@ -317,6 +322,7 @@ public final class View {
         viewAllGamesButton.addActionListener(e -> showGameBrowser());
         topGamesButton.addActionListener(e -> showTopGamesBrowser());
         mostBoughtButton.addActionListener(e -> showMostBoughtBrowser());
+        leastRatedButton.addActionListener(e -> showLeastRatedBrowser());
         publisherOpsButton.addActionListener(e -> showPublisherOperations());
         adminOpsButton.addActionListener(e -> showAdminOperations());
         viewCollectionButton.addActionListener(e -> showUserCollectionView());
@@ -955,6 +961,59 @@ public final class View {
         gameListPanel.repaint();
     }
     
+    private void showLeastRatedBrowser() {
+        // Switch to game browser view
+        cardLayout.show(cardPanel, "GAME_BROWSER");
+        rightPanel.setBorder(BorderFactory.createTitledBorder("LEAST RATED PUBLISHERS & DEVELOPERS"));
+        
+        // Load least rated users into the list
+        loadLeastRatedUsersList();
+    }
+    
+    private void loadLeastRatedUsersList() {
+        // Clear existing content
+        gameListPanel.removeAll();
+        
+        // Get least rated users from controller
+        List<db_project.data.LeastRatedUser> leastRatedUsers = getController().getLeastRatedUsers();
+        
+        // Add title
+        JLabel titleLabel = new JLabel("LEAST RATED PUBLISHERS & DEVELOPERS");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(16f));
+        titleLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        gameListPanel.add(titleLabel);
+        gameListPanel.add(javax.swing.Box.createVerticalStrut(10));
+        
+        if (leastRatedUsers.isEmpty()) {
+            JLabel noDataLabel = new JLabel("No data available - all publishers/developers have good ratings!");
+            noDataLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+            gameListPanel.add(noDataLabel);
+        } else {
+            for (db_project.data.LeastRatedUser user : leastRatedUsers) {
+                // Create a panel for each user
+                JPanel userPanel = new JPanel();
+                userPanel.setLayout(new java.awt.BorderLayout());
+                userPanel.setBorder(BorderFactory.createEtchedBorder());
+                userPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+                
+                // User info
+                JLabel userLabel = new JLabel(String.format(
+                    "<html><b>%s %s</b><br>Role: %s<br>Average Rating: %.2f/10<br>Email: %s</html>",
+                    user.getName(), user.getSurname(), user.getRole(), user.getAvgRating(), user.getEmail()
+                ));
+                
+                userPanel.add(userLabel, java.awt.BorderLayout.CENTER);
+                userPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+                
+                gameListPanel.add(userPanel);
+                gameListPanel.add(javax.swing.Box.createVerticalStrut(5));
+            }
+        }
+        
+        gameListPanel.revalidate();
+        gameListPanel.repaint();
+    }
+    
     private void showGameDetails(VideoGames game) {
         // Create the game detail view according to the image
         gameDetailPanel.removeAll();
@@ -1009,6 +1068,20 @@ public final class View {
         
         genresArea.setText(genresText.toString());
         genresPanel.add(genresArea);
+        
+        // Add admin buttons for genre management
+        if (currentUser != null && currentUser.isAdministrator()) {
+            JPanel genreButtonPanel = new JPanel(new FlowLayout());
+            JButton addGenreButton = new JButton("Add Genre");
+            JButton removeGenreButton = new JButton("Remove Genre");
+            
+            addGenreButton.addActionListener(e -> showAddGenreDialog(game));
+            removeGenreButton.addActionListener(e -> showRemoveGenreDialog(game));
+            
+            genreButtonPanel.add(addGenreButton);
+            genreButtonPanel.add(removeGenreButton);
+            genresPanel.add(genreButtonPanel);
+        }
         
         // Achievements Panel
         JPanel achievementsPanel = new JPanel();
@@ -1478,5 +1551,72 @@ public final class View {
         
         gameListPanel.revalidate();
         gameListPanel.repaint();
+    }
+    
+    private void showAddGenreDialog(VideoGames game) {
+        List<String> allGenres = getController().getAllGenres();
+        List<String> currentGenres = getController().getGameGenres(game.getGameID());
+        
+        // Filter out genres already assigned to the game
+        List<String> availableGenres = new ArrayList<>();
+        for (String genre : allGenres) {
+            if (!currentGenres.contains(genre)) {
+                availableGenres.add(genre);
+            }
+        }
+        
+        if (availableGenres.isEmpty()) {
+            showError("All available genres are already assigned to this game.");
+            return;
+        }
+        
+        String[] genreArray = availableGenres.toArray(new String[0]);
+        String selectedGenre = (String) JOptionPane.showInputDialog(
+            mainFrame,
+            "Select a genre to add to " + game.getTitle() + ":",
+            "Add Genre",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            genreArray,
+            genreArray[0]
+        );
+        
+        if (selectedGenre != null) {
+            if (getController().addGenreToGame(currentUser, game.getGameID(), selectedGenre)) {
+                showMessage("Genre '" + selectedGenre + "' added successfully!");
+                showGameDetails(game); // Refresh the view
+            } else {
+                showError("Failed to add genre to game!");
+            }
+        }
+    }
+    
+    private void showRemoveGenreDialog(VideoGames game) {
+        List<String> currentGenres = getController().getGameGenres(game.getGameID());
+        
+        if (currentGenres.isEmpty()) {
+            showError("This game has no genres to remove.");
+            return;
+        }
+        
+        String[] genreArray = currentGenres.toArray(new String[0]);
+        String selectedGenre = (String) JOptionPane.showInputDialog(
+            mainFrame,
+            "Select a genre to remove from " + game.getTitle() + ":",
+            "Remove Genre",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            genreArray,
+            genreArray[0]
+        );
+        
+        if (selectedGenre != null) {
+            if (getController().removeGenreFromGame(currentUser, game.getGameID(), selectedGenre)) {
+                showMessage("Genre '" + selectedGenre + "' removed successfully!");
+                showGameDetails(game); // Refresh the view
+            } else {
+                showError("Failed to remove genre from game!");
+            }
+        }
     }
 }

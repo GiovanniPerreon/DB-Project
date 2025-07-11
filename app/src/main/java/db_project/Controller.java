@@ -95,16 +95,20 @@ public final class Controller {
     public boolean createGame(Users user, String title, double price, String description, String requirements, String releaseDate) {
         try {
             // Check if user is a publisher
+            System.out.println("DEBUG: User " + user.getName() + " (ID: " + user.getUserID() + ") isPublisher: " + user.isPublisher());
             if (!user.isPublisher()) {
                 System.out.println("DEBUG: User is not a publisher, cannot create game");
                 return false;
             }
             
             System.out.println("DEBUG: Creating game for publisher " + user.getUserID());
-            return model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
+            boolean result = model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
+            System.out.println("DEBUG: Game creation result: " + result);
+            return result;
             
         } catch (Exception e) {
             System.err.println("Error creating game: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -512,6 +516,69 @@ public final class Controller {
                 .filter(achievement -> achievement.getGameID() == gameId)
                 .collect(java.util.stream.Collectors.toList());
         } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Adds a genre to a game (admin only)
+     */
+    public boolean addGenreToGame(Users user, int gameId, String genre) {
+        try {
+            if (!user.isAdministrator()) {
+                System.out.println("DEBUG: User is not admin, cannot add genre to game");
+                return false;
+            }
+            
+            System.out.println("DEBUG: Admin adding genre " + genre + " to game " + gameId);
+            return model.addGenreToGame(gameId, genre);
+        } catch (Exception e) {
+            System.err.println("Error adding genre to game: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Removes a genre from a game (admin only)
+     */
+    public boolean removeGenreFromGame(Users user, int gameId, String genre) {
+        try {
+            if (!user.isAdministrator()) {
+                System.out.println("DEBUG: User is not admin, cannot remove genre from game");
+                return false;
+            }
+            
+            System.out.println("DEBUG: Admin removing genre " + genre + " from game " + gameId);
+            return model.removeGenreFromGame(gameId, genre);
+        } catch (Exception e) {
+            System.err.println("Error removing genre from game: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Gets all available genres
+     */
+    public List<String> getAllGenres() {
+        try {
+            return model.getGenres().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(genre -> genre.getGenre())
+                .collect(java.util.stream.Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+    
+    /**
+     * Gets publishers and developers with rating below average
+     */
+    public List<db_project.data.LeastRatedUser> getLeastRatedUsers() {
+        try {
+            return model.getLeastRatedUsers();
+        } catch (Exception e) {
+            System.err.println("Error getting least rated users: " + e.getMessage());
             return new ArrayList<>();
         }
     }

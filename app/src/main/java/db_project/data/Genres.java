@@ -14,6 +14,15 @@ public class Genres {
         this.description = description;
     }
 
+    // Getters
+    public String getGenre() {
+        return genre;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     /**
      * Returns a string representation of the genre.
      */

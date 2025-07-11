@@ -68,6 +68,16 @@ public final class Queries {
         from   VIDEOGAME_GENRES
         where  gameID = ? and genre = ?
         """;
+    public static final String ADD_VIDEOGAME_GENRE =
+        """
+        insert into VIDEOGAME_GENRES (gameID, genre)
+        values (?, ?)
+        """;
+    public static final String REMOVE_VIDEOGAME_GENRE =
+        """
+        delete from VIDEOGAME_GENRES
+        where gameID = ? and genre = ?
+        """;
     public static final String LANGUAGE_LIST =
         """
         select language_name
@@ -230,5 +240,19 @@ public final class Queries {
         """
         delete from wishlist_items
         where wishlistID = ? and gameID = ?
+        """;
+    public static final String LEAST_RATED_PUBLISHERS_DEVELOPERS =
+        """
+        SELECT u.userID, u.name, u.surname, u.email, u.is_publisher, u.is_developer, AVG(v.average_rating) as avg_rating
+        FROM users u
+        JOIN videogames v ON u.userID = v.publisherID OR u.userID IN (
+            SELECT vd.developerID FROM videogame_developers vd WHERE vd.gameID = v.gameID
+        )
+        WHERE v.average_rating IS NOT NULL AND (u.is_publisher = TRUE OR u.is_developer = TRUE)
+        GROUP BY u.userID, u.name, u.surname, u.email, u.is_publisher, u.is_developer
+        HAVING AVG(v.average_rating) < (
+            SELECT AVG(average_rating) FROM videogames WHERE average_rating IS NOT NULL
+        )
+        ORDER BY avg_rating ASC
         """;
 }
