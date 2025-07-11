@@ -29,12 +29,18 @@ public final class Controller {
     public void testAllTables() {
         var users = this.model.getUsers();
         var videogames = this.model.getVideoGames();
+        var videogameDevelopers = this.model.getVideogameDevelopers();
         var genres = this.model.getGenres();
         var videogameGenres = this.model.getVideoGameGenres();
         var transactions = this.model.getTransactions();
+        var transactionItems = this.model.getTransactionItems();
         var reviews = this.model.getReviews();
         var wishlists = this.model.getWishlists();
-        Stream.of(users, videogames, genres, videogameGenres, transactions, reviews, wishlists)
+        var wishlistItems = this.model.getWishlistItems();
+        var achievements = this.model.getAchievements();
+        Stream.of(users, videogames, videogameDevelopers, genres,
+                  videogameGenres, transactions, transactionItems,
+                    reviews, wishlists, wishlistItems, achievements)
             .flatMap(List::stream)
             .forEach(optional -> optional.ifPresentOrElse(
                 item -> System.out.println("Item: " + item),

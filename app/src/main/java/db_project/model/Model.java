@@ -10,6 +10,10 @@ import db_project.data.Users;
 import db_project.data.VideoGameGenres;
 import db_project.data.VideoGames;
 import db_project.data.Wishlists;
+import db_project.data.Achievements;
+import db_project.data.VideogameDevelopers;
+import db_project.data.TransactionItems;
+import db_project.data.WishlistItems;
 
 public interface Model {
     /**
@@ -45,4 +49,21 @@ public interface Model {
      * @return all the wishlists in the database.
      */
     List<Optional<Wishlists>> getWishlists();
+    /**
+     * @return all the achievements in the database.
+     */
+    List<Optional<Achievements>> getAchievements();
+    /**
+     * @return all the videogame developers in the database.
+     */
+    List<Optional<VideogameDevelopers>> getVideogameDevelopers();
+    /**
+     * @return all the transaction items in the database.
+     */
+    List<Optional<TransactionItems>> getTransactionItems();
+    /**
+     * @return all the wishlist items in the database.
+     */
+    List<Optional<WishlistItems>> getWishlistItems();
+
 }

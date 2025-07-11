@@ -57,16 +57,6 @@ public final class Queries {
         from   WISHLISTS
         where  wishlistID = ?
         """;
-    public static final String WISHLIST_ADD_GAME =
-        """
-        insert into WISHLIST_GAMES (wishlistID, gameID)
-        values (?, ?)
-        """;
-    public static final String WISHLIST_REMOVE_GAME =
-        """
-        delete from WISHLIST_GAMES
-        where wishlistID = ? and gameID = ?
-        """;
     public static final String TRANSACTION_LIST =
         """
         select transactionID, userID, total_cost
@@ -93,5 +83,74 @@ public final class Queries {
         """
         insert into REVIEWS (userID, gameID, rating, comment)
         values (?, ?, ?, ?)
+        """;
+    public static final String VIDEOGAME_DEVELOPERS_LIST =
+        """
+        select developerID, gameID
+        from   videogame_developers
+        """;
+    public static final String FIND_VIDEOGAME_DEVELOPERS =
+        """
+        select developerID, gameID
+        from   videogame_developers
+        where  gameID = ?
+        """;
+    public static final String ADD_VIDEOGAME_DEVELOPER =
+        """
+        insert into videogame_developers (developerID, gameID)
+        values (?, ?)
+        """;
+    public static final String ACHIEVEMENTS_LIST =
+        """
+        select achievementID, gameID, title, description
+        from   achievements
+        """;
+    public static final String FIND_ACHIEVEMENTS =
+        """
+        select achievementID, gameID, title, description
+        from   achievements
+        where  gameID = ?
+        """;
+    public static final String ADD_ACHIEVEMENT =
+        """
+        insert into achievements (achievementID, gameID, title, description)
+        values (?, ?, ?, ?)
+        """;
+    public static final String TRANSACTION_ITEMS_LIST =
+        """
+        select transactionID, gameID
+        from   transaction_items
+        """;
+    public static final String FIND_TRANSACTION_ITEMS =
+        """
+        select transactionID, gameID
+        from   transaction_items
+        where  transactionID = ?
+        """;
+    public static final String ADD_TRANSACTION_ITEM =
+        """
+        insert into transaction_items (transactionID, gameID)
+        values (?, ?)
+        """;
+    public static final String WISHLIST_ITEMS_LIST =
+        """
+        select wishlistID, gameID
+        from   wishlist_items
+        """;
+    public static final String FIND_WISHLIST_ITEMS =
+        """
+        select wishlistID, gameID
+        from   wishlist_items
+        where  wishlistID = ?
+        """;
+    public static final String ADD_WISHLIST_ITEM =
+        """
+        insert into wishlist_items (wishlistID, gameID)
+        values (?, ?)
+        """;
+    public static final String REMOVE_WISHLIST_ITEM =
+        """
+        delete from wishlist_items
+        where wishlistID = ? and gameID = ?
         """;
 }
