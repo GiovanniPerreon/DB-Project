@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import db_project.data.Users;
+import db_project.data.VideoGames;
 
 public interface Model {
     /**
@@ -18,5 +19,5 @@ public interface Model {
     /**
      * @return all the videogames in the database.
      */
-    List<Optional<db_project.data.VideoGames>> getVideoGames();
+    List<Optional<VideoGames>> getVideoGames();
 }

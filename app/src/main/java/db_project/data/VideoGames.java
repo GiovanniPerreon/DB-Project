@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class VideoGames {
     private final int gameID;
-    private final int userID;
+    private final int publisherID;
     private final String title;
     private final String price;
     private final String description;
@@ -15,10 +15,10 @@ public class VideoGames {
     private final String averageRating;
     private final String releaseDate;
     private final String discount;
-    public VideoGames(int gameID, int userID, String title, String price, String description,
+    public VideoGames(int gameID, int publisherID, String title, String price, String description,
             String requirements, String averageRating, String releaseDate, String discount) {
         this.gameID = gameID;
-        this.userID = userID;
+        this.publisherID = publisherID;
         this.title = title;
         this.price = price;
         this.description = description;
@@ -37,7 +37,7 @@ public class VideoGames {
             "VideoGame",
             List.of(
                 Printer.field("gameID", this.gameID),
-                Printer.field("userID", this.userID),
+                Printer.field("publisherID", this.publisherID),
                 Printer.field("title", this.title),
                 Printer.field("price", this.price),
                 Printer.field("description", this.description),
@@ -62,7 +62,7 @@ public class VideoGames {
                 while (resultSet.next()) {
                     videogames.add(Optional.of(new VideoGames(
                         resultSet.getInt("gameID"),
-                        resultSet.getInt("userID"),
+                        resultSet.getInt("publisherID"),
                         resultSet.getString("title"),
                         resultSet.getString("price"),
                         resultSet.getString("description"),
@@ -91,7 +91,7 @@ public class VideoGames {
                     if (resultSet.next()) {
                         return Optional.of(new VideoGames(
                             resultSet.getInt("gameID"),
-                            resultSet.getInt("userID"),
+                            resultSet.getInt("publisherID"),
                             resultSet.getString("title"),
                             resultSet.getString("price"),
                             resultSet.getString("description"),

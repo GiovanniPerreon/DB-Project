@@ -15,12 +15,12 @@ public final class Queries {
         """;
     public static final String VIDEOGAME_LIST =
         """
-        select gameID, userID, title, price, description, requirements, average_rating, release_date, discount
+        select gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
         from   VIDEOGAMES
         """;
     public static final String FIND_VIDEOGAME =
         """
-        select gameID, userID, title, price, description, requirements, average_rating, release_date, discount
+        select gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount
         from   VIDEOGAMES
         where  gameID = ?
         """;

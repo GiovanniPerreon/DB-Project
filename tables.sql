@@ -22,7 +22,7 @@ CREATE TABLE if NOT EXISTS users (
 
 CREATE TABLE if NOT EXISTS videogames (
     gameID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userID INT NOT NULL,
+    publisherID INT NOT NULL,
     title VARCHAR(64) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     description VARCHAR(5000),
@@ -30,7 +30,48 @@ CREATE TABLE if NOT EXISTS videogames (
     average_rating DECIMAL(2,1) CHECK (average_rating >= 1 AND average_rating <= 10),
     release_date DATE NOT NULL, 
     discount INT,
-    FOREIGN KEY (userID) REFERENCES users(userID)
+    FOREIGN KEY (publisherID) REFERENCES users(userID)
+);
+
+CREATE TABLE if NOT EXISTS videogame_developers (
+    developerID INT NOT NULL,
+    gameID INT NOT NULL,
+    PRIMARY KEY (developerID, gameID),
+    FOREIGN KEY (developerID) REFERENCES users(userID),
+    FOREIGN KEY (gameID) REFERENCES videogames(gameID)
+);
+
+CREATE TABLE if NOT EXISTS genres (
+    genre VARCHAR(64) NOT NULL PRIMARY KEY,
+    description VARCHAR(5000)
+);
+CREATE TABLE if NOT EXISTS videogame_genres (
+    gameID INT NOT NULL,
+    genre VARCHAR(64) NOT NULL,
+    PRIMARY KEY (gameID, genre),
+    FOREIGN KEY (gameID) REFERENCES videogames(gameID),
+    FOREIGN KEY (genre) REFERENCES genres(genre)
+);
+
+CREATE TABLE if NOT EXISTS languages (
+    language_name VARCHAR(64) NOT NULL PRIMARY KEY
+);
+
+CREATE TABLE if NOT EXISTS videogame_languages (
+    gameID INT NOT NULL,
+    language_name VARCHAR(64) NOT NULL,
+    PRIMARY KEY (gameID, language_name),
+    FOREIGN KEY (gameID) REFERENCES videogames(gameID),
+    FOREIGN KEY (language_name) REFERENCES languages(language_name)
+);
+
+CREATE TABLE if NOT EXISTS achievements (
+    achievementID INT NOT NULL,
+    gameID INT NOT NULL,
+    title VARCHAR(64) NOT NULL,
+    description VARCHAR(5000),
+    PRIMARY KEY (achievementID, gameID),
+    FOREIGN KEY (gameID) REFERENCES videogames(gameID)
 );
 
 CREATE TABLE if NOT EXISTS transactions (
@@ -40,10 +81,26 @@ CREATE TABLE if NOT EXISTS transactions (
 	FOREIGN KEY (userID) REFERENCES users(userID)
 );
 
+CREATE TABLE IF NOT EXISTS transaction_items (
+    transactionID INT NOT NULL,
+    gameID INT NOT NULL,
+    PRIMARY KEY (transactionID, gameID),
+    FOREIGN KEY (transactionID) REFERENCES transactions(transactionsID),
+    FOREIGN KEY (gameID) REFERENCES videogames(gameID)
+);
+
 CREATE TABLE IF NOT EXISTS wishlists (
     wishlistID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     userID INT NOT NULL UNIQUE,
     FOREIGN KEY (userID) REFERENCES users(userID)
+);
+
+CREATE TABLE IF NOT EXISTS wishlist_items (
+    wishlistID INT NOT NULL,
+    gameID INT NOT NULL,
+    PRIMARY KEY (wishlistID, gameID),
+    FOREIGN KEY (wishlistID) REFERENCES wishlists(wishlistID),
+    FOREIGN KEY (gameID) REFERENCES videogames(gameID)
 );
 
 CREATE TABLE IF NOT EXISTS reviews (
@@ -61,10 +118,10 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15', true, true, true),
 ('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13', false, false, false);
 
-INSERT INTO videogames (userID, title, price, description, requirements, average_rating, release_date, discount)
+INSERT INTO videogames (publisherID, title, price, description, requirements, average_rating, release_date, discount)
 SELECT u.userID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount
 FROM (
-    SELECT 2 AS userID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
+    SELECT 2 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970' AS requirements, 4.9 AS average_rating, '2015-05-19' AS release_date, 0 AS discount
     UNION ALL
     SELECT 6, 'Among Us', 4.99, 'Un gioco multiplayer di deduzione sociale ambientato nello spazio.',
@@ -76,8 +133,92 @@ FROM (
     SELECT 1, 'Elden Ring', 59.99, 'Un gioco di ruolo d''azione con un vasto mondo aperto e combattimenti impegnativi.',
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', 4.8, '2022-02-25', 30
 ) v
-JOIN users u ON u.userID = v.userID
-WHERE u.is_developer = TRUE;
+JOIN users u ON u.userID = v.publisherID
+WHERE u.is_publisher = TRUE;
+
+INSERT INTO videogame_developers (developerID, gameID)
+SELECT u.userID, g.gameID
+FROM (
+    SELECT 1 AS userID, 1 AS gameID
+    UNION ALL
+    SELECT 1, 2
+    UNION ALL
+    SELECT 1, 3
+    UNION ALL
+    SELECT 2, 4
+) d
+JOIN users u ON d.userID = u.userID
+JOIN videogames g ON d.gameID = g.gameID;
+
+INSERT INTO genres (genre, description) VALUES
+('Azione', 'Giochi che enfatizzano il combattimento e l''azione rapida.'),
+('Avventura', 'Giochi che si concentrano sull''esplorazione e la narrazione.'),
+('RPG', 'Giochi di ruolo con elementi di personalizzazione del personaggio.'),
+('Strategia', 'Giochi che richiedono pianificazione e tattica.'),
+('Simulazione', 'Giochi che simulano situazioni reali o immaginarie.');
+
+INSERT INTO videogame_genres (gameID, genre)
+SELECT g.gameID, v.genre
+FROM (
+    SELECT 1 AS gameID, 'Azione' AS genre
+    UNION ALL
+    SELECT 1, 'Avventura'
+    UNION ALL
+    SELECT 2, 'Azione'
+    UNION ALL
+    SELECT 2, 'Strategia'
+    UNION ALL
+    SELECT 3, 'RPG'
+    UNION ALL
+    SELECT 4, 'RPG'
+) v
+JOIN videogames g ON v.gameID = g.gameID;
+
+INSERT INTO languages (language_name) VALUES
+('Italian'),
+('English'),
+('German'),
+('French'),
+('Spanish'),
+('Russian'),
+('Chinese'),
+('Japanese');
+
+INSERT INTO videogame_languages (gameID, language_name)
+SELECT g.gameID, l.language_name
+FROM (
+    SELECT 1 AS gameID, 'Italian' AS language_name
+    UNION ALL
+    SELECT 1, 'English'
+    UNION ALL
+    SELECT 2, 'Italian'
+    UNION ALL
+    SELECT 2, 'English'
+    UNION ALL
+    SELECT 3, 'Italian'
+    UNION ALL
+    SELECT 3, 'English'
+    UNION ALL
+    SELECT 4, 'Italian'
+    UNION ALL
+    SELECT 4, 'English'
+) l
+JOIN videogames g ON l.gameID = g.gameID;
+
+INSERT INTO achievements (achievementID, gameID, title, description)
+SELECT a.achievementID, g.gameID, a.title, a.description
+FROM (
+    SELECT 1 AS achievementID, 1 AS gameID, 'Inizia l''avventura' AS title, 'Completa il tutorial iniziale.' AS description
+    UNION ALL
+    SELECT 2, 1, 'Maestro delle spade', 'Sconfiggi 100 nemici con la spada.'
+    UNION ALL
+    SELECT 1, 2, 'Stratega Supremo', 'Vinci una partita in modalità strategia senza perdere una torre.'
+    UNION ALL
+    SELECT 1, 3, 'Cacciatore di draghi', 'Sconfiggi un drago leggendario.'
+    UNION ALL
+    SELECT 1, 4, 'Eroe del regno', 'Completa la campagna principale.'
+) a
+JOIN videogames g ON a.gameID = g.gameID;
 
 INSERT INTO transactions (userID, total_cost)
 SELECT u.userID, t.total_cost
@@ -92,12 +233,39 @@ FROM (
 ) t
 JOIN users u ON u.userID = t.userID;
 
+INSERT INTO transaction_items (transactionID, gameID)
+SELECT t.transactionsID, g.gameID
+FROM (
+    SELECT 1 AS transactionsID, 1 AS gameID
+    UNION ALL
+    SELECT 1, 2
+    UNION ALL
+    SELECT 1, 3
+    UNION ALL
+    SELECT 2, 4
+) t
+JOIN transactions tr ON t.transactionsID = tr.transactionsID
+JOIN videogames g ON t.gameID = g.gameID;
 
 INSERT INTO wishlists (userID)
 SELECT u.userID
 FROM users u
 LEFT JOIN wishlists w ON u.userID = w.userID
 WHERE w.userID IS NULL;
+
+INSERT INTO wishlist_items (wishlistID, gameID)
+SELECT w.wishlistID, g.gameID
+FROM (
+    SELECT 1 AS wishlistID, 1 AS gameID
+    UNION ALL
+    SELECT 1, 2
+    UNION ALL
+    SELECT 1, 3
+    UNION ALL
+    SELECT 2, 4
+) w
+JOIN wishlists wl ON w.wishlistID = wl.wishlistID
+JOIN videogames g ON w.gameID = g.gameID;
 
 INSERT INTO reviews (userID, gameID, rating, comment)
 SELECT r.userID, r.gameID, r.rating, r.comment 
