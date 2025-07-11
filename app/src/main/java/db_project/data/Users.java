@@ -50,6 +50,43 @@ public class Users {
         );
     }
 
+    // Getters
+    public int getUserID() {
+        return userID;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getBirthDate() {
+        return birth_date;
+    }
+
+    public boolean isAdministrator() {
+        return is_administrator;
+    }
+
+    public boolean isPublisher() {
+        return is_publisher;
+    }
+
+    public boolean isDeveloper() {
+        return is_developer;
+    }
+
     public static final class DAO {
         /**
          * Returns a list of all users in the database.
