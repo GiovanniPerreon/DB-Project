@@ -28,7 +28,7 @@ CREATE TABLE if NOT EXISTS videogames (
     price DECIMAL(10, 2) NOT NULL,
     description VARCHAR(5000),
     requirements VARCHAR(5000),
-    average_rating DECIMAL(2,1) DEFAULT 2.5 CHECK (average_rating >= 1 AND average_rating <= 5),
+    average_rating DECIMAL(3,2) DEFAULT 2.50 CHECK (average_rating >= 1 AND average_rating <= 5),
     release_date DATE NOT NULL, 
     discount INT,
     FOREIGN KEY (publisherID) REFERENCES users(userID)
@@ -126,209 +126,13 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- Inserts --------------------------------------------------------------------
 
 INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked) VALUES
+-- Testing Users
 ('a', 'a', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
 ('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
-('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13', false, false, false, false),
-('blocked.user@email.com', 'blocked123', 'Blocked', 'User', '1995-03-20', false, false, false, true);
-
-INSERT INTO videogames (publisherID, title, price, description, requirements, release_date, discount)
-SELECT u.userID, v.title, v.price, v.description, v.requirements, v.release_date, v.discount
-FROM (
-    SELECT 1 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970' AS requirements, '2015-05-19' AS release_date, 0 AS discount
-    UNION ALL
-    SELECT 2, 'Among Us', 4.99, 'Un gioco multiplayer di deduzione sociale ambientato nello spazio.',
-           'CPU: Intel Core i3, RAM: 2GB, GPU: NVIDIA GTX 660', '2018-06-15', 0
-    UNION ALL
-    SELECT 1, 'Sekiro: Shadows Die Twice', 59.99, 'Un gioco di azione-avventura con combattimenti impegnativi e una trama avvincente.',
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2019-03-22', 20
-    UNION ALL
-    SELECT 1, 'Elden Ring', 59.99, 'Un gioco di ruolo d''azione con un vasto mondo aperto e combattimenti impegnativi.',
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2022-02-25', 30
-    UNION ALL
-    SELECT 2, 'Dragon Age: Veilguard', 39.99, 'Un gioco di ruolo fantasy con una trama avvincente e personaggi memorabili.',
-           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2023-05-10', 90
-) v
-JOIN users u ON u.userID = v.publisherID
-WHERE u.is_publisher = TRUE;
-
-INSERT INTO videogame_developers (developerID, gameID)
-SELECT u.userID, g.gameID
-FROM (
-    SELECT 1 AS userID, 1 AS gameID
-    UNION ALL
-    SELECT 1, 2
-    UNION ALL
-    SELECT 1, 3
-    UNION ALL
-    SELECT 2, 4
-) d
-JOIN users u ON d.userID = u.userID
-JOIN videogames g ON d.gameID = g.gameID;
-
-INSERT INTO genres (genre, description) VALUES
-('Azione', 'Giochi che enfatizzano il combattimento e l''azione rapida.'),
-('Avventura', 'Giochi che si concentrano sull''esplorazione e la narrazione.'),
-('RPG', 'Giochi di ruolo con elementi di personalizzazione del personaggio.'),
-('Strategia', 'Giochi che richiedono pianificazione e tattica.'),
-('Simulazione', 'Giochi che simulano situazioni reali o immaginarie.');
-
-INSERT INTO videogame_genres (gameID, genre)
-SELECT g.gameID, v.genre
-FROM (
-    SELECT 1 AS gameID, 'Azione' AS genre
-    UNION ALL
-    SELECT 1, 'Avventura'
-    UNION ALL
-    SELECT 2, 'Azione'
-    UNION ALL
-    SELECT 2, 'Strategia'
-    UNION ALL
-    SELECT 3, 'RPG'
-    UNION ALL
-    SELECT 4, 'RPG'
-) v
-JOIN videogames g ON v.gameID = g.gameID;
-
-INSERT INTO languages (language_name) VALUES
-('Italian'),
-('English'),
-('German'),
-('French'),
-('Spanish'),
-('Russian'),
-('Chinese'),
-('Japanese');
-
-INSERT INTO videogame_languages (gameID, language_name)
-SELECT g.gameID, l.language_name
-FROM (
-    SELECT 1 AS gameID, 'Italian' AS language_name
-    UNION ALL
-    SELECT 1, 'English'
-    UNION ALL
-    SELECT 2, 'Italian'
-    UNION ALL
-    SELECT 2, 'English'
-    UNION ALL
-    SELECT 3, 'Italian'
-    UNION ALL
-    SELECT 3, 'English'
-    UNION ALL
-    SELECT 4, 'Italian'
-    UNION ALL
-    SELECT 4, 'English'
-) l
-JOIN videogames g ON l.gameID = g.gameID;
-
-INSERT INTO achievements (achievementID, gameID, title, description)
-SELECT a.achievementID, g.gameID, a.title, a.description
-FROM (
-    SELECT 1 AS achievementID, 1 AS gameID, 'Inizia l''avventura' AS title, 'Completa il tutorial iniziale.' AS description
-    UNION ALL
-    SELECT 2, 1, 'Maestro delle spade', 'Sconfiggi 100 nemici con la spada.'
-    UNION ALL
-    SELECT 1, 2, 'Stratega Supremo', 'Vinci una partita in modalità strategia senza perdere una torre.'
-    UNION ALL
-    SELECT 1, 3, 'Cacciatore di draghi', 'Sconfiggi un drago leggendario.'
-    UNION ALL
-    SELECT 1, 4, 'Eroe del regno', 'Completa la campagna principale.'
-) a
-JOIN videogames g ON a.gameID = g.gameID;
-
-INSERT INTO transactions (userID, total_cost)
-SELECT u.userID, t.total_cost
-FROM (
-    SELECT 1 AS userID, 59.99 AS total_cost
-    UNION ALL
-    SELECT 1, 24.99
-    UNION ALL
-    SELECT 1, 14.99
-    UNION ALL
-    SELECT 2, 49.99
-) t
-JOIN users u ON u.userID = t.userID;
-
-INSERT INTO transaction_items (transactionID, gameID)
-SELECT t.transactionID, g.gameID
-FROM (
-    SELECT 1 AS transactionID, 1 AS gameID
-    UNION ALL
-    SELECT 1, 2
-    UNION ALL
-    SELECT 1, 3
-    UNION ALL
-    SELECT 2, 4
-) t
-JOIN transactions tr ON t.transactionID = tr.transactionID
-JOIN videogames g ON t.gameID = g.gameID;
-
-INSERT INTO wishlists (userID)
-SELECT u.userID
-FROM users u
-LEFT JOIN wishlists w ON u.userID = w.userID
-WHERE w.userID IS NULL;
-
-INSERT INTO wishlist_items (wishlistID, gameID)
-SELECT w.wishlistID, g.gameID
-FROM (
-    -- All possible combinations of wishlists and games
-    SELECT wl.wishlistID, vg.gameID, wl.userID
-    FROM wishlists wl
-    CROSS JOIN videogames vg
-) w
-JOIN videogames g ON w.gameID = g.gameID
--- Exclude games that the user already owns
-WHERE NOT EXISTS (
-    SELECT 1 
-    FROM transactions t
-    JOIN transaction_items ti ON t.transactionID = ti.transactionID
-    WHERE t.userID = w.userID 
-    AND ti.gameID = w.gameID
-);
-
-INSERT INTO reviews (userID, gameID, rating, comment)
-SELECT r.userID, r.gameID, r.rating, r.comment 
-FROM (
-    SELECT 1 AS userID, 1 AS gameID, 4.9 AS rating, 'Sono scarso e mi faccio carriare dal mio amico Francesco' AS comment
-    UNION ALL
-    SELECT 1, 2, 4.2, 'Il gioco è stato rilasciato in uno stato incompleto, ma dopo alcuni aggiornamenti è diventato molto divertente'
-) r
-JOIN users u ON r.userID = u.userID
-JOIN videogames g ON r.gameID = g.gameID;
-
-INSERT INTO achievements_user (achievementID, userID, gameID)
-SELECT a.achievementID, u.userID, a.gameID
-FROM (
-    SELECT 1 AS achievementID, 1 AS userID, 1 AS gameID
-    UNION ALL
-    SELECT 2, 1, 1
-    UNION ALL
-    SELECT 1, 1, 2
-    UNION ALL
-    SELECT 1, 2, 3
-) a
-JOIN users u ON a.userID = u.userID
-JOIN achievements ach ON a.achievementID = ach.achievementID AND a.gameID = ach.gameID;
-
--- Update average ratings based on the inserted reviews
-UPDATE videogames 
-SET average_rating = (
-    SELECT AVG(rating) 
-    FROM reviews 
-    WHERE reviews.gameID = videogames.gameID
-) 
-WHERE gameID IN (
-    SELECT DISTINCT gameID 
-    FROM reviews
-);
-
--- Additional users to reach 50 total (we have 4, adding 46 more)
-INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked) VALUES
+('blocked.user@email.com', 'blocked123', 'Blocked', 'User', '1995-03-20', false, false, false, true),
 -- Additional Administrators
 ('admin.sarah@steamdb.com', 'admin2024', 'Sarah', 'Johnson', '1985-07-22', true, false, false, false),
 ('admin.david@steamdb.com', 'admin2024', 'David', 'Chen', '1988-11-08', true, false, false, false),
-
 -- Publishers
 ('ubisoft@email.com', 'ubi2024', 'Marie', 'Dubois', '1982-03-15', false, true, false, false),
 ('activision@email.com', 'activ2024', 'Robert', 'Williams', '1980-09-12', false, true, false, false),
@@ -336,7 +140,6 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('naughty.dog@email.com', 'naughty2024', 'Emma', 'Thompson', '1985-12-05', false, true, true, false),
 ('bethesda@email.com', 'beth2024', 'Mark', 'Anderson', '1983-04-18', false, true, false, false),
 ('valve@email.com', 'valve2024', 'Gabe', 'Newell', '1962-11-03', false, true, true, false),
-
 -- Developers
 ('dev.marco@gmail.com', 'dev2024', 'Marco', 'Rossi', '1992-01-14', false, false, true, false),
 ('dev.laura@gmail.com', 'dev2024', 'Laura', 'Bianchi', '1989-08-20', false, false, true, false),
@@ -377,71 +180,91 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('gamer.finn@email.com', 'finn2024', 'Finn', 'Nelson', '1994-01-13', false, false, false, false),
 ('gamer.grace@email.com', 'grace2024', 'Grace', 'Carter', '1992-06-30', false, false, false, false);
 
--- Additional videogames to reach 20 total (we have 4, adding 16 more)
-INSERT INTO videogames (publisherID, title, price, description, requirements, average_rating, release_date, discount)
-SELECT u.userID, v.title, v.price, v.description, v.requirements, v.average_rating, v.release_date, v.discount
+INSERT INTO videogames (publisherID, title, price, description, requirements, release_date, discount)
+SELECT u.userID, v.title, v.price, v.description, v.requirements, v.release_date, v.discount
 FROM (
+    SELECT 1 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970' AS requirements, '2015-05-19' AS release_date, 0 AS discount
+    UNION ALL
+    SELECT 2, 'Among Us', 4.99, 'Un gioco multiplayer di deduzione sociale ambientato nello spazio.',
+           'CPU: Intel Core i3, RAM: 2GB, GPU: NVIDIA GTX 660', '2018-06-15', 0
+    UNION ALL
+    SELECT 1, 'Sekiro: Shadows Die Twice', 59.99, 'Un gioco di azione-avventura con combattimenti impegnativi e una trama avvincente.',
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2019-03-22', 20
+    UNION ALL
+    SELECT 1, 'Elden Ring', 59.99, 'Un gioco di ruolo d''azione con un vasto mondo aperto e combattimenti impegnativi.',
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2022-02-25', 30
+    UNION ALL
+    SELECT 2, 'Dragon Age: Veilguard', 39.99, 'Un gioco di ruolo fantasy con una trama avvincente e personaggi memorabili.',
+           'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2023-05-10', 90
+    UNION ALL
     SELECT 7 AS publisherID, 'Assassin''s Creed Valhalla' AS title, 59.99 AS price, 'Vivi l''epoca d''oro dei vichinghi e guida Eivor in una saga leggendaria.' AS description,
-           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960' AS requirements, 4.3 AS average_rating, '2020-11-10' AS release_date, 25 AS discount
+           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960' AS requirements, '2020-11-10' AS release_date, 25 AS discount
     UNION ALL
     SELECT 8, 'Call of Duty: Modern Warfare II', 69.99, 'Il sequel del rinomato Call of Duty: Modern Warfare con campagna e multiplayer.',
-           'CPU: Intel Core i5-6600K, RAM: 12GB, GPU: NVIDIA GTX 1060', 4.1, '2022-10-28', 15
+           'CPU: Intel Core i5-6600K, RAM: 12GB, GPU: NVIDIA GTX 1060', '2022-10-28', 15
     UNION ALL
     SELECT 9, 'Hollow Knight', 14.99, 'Un classico Metroidvania 2D con atmosfera gotica e gameplay impegnativo.',
-           'CPU: Intel Core 2 Duo E5200, RAM: 4GB, GPU: GeForce 9800GTX', 4.9, '2017-02-24', 0
+           'CPU: Intel Core 2 Duo E5200, RAM: 4GB, GPU: GeForce 9800GTX', '2017-02-24', 0
     UNION ALL
     SELECT 10, 'The Last of Us Part II', 39.99, 'Sequel dell''acclamato survival horror post-apocalittico.',
-           'CPU: Intel Core i5-8400, RAM: 8GB, GPU: NVIDIA GTX 1060', 4.6, '2020-06-19', 10
+           'CPU: Intel Core i5-8400, RAM: 8GB, GPU: NVIDIA GTX 1060', '2020-06-19', 10
     UNION ALL
     SELECT 11, 'The Elder Scrolls V: Skyrim', 19.99, 'Il leggendario RPG fantasy open-world ambientato in Skyrim.',
-           'CPU: Intel Core i5-750, RAM: 4GB, GPU: NVIDIA GTX 470', 4.8, '2011-11-11', 0
+           'CPU: Intel Core i5-750, RAM: 4GB, GPU: NVIDIA GTX 470', '2011-11-11', 0
     UNION ALL
     SELECT 12, 'Half-Life: Alyx', 59.99, 'L''attesissimo ritorno della serie Half-Life in realtà virtuale.',
-           'CPU: Intel Core i5-7500, RAM: 12GB, GPU: NVIDIA GTX 1060', 4.7, '2020-03-23', 20
+           'CPU: Intel Core i5-7500, RAM: 12GB, GPU: NVIDIA GTX 1060', '2020-03-23', 20
     UNION ALL
     SELECT 7, 'Far Cry 6', 49.99, 'Combatti la dittatura nell''isola tropicale fittizia di Yara.',
-           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', 3.9, '2021-10-07', 30
+           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', '2021-10-07', 30
     UNION ALL
     SELECT 8, 'Overwatch 2', 0.00, 'Il sequel free-to-play del famoso hero shooter di Blizzard.',
-           'CPU: Intel Core i3, RAM: 6GB, GPU: NVIDIA GTX 600', 3.8, '2022-10-04', 0
+           'CPU: Intel Core i3, RAM: 6GB, GPU: NVIDIA GTX 600', '2022-10-04', 0
     UNION ALL
     SELECT 9, 'Celeste', 19.99, 'Un platformer challenging con una storia toccante sulla salute mentale.',
-           'CPU: Intel Core 2 Duo E5200, RAM: 2GB, GPU: GeForce 9800GTX', 4.8, '2018-01-25', 0
+           'CPU: Intel Core 2 Duo E5200, RAM: 2GB, GPU: GeForce 9800GTX', '2018-01-25', 0
     UNION ALL
     SELECT 10, 'Uncharted 4: A Thief''s End', 19.99, 'L''ultima avventura di Nathan Drake piena di azione e scoperte.',
-           'CPU: Intel Core i5-4430, RAM: 8GB, GPU: NVIDIA GTX 960', 4.5, '2016-05-10', 0
+           'CPU: Intel Core i5-4430, RAM: 8GB, GPU: NVIDIA GTX 960', '2016-05-10', 0
     UNION ALL
     SELECT 11, 'Fallout 4', 29.99, 'Survival RPG post-apocalittico ambientato nella Boston devastata.',
-           'CPU: Intel Core i5-2300, RAM: 8GB, GPU: NVIDIA GTX 550 Ti', 4.2, '2015-11-10', 0
+           'CPU: Intel Core i5-2300, RAM: 8GB, GPU: NVIDIA GTX 550 Ti', '2015-11-10', 0
     UNION ALL
     SELECT 12, 'Portal 2', 9.99, 'Il sequel del rivoluzionario puzzle game con meccaniche innovative.',
-           'CPU: Intel Core 2 Duo E6600, RAM: 2GB, GPU: NVIDIA GeForce 7600GS', 4.9, '2011-04-19', 0
+           'CPU: Intel Core 2 Duo E6600, RAM: 2GB, GPU: NVIDIA GeForce 7600GS', '2011-04-19', 0
     UNION ALL
     SELECT 9, 'Hades', 24.99, 'Roguelike isometrico ambientato negli Inferi della mitologia greca.',
-           'CPU: Dual Core 3.0ghz, RAM: 4GB, GPU: DirectX 10 compatible', 4.8, '2020-09-17', 0
+           'CPU: Dual Core 3.0ghz, RAM: 4GB, GPU: DirectX 10 compatible', '2020-09-17', 0
     UNION ALL
     SELECT 7, 'Watch Dogs: Legion', 39.99, 'Hacker cyberpunk ambientato in una Londra distopica.',
-           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', 3.7, '2020-10-29', 40
+           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', '2020-10-29', 40
     UNION ALL
     SELECT 8, 'Diablo IV', 69.99, 'Il ritorno della leggendaria serie action RPG di Blizzard.',
-           'CPU: Intel Core i5-2500K, RAM: 8GB, GPU: NVIDIA GTX 660', 4.0, '2023-06-06', 0
+           'CPU: Intel Core i5-2500K, RAM: 8GB, GPU: NVIDIA GTX 660', '2023-06-06', 0
     UNION ALL
     SELECT 12, 'Counter-Strike 2', 0.00, 'Il nuovo capitolo del leggendario FPS competitivo.',
-           'CPU: Intel Core i5-750, RAM: 8GB, GPU: NVIDIA GTX 1060', 4.4, '2023-09-27', 0
+           'CPU: Intel Core i5-750, RAM: 8GB, GPU: NVIDIA GTX 1060', '2023-09-27', 0
 ) v
 JOIN users u ON u.userID = v.publisherID
 WHERE u.is_publisher = TRUE;
 
--- Additional videogame developers assignments
 INSERT INTO videogame_developers (developerID, gameID)
 SELECT u.userID, g.gameID
 FROM (
-    -- Existing games with new developers
-    SELECT 13 AS userID, 5 AS gameID  -- Marco develops Assassin's Creed Valhalla
+    SELECT 1 AS userID, 1 AS gameID
     UNION ALL
-    SELECT 14, 5  -- Laura also develops Assassin's Creed Valhalla
+    SELECT 1, 2
     UNION ALL
-    SELECT 15, 6  -- Carlos develops Call of Duty: Modern Warfare II
+    SELECT 1, 3
+    UNION ALL
+    SELECT 2, 4
+    UNION ALL
+    SELECT 13, 5 
+    UNION ALL
+    SELECT 14, 5
+    UNION ALL
+    SELECT 15, 6
     UNION ALL
     SELECT 16, 7  -- Anna develops Hollow Knight
     UNION ALL
@@ -479,8 +302,12 @@ JOIN users u ON d.userID = u.userID
 JOIN videogames g ON d.gameID = g.gameID
 WHERE u.is_developer = TRUE;
 
--- Additional genres
 INSERT INTO genres (genre, description) VALUES
+('Azione', 'Giochi che enfatizzano il combattimento e l''azione rapida.'),
+('Avventura', 'Giochi che si concentrano sull''esplorazione e la narrazione.'),
+('RPG', 'Giochi di ruolo con elementi di personalizzazione del personaggio.'),
+('Strategia', 'Giochi che richiedono pianificazione e tattica.'),
+('Simulazione', 'Giochi che simulano situazioni reali o immaginarie.'),
 ('Sparatutto', 'Giochi che si concentrano sul combattimento con armi da fuoco.'),
 ('Survival', 'Giochi che enfatizzano la sopravvivenza in ambienti ostili.'),
 ('Horror', 'Giochi progettati per spaventare e creare tensione.'),
@@ -488,10 +315,21 @@ INSERT INTO genres (genre, description) VALUES
 ('Corsa', 'Giochi di corse con veicoli di vario tipo.'),
 ('Puzzle', 'Giochi che richiedono risoluzione di enigmi e ragionamento logico.');
 
--- Additional videogame genres assignments
 INSERT INTO videogame_genres (gameID, genre)
 SELECT g.gameID, v.genre
 FROM (
+    SELECT 1 AS gameID, 'Azione' AS genre
+    UNION ALL
+    SELECT 1, 'Avventura'
+    UNION ALL
+    SELECT 2, 'Azione'
+    UNION ALL
+    SELECT 2, 'Strategia'
+    UNION ALL
+    SELECT 3, 'RPG'
+    UNION ALL
+    SELECT 4, 'RPG'
+    UNION ALL
     SELECT 5 AS gameID, 'Azione' AS genre
     UNION ALL
     SELECT 5, 'Avventura'
@@ -558,11 +396,34 @@ FROM (
 ) v
 JOIN videogames g ON v.gameID = g.gameID;
 
--- Additional videogame languages for new games
+INSERT INTO languages (language_name) VALUES
+('Italian'),
+('English'),
+('German'),
+('French'),
+('Spanish'),
+('Russian'),
+('Chinese'),
+('Japanese');
+
 INSERT INTO videogame_languages (gameID, language_name)
 SELECT g.gameID, l.language_name
 FROM (
-    SELECT 5 AS gameID, 'Italian' AS language_name
+    SELECT 1 AS gameID, 'Italian' AS language_name
+    UNION ALL
+    SELECT 1, 'English'
+    UNION ALL
+    SELECT 2, 'Italian'
+    UNION ALL
+    SELECT 2, 'English'
+    UNION ALL
+    SELECT 3, 'Italian'
+    UNION ALL
+    SELECT 3, 'English'
+    UNION ALL
+    SELECT 4, 'Italian'
+    UNION ALL
+    SELECT 4, 'English'
     UNION ALL
     SELECT 5, 'English'
     UNION ALL
@@ -646,11 +507,20 @@ FROM (
 ) l
 JOIN videogames g ON l.gameID = g.gameID;
 
--- Additional achievements for new games
 INSERT INTO achievements (achievementID, gameID, title, description)
 SELECT a.achievementID, g.gameID, a.title, a.description
 FROM (
-    SELECT 1 AS achievementID, 5 AS gameID, 'Vichingo Leggendario' AS title, 'Completa la storia principale di Valhalla.' AS description
+    SELECT 1 AS achievementID, 1 AS gameID, 'Inizia l''avventura' AS title, 'Completa il tutorial iniziale.' AS description
+    UNION ALL
+    SELECT 2, 1, 'Maestro delle spade', 'Sconfiggi 100 nemici con la spada.'
+    UNION ALL
+    SELECT 1, 2, 'Stratega Supremo', 'Vinci una partita in modalità strategia senza perdere una torre.'
+    UNION ALL
+    SELECT 1, 3, 'Cacciatore di draghi', 'Sconfiggi un drago leggendario.'
+    UNION ALL
+    SELECT 1, 4, 'Eroe del regno', 'Completa la campagna principale.'
+    UNION ALL
+    SELECT 1, 5, 'Vichingo Leggendario', 'Completa la storia principale di Valhalla.'
     UNION ALL
     SELECT 2, 5, 'Esploratore del Nord', 'Scopri tutte le regioni dell''Inghilterra.'
     UNION ALL
@@ -690,11 +560,17 @@ FROM (
 ) a
 JOIN videogames g ON a.gameID = g.gameID;
 
--- Many more transactions to simulate realistic activity
 INSERT INTO transactions (userID, total_cost)
 SELECT u.userID, t.total_cost
 FROM (
-    -- High spenders
+    SELECT 1 AS userID, 59.99 AS total_cost
+    UNION ALL
+    SELECT 1, 24.99
+    UNION ALL
+    SELECT 1, 14.99
+    UNION ALL
+    SELECT 2, 49.99
+    UNION ALL
     SELECT 17 AS userID, 249.95 AS total_cost  -- Alice buys multiple games
     UNION ALL
     SELECT 17, 69.99  -- Alice buys another game
@@ -763,12 +639,16 @@ FROM (
 ) t
 JOIN users u ON u.userID = t.userID;
 
--- Transaction items for the new transactions
 INSERT INTO transaction_items (transactionID, gameID)
 SELECT t.transactionID, g.gameID
 FROM (
-    -- Alice's purchases (transactions 5 and 6)
-    SELECT 5 AS transactionID, 5 AS gameID
+    SELECT 1 AS transactionID, 1 AS gameID
+    UNION ALL
+    SELECT 1, 2
+    UNION ALL
+    SELECT 1, 3
+    UNION ALL
+    SELECT 2, 4
     UNION ALL
     SELECT 5, 6
     UNION ALL
@@ -778,64 +658,46 @@ FROM (
     UNION ALL
     SELECT 6, 9
     UNION ALL
-    
-    -- Bob's purchases (transaction 7)
     SELECT 7, 10
     UNION ALL
     SELECT 7, 11
     UNION ALL
     SELECT 7, 12
     UNION ALL
-    
-    -- Charlie's purchases (transaction 8)
     SELECT 8, 13
     UNION ALL
     SELECT 8, 14
     UNION ALL
     SELECT 8, 15
     UNION ALL
-    
-    -- Diana's purchases (transaction 9)
     SELECT 9, 5
     UNION ALL
     SELECT 9, 6
     UNION ALL
     SELECT 9, 16
     UNION ALL
-    
-    -- Ethan's purchase (transaction 10)
     SELECT 10, 17
     UNION ALL
-    
-    -- Fiona's purchases (transaction 11)
     SELECT 11, 18
     UNION ALL
     SELECT 11, 19
     UNION ALL
     SELECT 11, 9
     UNION ALL
-    
-    -- George's purchases (transaction 12)
     SELECT 12, 20
     UNION ALL
     SELECT 12, 7
     UNION ALL
     SELECT 12, 13
     UNION ALL
-    
-    -- Helen's purchase (transaction 13)
     SELECT 13, 8
     UNION ALL
-    
-    -- Ivan's purchases (transaction 14)
     SELECT 14, 15
     UNION ALL
     SELECT 14, 16
     UNION ALL
     SELECT 14, 17
     UNION ALL
-    
-    -- Julia's purchases (transaction 15)
     SELECT 15, 5
     UNION ALL
     SELECT 15, 9
@@ -844,8 +706,6 @@ FROM (
     UNION ALL
     SELECT 15, 14
     UNION ALL
-    
-    -- More transactions for other users
     SELECT 16, 6  -- Kevin
     UNION ALL
     SELECT 17, 10  -- Lisa
@@ -953,14 +813,12 @@ FROM (
 JOIN transactions tr ON t.transactionID = tr.transactionID
 JOIN videogames g ON t.gameID = g.gameID;
 
--- Add wishlists for all new users
 INSERT INTO wishlists (userID)
 SELECT u.userID
 FROM users u
 LEFT JOIN wishlists w ON u.userID = w.userID
 WHERE w.userID IS NULL;
 
--- Add wishlist items for many users
 INSERT INTO wishlist_items (wishlistID, gameID)
 SELECT w.wishlistID, g.gameID
 FROM (
@@ -1054,14 +912,19 @@ FROM (
     SELECT 48, 15  -- Grace wants Fallout 4
 ) w
 JOIN wishlists wl ON w.wishlistID = wl.wishlistID
-JOIN videogames g ON w.gameID = g.gameID;
+JOIN videogames g ON w.gameID = g.gameID
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM transactions t
+    JOIN transaction_items ti ON t.transactionID = ti.transactionID
+    WHERE t.userID = wl.userID 
+    AND ti.gameID = w.gameID
+);
 
--- Add many reviews from users who own games
 INSERT INTO reviews (userID, gameID, rating, comment)
 SELECT r.userID, r.gameID, r.rating, r.comment 
 FROM (
-    -- Reviews from Alice (userID 17)
-    SELECT 17 AS userID, 5 AS gameID, 4.5 AS rating, 'Fantastico gioco open-world con una storia coinvolgente!' AS comment
+    SELECT 1 AS userID, 1 AS gameID, 4.9 AS rating, 'Il gioco è stato rilasciato in uno stato incompleto, ma dopo alcuni aggiornamenti è diventato molto divertente' AS comment
     UNION ALL
     SELECT 17, 6, 4.0, 'Buona campagna ma il multiplayer potrebbe essere migliorato.'
     UNION ALL
@@ -1198,18 +1061,23 @@ FROM (
 ) r
 JOIN users u ON r.userID = u.userID
 JOIN videogames g ON r.gameID = g.gameID
--- Only allow reviews from users who own the game
 WHERE EXISTS (
     SELECT 1 FROM transaction_items ti 
     JOIN transactions t ON ti.transactionID = t.transactionID 
     WHERE t.userID = r.userID AND ti.gameID = r.gameID
 );
 
--- Add achievements earned by users for games they own
 INSERT INTO achievements_user (achievementID, userID, gameID)
 SELECT a.achievementID, u.userID, a.gameID
 FROM (
-    -- Alice's achievements
+    SELECT 1 AS achievementID, 1 AS userID, 1 AS gameID
+    UNION ALL
+    SELECT 2, 1, 1
+    UNION ALL
+    SELECT 1, 1, 2
+    UNION ALL
+    SELECT 1, 2, 3
+    UNION ALL
     SELECT 1 AS achievementID, 17 AS userID, 5 AS gameID
     UNION ALL
     SELECT 2, 17, 5
@@ -1355,9 +1223,19 @@ FROM (
 ) a
 JOIN users u ON a.userID = u.userID
 JOIN achievements ach ON a.achievementID = ach.achievementID AND a.gameID = ach.gameID
--- Only allow achievements for games the user owns
 WHERE EXISTS (
     SELECT 1 FROM transaction_items ti 
     JOIN transactions t ON ti.transactionID = t.transactionID 
     WHERE t.userID = a.userID AND ti.gameID = a.gameID
+);
+
+UPDATE videogames 
+SET average_rating = (
+    SELECT ROUND(AVG(rating), 1)
+    FROM reviews 
+    WHERE reviews.gameID = videogames.gameID
+) 
+WHERE gameID IN (
+    SELECT DISTINCT gameID 
+    FROM reviews
 );
