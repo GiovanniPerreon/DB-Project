@@ -168,7 +168,7 @@ public final class View {
         JButton viewAllGamesButton = new JButton("Browse Games");
         JButton topGamesButton = new JButton("Top Games");
         JButton mostBoughtButton = new JButton("Most Bought");
-        JButton leastRatedButton = new JButton("Least rated developers");
+        JButton leastRatedButton = new JButton("Lowest Rated Developers");
         
         // Make buttons bigger
         viewAllGamesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
