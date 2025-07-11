@@ -23,6 +23,14 @@ public interface Model {
      * @return an Optional of the user with the given ID.
      */
     Optional<Users> find(int userId);   
+    
+    /**
+     * @param email user's email
+     * @param password user's password
+     * @return an Optional of the user with the given email and password.
+     */
+    Optional<Users> findByEmailPassword(String email, String password);
+
     /**
      * @return all users in the database.
      */
@@ -75,5 +83,16 @@ public interface Model {
      * @return all the wishlist items in the database.
      */
     List<Optional<WishlistItems>> getWishlistItems();
+
+    /**
+     * Registers a new user in the database.
+     * @param email user's email
+     * @param password user's password
+     * @param name user's name
+     * @param surname user's surname
+     * @param birthDate user's birth date
+     * @return true if registration was successful, false otherwise
+     */
+    boolean registerUser(String email, String password, String name, String surname, String birthDate);
 
 }

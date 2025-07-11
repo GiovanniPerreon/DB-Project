@@ -50,6 +50,43 @@ public class Users {
         );
     }
 
+    // Getters
+    public int getUserID() {
+        return userID;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getBirthDate() {
+        return birth_date;
+    }
+
+    public boolean isAdministrator() {
+        return is_administrator;
+    }
+
+    public boolean isPublisher() {
+        return is_publisher;
+    }
+
+    public boolean isDeveloper() {
+        return is_developer;
+    }
+
     public static final class DAO {
         /**
          * Returns a list of all users in the database.
@@ -103,6 +140,48 @@ public class Users {
                 throw new DAOException(e);
             }
             
+        }
+
+        /**
+         * Adds a new user to the database.
+         */
+        public static boolean addUser(Connection connection, String email, String password, String name, String surname, String birthDate, boolean isAdmin, boolean isPublisher, boolean isDeveloper) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.ADD_USER, email, password, name, surname, birthDate, isAdmin, isPublisher, isDeveloper)
+            ) {
+                int rowsAffected = statement.executeUpdate();
+                return rowsAffected > 0;
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
+
+        /**
+         * Finds a user by email and password for login.
+         */
+        public static Optional<Users> findByEmailPassword(Connection connection, String email, String password) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.FIND_USER_BY_EMAIL_PASSWORD, email, password);
+                var resultSet = statement.executeQuery()
+            ) {
+                if (resultSet.next()) {
+                    return Optional.of(new Users(
+                        resultSet.getInt("userID"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("name"),
+                        resultSet.getString("surname"),
+                        resultSet.getString("birth_date"),
+                        resultSet.getBoolean("is_administrator"),
+                        resultSet.getBoolean("is_publisher"),
+                        resultSet.getBoolean("is_developer")
+                    ));
+                } else {
+                    return Optional.empty();
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
         }
     }
 }

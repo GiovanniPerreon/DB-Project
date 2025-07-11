@@ -125,4 +125,17 @@ public final class DBModel implements Model {
     public List<Optional<Achievements>> getAchievements() {
         return Achievements.DAO.list(this.connection);
     }
+
+    /**
+     * Registers a new user in the database.
+     */
+    @Override
+    public boolean registerUser(String email, String password, String name, String surname, String birthDate) {
+        return Users.DAO.addUser(this.connection, email, password, name, surname, birthDate, false, false, false);
+    }
+
+    @Override
+    public Optional<Users> findByEmailPassword(String email, String password) {
+        return Users.DAO.findByEmailPassword(this.connection, email, password);
+    }
 }

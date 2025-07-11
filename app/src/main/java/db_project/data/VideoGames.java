@@ -49,6 +49,47 @@ public class VideoGames {
         );
     }
 
+    // Getters
+    public int getGameID() {
+        return gameID;
+    }
+
+    public int getPublisherID() {
+        return publisherID;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getRequirements() {
+        return requirements;
+    }
+
+    public double getAverageRating() {
+        try {
+            return Double.parseDouble(averageRating);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public String getDiscount() {
+        return discount;
+    }
+
     public static final class DAO {
         /**
          * Returns a list of all video games in the database.
