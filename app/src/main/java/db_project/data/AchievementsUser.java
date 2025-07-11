@@ -46,7 +46,29 @@ public class AchievementsUser {
 
     public static final class DAO {
         /**
-         * Gets all achievements for a specific user.
+         * Returns a list of all user achievements in the database.
+         */
+        public static List<Optional<AchievementsUser>> list(Connection connection) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.ACHIEVEMENTS_USER_LIST);
+                var resultSet = statement.executeQuery()
+            ) {
+                var achievementsUsers = new ArrayList<Optional<AchievementsUser>>();
+                while (resultSet.next()) {
+                    achievementsUsers.add(Optional.of(new AchievementsUser(
+                        resultSet.getInt("achievementID"),
+                        resultSet.getInt("userID"),
+                        resultSet.getInt("gameID")
+                    )));
+                }
+                return achievementsUsers;
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
+
+        /**
+         * Gets all achievements for a specific user (returns full Achievement objects with details).
          */
         public static List<Achievements> getUserAchievements(Connection connection, int userID) {
             List<Achievements> achievements = new ArrayList<>();

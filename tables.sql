@@ -126,6 +126,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 -- Inserts --------------------------------------------------------------------
 
 INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked) VALUES
+('a', 'a', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
 ('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
 ('TamburiniTamburelli@ngareign.er', '...', 'John', 'Sql', '2003-01-13', false, false, false, false),
 ('blocked.user@email.com', 'blocked123', 'Blocked', 'User', '1995-03-20', false, false, false, true);

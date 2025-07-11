@@ -193,6 +193,11 @@ public final class Queries {
         join achievements_user au on a.achievementID = au.achievementID and a.gameID = au.gameID
         where au.userID = ?
         """;
+    public static final String ACHIEVEMENTS_USER_LIST =
+        """
+        select achievementID, userID, gameID
+        from achievements_user
+        """;
     public static final String FIND_USER_ACHIEVEMENT =
         """
         select achievementID, userID, gameID
