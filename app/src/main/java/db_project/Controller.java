@@ -1,11 +1,9 @@
 package db_project;
 
-import db_project.data.Users;
 import db_project.model.Model;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 // The controller provides a holistic description of how the outside world can
@@ -31,10 +29,12 @@ public final class Controller {
     public void testAllTables() {
         var users = this.model.getUsers();
         var videogames = this.model.getVideoGames();
+        var genres = this.model.getGenres();
+        var videogameGenres = this.model.getVideoGameGenres();
         var transactions = this.model.getTransactions();
         var reviews = this.model.getReviews();
         var wishlists = this.model.getWishlists();
-        Stream.of(users, videogames, transactions, reviews, wishlists)
+        Stream.of(users, videogames, genres, videogameGenres, transactions, reviews, wishlists)
             .flatMap(List::stream)
             .forEach(optional -> optional.ifPresentOrElse(
                 item -> System.out.println("Item: " + item),

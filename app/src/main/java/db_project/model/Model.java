@@ -3,9 +3,11 @@ package db_project.model;
 import java.util.List;
 import java.util.Optional;
 
+import db_project.data.Genres;
 import db_project.data.Reviews;
 import db_project.data.Transactions;
 import db_project.data.Users;
+import db_project.data.VideoGameGenres;
 import db_project.data.VideoGames;
 import db_project.data.Wishlists;
 
@@ -23,6 +25,14 @@ public interface Model {
      * @return all the videogames in the database.
      */
     List<Optional<VideoGames>> getVideoGames();
+    /**
+     * @return all the genres in the database.
+     */
+    List<Optional<Genres>> getGenres();
+    /**
+     * @return all the videogame genres in the database.
+     */
+    List<Optional<VideoGameGenres>> getVideoGameGenres();
     /**
      * @return all the transactions in the database.
      */

@@ -24,6 +24,28 @@ public final class Queries {
         from   VIDEOGAMES
         where  gameID = ?
         """;
+    public static final String GENRE_LIST =
+        """
+        select genre, description
+        from   GENRES
+        """;
+    public static final String FIND_GENRE =
+        """
+        select genre, description
+        from   GENRES
+        where  genre = ?
+        """;
+    public static final String VIDEOGAME_GENRE_LIST =
+        """
+        select gameID, genre
+        from   VIDEOGAME_GENRES
+        """;
+    public static final String FIND_VIDEOGAME_GENRE =
+        """
+        select gameID, genre
+        from   VIDEOGAME_GENRES
+        where  gameID = ? and genre = ?
+        """;
     public static final String WISHLIST_LIST =
         """
         select wishlistID, userID
