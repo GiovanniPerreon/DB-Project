@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import db_project.data.Genres;
 import db_project.data.Languages;
+import db_project.data.LeastRatedUser;
 import db_project.data.Reviews;
+import db_project.data.TransactionItems;
 import db_project.data.Transactions;
 import db_project.data.Users;
 import db_project.data.VideoGameGenres;
@@ -71,6 +73,13 @@ public interface Model {
      * @return all the achievements in the database.
      */
     List<Optional<Achievements>> getAchievements();
+    
+    /**
+     * @param userID the user ID
+     * @return all achievements for a specific user.
+     */
+    List<Optional<Achievements>> getUserAchievements(int userID);
+    
     /**
      * @return all the videogame developers in the database.
      */
@@ -190,17 +199,9 @@ public interface Model {
     boolean removeGenreFromGame(int gameId, String genre);
     
     /**
-     * Gets publishers and developers with average rating below the overall average.
-     * @return list of least rated users
+     * @return all the least rated users in the database.
      */
-    List<db_project.data.LeastRatedUser> getLeastRatedUsers();
-    
-    /**
-     * Gets all achievements for a specific user.
-     * @param userId the user ID
-     * @return list of achievements for the user
-     */
-    List<db_project.data.Achievements> getUserAchievements(int userId);
+    List<LeastRatedUser> getLeastRatedUsers();
     
     /**
      * Updates the average rating for a game based on all its reviews.
@@ -208,4 +209,45 @@ public interface Model {
      * @return true if average rating was updated successfully, false otherwise
      */
     boolean updateGameAverageRating(int gameId);
+    
+    /**
+     * @return top 10 newest games.
+     */
+    List<Optional<VideoGames>> getTop10NewestGames();
+    
+    /**
+     * @return top 10 oldest games.
+     */
+    List<Optional<VideoGames>> getTop10OldestGames();
+    
+    /**
+     * @return top 10 highest rated games.
+     */
+    List<Optional<VideoGames>> getTop10HighestRatedGames();
+    
+    /**
+     * @return top 10 lowest rated games.
+     */
+    List<Optional<VideoGames>> getTop10LowestRatedGames();
+    
+    /**
+     * @return top 10 most expensive games.
+     */
+    List<Optional<VideoGames>> getTop10MostExpensiveGames();
+    
+    /**
+     * @return top 10 cheapest games.
+     */
+    List<Optional<VideoGames>> getTop10CheapestGames();
+    
+    /**
+     * @return top 10 most sold games.
+     */
+    List<Optional<VideoGames>> getTop10MostSoldGames();
+    
+    /**
+     * @param genre the genre to filter by
+     * @return top 10 games by genre.
+     */
+    List<Optional<VideoGames>> getTop10GamesByGenre(String genre);
 }

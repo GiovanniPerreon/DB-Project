@@ -130,6 +130,11 @@ public final class DBModel implements Model {
     public List<Optional<Achievements>> getAchievements() {
         return Achievements.DAO.list(this.connection);
     }
+    
+    @Override
+    public List<Optional<Achievements>> getUserAchievements(int userID) {
+        return Achievements.DAO.getUserAchievements(this.connection, userID);
+    }
 
     /**
      * Registers a new user in the database.
@@ -310,8 +315,43 @@ public final class DBModel implements Model {
     }
     
     @Override
-    public List<Achievements> getUserAchievements(int userId) {
-        return db_project.data.AchievementsUser.DAO.getUserAchievements(connection, userId);
+    public List<Optional<VideoGames>> getTop10NewestGames() {
+        return VideoGames.DAO.getTop10NewestGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10OldestGames() {
+        return VideoGames.DAO.getTop10OldestGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10HighestRatedGames() {
+        return VideoGames.DAO.getTop10HighestRatedGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10LowestRatedGames() {
+        return VideoGames.DAO.getTop10LowestRatedGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10MostExpensiveGames() {
+        return VideoGames.DAO.getTop10MostExpensiveGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10CheapestGames() {
+        return VideoGames.DAO.getTop10CheapestGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10MostSoldGames() {
+        return VideoGames.DAO.getTop10MostSoldGames(connection);
+    }
+    
+    @Override
+    public List<Optional<VideoGames>> getTop10GamesByGenre(String genre) {
+        return VideoGames.DAO.getTop10GamesByGenre(connection, genre);
     }
     
     @Override

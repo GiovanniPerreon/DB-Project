@@ -91,6 +91,14 @@ public class Users {
     public boolean isBlocked() {
         return is_blocked;
     }
+    
+    public String getRole() {
+        if (is_administrator) return "Administrator";
+        if (is_publisher) return "Publisher";
+        if (is_developer) return "Developer";
+        return "User";
+    }
+
     /**
      * Returns a string representation of all user types/roles
      */
