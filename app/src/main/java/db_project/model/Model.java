@@ -19,4 +19,16 @@ public interface Model {
      * @return all the videogames in the database.
      */
     List<Optional<db_project.data.VideoGames>> getVideoGames();
+    /**
+     * @return all the transactions in the database.
+     */
+    List<Optional<db_project.data.Transactions>> getTransactions();
+    /**
+     * @return all the reviews in the database.
+     */
+    List<Optional<db_project.data.Reviews>> getReviews();
+    /**
+     * @return all the wishlists in the database.
+     */
+    List<Optional<db_project.data.Wishlists>> getWishlists();
 }

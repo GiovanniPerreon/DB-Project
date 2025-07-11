@@ -31,7 +31,10 @@ public final class Controller {
     public void testAllTables() {
         var users = this.model.getUsers();
         var videoGames = this.model.getVideoGames();
-        Stream.of(users, videoGames)
+        var transactions = this.model.getTransactions();
+        var reviews = this.model.getReviews();
+        var wishlists = this.model.getWishlists();
+        Stream.of(users, videoGames, transactions, reviews, wishlists)
             .flatMap(List::stream)
             .forEach(optional -> optional.ifPresentOrElse(
                 item -> System.out.println("Item: " + item),

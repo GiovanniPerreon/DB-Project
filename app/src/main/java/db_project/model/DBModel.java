@@ -41,4 +41,25 @@ public final class DBModel implements Model {
         this.videogames = VideoGames.DAO.list(this.connection);
         return this.videogames;
     }
+    /**
+     * @return all the transactions in the database.
+     */
+    @Override
+    public List<Optional<db_project.data.Transactions>> getTransactions() {
+        return db_project.data.Transactions.DAO.list(this.connection);
+    }
+    /*
+     * @return all the reviews in the database.
+     */
+    @Override
+    public List<Optional<db_project.data.Reviews>> getReviews() {
+        return db_project.data.Reviews.DAO.list(this.connection);
+    }
+    /**
+     * @return all the wishlists in the database.
+     */
+    @Override
+    public List<Optional<db_project.data.Wishlists>> getWishlists() {
+        return db_project.data.Wishlists.DAO.list(this.connection);
+    }
 }
