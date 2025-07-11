@@ -42,7 +42,7 @@ public class VideoGames {
                 Printer.field("price", this.price),
                 Printer.field("description", this.description),
                 Printer.field("requirements", this.requirements),
-                Printer.field("averageRating", this.averageRating),
+                Printer.field("averageRating", this.getAverageRatingString()),
                 Printer.field("releaseDate", this.releaseDate),
                 Printer.field("discount", this.discount)
             )
@@ -76,10 +76,14 @@ public class VideoGames {
 
     public double getAverageRating() {
         try {
-            return Double.parseDouble(averageRating);
+            return averageRating != null ? Double.parseDouble(averageRating) : 0.0;
         } catch (NumberFormatException e) {
             return 0.0;
         }
+    }
+    
+    public String getAverageRatingString() {
+        return averageRating != null ? averageRating : "No rating yet";
     }
 
     public String getReleaseDate() {

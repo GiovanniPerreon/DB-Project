@@ -52,8 +52,6 @@ public class Users {
             )
         );
     }
-
-    // Getters
     public int getUserID() {
         return userID;
     }
@@ -93,13 +91,11 @@ public class Users {
     public boolean isBlocked() {
         return is_blocked;
     }
-
     /**
      * Returns a string representation of all user types/roles
      */
     public String getUserTypes() {
         List<String> types = new ArrayList<>();
-        
         if (is_administrator) {
             types.add("Admin");
         }
@@ -113,7 +109,6 @@ public class Users {
         if (types.isEmpty()) {
             return "User";
         }
-        
         return String.join(", ", types);
     }
 

@@ -201,4 +201,11 @@ public interface Model {
      * @return list of achievements for the user
      */
     List<db_project.data.Achievements> getUserAchievements(int userId);
+    
+    /**
+     * Updates the average rating for a game based on all its reviews.
+     * @param gameId the game ID
+     * @return true if average rating was updated successfully, false otherwise
+     */
+    boolean updateGameAverageRating(int gameId);
 }

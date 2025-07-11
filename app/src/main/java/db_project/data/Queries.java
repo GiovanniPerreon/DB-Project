@@ -260,4 +260,15 @@ public final class Queries {
         )
         ORDER BY avg_rating ASC
         """;
+    
+    public static final String UPDATE_GAME_AVERAGE_RATING =
+        """
+        UPDATE videogames 
+        SET average_rating = (
+            SELECT AVG(rating) 
+            FROM reviews 
+            WHERE gameID = ?
+        ) 
+        WHERE gameID = ?
+        """;
 }
