@@ -7,8 +7,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -29,15 +29,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import javax.swing.SwingUtilities;
 import javax.swing.Box;
 import javax.swing.border.TitledBorder;
 
 import db_project.data.Users;
 import db_project.data.VideoGames;
-
+import db_project.data.Transactions;
 import db_project.data.Reviews;
-
+import db_project.data.Wishlists;
 import db_project.data.Achievements;
 
 public final class View {
@@ -45,7 +45,6 @@ public final class View {
     private Optional<Controller> controller;
     private final JFrame mainFrame;
     private JPanel mainPanel;
-    private JPanel loginPanel;
     private Users currentUser;
     
     // Admin and publisher buttons
@@ -94,15 +93,12 @@ public final class View {
     private void setupUI() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(new Color(248, 249, 250)); // Light background
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Header with modern styling
-        JLabel titleLabel = new JLabel("SteamDB - Videogames Store");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        titleLabel.setForeground(new Color(25, 25, 112)); // Midnight blue
+        // Header
+        JLabel titleLabel = new JLabel("SteamDB - Video Game Store");
+        titleLabel.setFont(titleLabel.getFont().deriveFont(24f));
         titleLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
         mainPanel.add(titleLabel);
 
         // User login section
@@ -111,95 +107,26 @@ public final class View {
         // Main menu (initially hidden)
         setupMainMenu();
 
-        mainFrame.getContentPane().setBackground(new Color(248, 249, 250));
         mainFrame.add(mainPanel);
         mainFrame.pack();
         mainFrame.setVisible(true);
     }
 
     private void setupLoginSection() {
-        loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
-            BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
-        loginPanel.setBackground(new Color(248, 249, 250)); // Light gray-blue background
+        JPanel loginPanel = new JPanel();
+        loginPanel.setBorder(BorderFactory.createTitledBorder("Login"));
         
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new java.awt.Insets(10, 10, 10, 10);
-        
-        // Title
-        JLabel loginTitle = new JLabel("SteamDB Login");
-        loginTitle.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        loginTitle.setForeground(new Color(25, 25, 112)); // Midnight blue
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        loginPanel.add(loginTitle, gbc);
-        
-        // Email label and field
-        JLabel emailLabel = new JLabel("Email:");
-        emailLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        emailLabel.setForeground(new Color(70, 130, 180));
-        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        loginPanel.add(emailLabel, gbc);
-        
-        JTextField emailField = new JTextField(25);
-        emailField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        emailField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        gbc.gridx = 1; gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        loginPanel.add(emailField, gbc);
-        
-        // Password label and field
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        passwordLabel.setForeground(new Color(70, 130, 180));
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.WEST;
-        loginPanel.add(passwordLabel, gbc);
-        
-        JTextField passwordField = new JTextField(25);
-        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        passwordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 1),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        gbc.gridx = 1; gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        loginPanel.add(passwordField, gbc);
-        
-        // Buttons panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        buttonPanel.setOpaque(false);
-        
+        JTextField emailField = new JTextField(20);
+        JTextField passwordField = new JTextField(20);
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        loginButton.setBackground(new Color(70, 130, 180));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setBorder(BorderFactory.createEmptyBorder(12, 25, 12, 25));
-        loginButton.setFocusPainted(false);
-        loginButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        
         JButton registerButton = new JButton("Register New User");
-        registerButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        registerButton.setBackground(new Color(34, 139, 34));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setBorder(BorderFactory.createEmptyBorder(12, 25, 12, 25));
-        registerButton.setFocusPainted(false);
-        registerButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         
-        buttonPanel.add(loginButton);
-        buttonPanel.add(registerButton);
-        
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        loginPanel.add(buttonPanel, gbc);
+        loginPanel.add(new JLabel("Email:"));
+        loginPanel.add(emailField);
+        loginPanel.add(new JLabel("Password:"));
+        loginPanel.add(passwordField);
+        loginPanel.add(loginButton);
+        loginPanel.add(registerButton);
         
         loginButton.addActionListener(e -> {
             String email = emailField.getText().trim();
@@ -218,179 +145,129 @@ public final class View {
 
     private void setupMainMenu() {
         JPanel menuPanel = new JPanel();
-        menuPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 2),
-            BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        ));
+        menuPanel.setBorder(BorderFactory.createTitledBorder("User Dashboard"));
         menuPanel.setLayout(new java.awt.BorderLayout());
         menuPanel.setVisible(false);
-        menuPanel.setBackground(new Color(248, 249, 250)); // Light background
         
         // Left panel - Navigation (Single column of buttons)
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setPreferredSize(new Dimension(280, 700));
-        leftPanel.setBackground(new Color(240, 248, 255)); // Alice blue
-        leftPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
         
-        // USER button (main dashboard view) - Primary color
-        JButton userButton = new JButton("USER DASHBOARD");
-        userButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-        userButton.setPreferredSize(new Dimension(200, 45));
-        userButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        userButton.setBackground(new Color(70, 130, 180)); // Steel blue
-        userButton.setForeground(Color.WHITE);
-        userButton.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-        userButton.setFocusPainted(false);
-        userButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        // USER button (main dashboard view)
+        JButton userButton = new JButton("USER");
+        userButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        userButton.setPreferredSize(new Dimension(200, 40));
         
         // VIDEOGAMES section
         JPanel videogamesPanel = new JPanel();
-        videogamesPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(34, 139, 34), 2), "VIDEOGAMES",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 12), new Color(34, 139, 34)
-        ));
+        videogamesPanel.setBorder(BorderFactory.createTitledBorder("VIDEOGAMES"));
         videogamesPanel.setLayout(new BoxLayout(videogamesPanel, BoxLayout.Y_AXIS));
-        videogamesPanel.setPreferredSize(new Dimension(200, 200));
-        videogamesPanel.setBackground(new Color(240, 255, 240)); // Honeydew
+        videogamesPanel.setPreferredSize(new Dimension(200, 180));
         
-        JButton viewAllGamesButton = createStyledButton("Browse Games", new Color(34, 139, 34));
-        JButton topGamesButton = createStyledButton("Top Games", new Color(34, 139, 34));
-        JButton mostBoughtButton = createStyledButton("Most Bought", new Color(34, 139, 34));
-        JButton leastRatedButton = createStyledButton("Lowest Rated Developers", new Color(34, 139, 34));
+        JButton viewAllGamesButton = new JButton("Browse Games");
+        JButton topGamesButton = new JButton("Top Games");
+        JButton mostBoughtButton = new JButton("Most Bought");
+        JButton leastRatedButton = new JButton("Lowest Rated Developers");
+        
+        // Make buttons bigger
+        viewAllGamesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        topGamesButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        mostBoughtButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        leastRatedButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         
         videogamesPanel.add(viewAllGamesButton);
-        videogamesPanel.add(javax.swing.Box.createVerticalStrut(8));
+        videogamesPanel.add(javax.swing.Box.createVerticalStrut(5));
         videogamesPanel.add(topGamesButton);
-        videogamesPanel.add(javax.swing.Box.createVerticalStrut(8));
+        videogamesPanel.add(javax.swing.Box.createVerticalStrut(5));
         videogamesPanel.add(mostBoughtButton);
-        videogamesPanel.add(javax.swing.Box.createVerticalStrut(8));
+        videogamesPanel.add(javax.swing.Box.createVerticalStrut(5));
         videogamesPanel.add(leastRatedButton);
         
         // OTHER section
         JPanel otherPanel = new JPanel();
-        otherPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(220, 20, 60), 2), "OTHER",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 12), new Color(220, 20, 60)
-        ));
+        otherPanel.setBorder(BorderFactory.createTitledBorder("OTHER"));
         otherPanel.setLayout(new BoxLayout(otherPanel, BoxLayout.Y_AXIS));
-        otherPanel.setPreferredSize(new Dimension(200, 140));
-        otherPanel.setBackground(new Color(255, 240, 245)); // Lavender blush
+        otherPanel.setPreferredSize(new Dimension(200, 120));
         
-        publisherOpsButton = createStyledButton("Publish Game", new Color(220, 20, 60));
-        adminOpsButton = createStyledButton("View All Users", new Color(220, 20, 60));
+        publisherOpsButton = new JButton("Publish Game");
+        adminOpsButton = new JButton("View All Users");
+        
+        // Make buttons bigger
+        publisherOpsButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        adminOpsButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         
         otherPanel.add(publisherOpsButton);
-        otherPanel.add(javax.swing.Box.createVerticalStrut(8));
+        otherPanel.add(javax.swing.Box.createVerticalStrut(5));
         otherPanel.add(adminOpsButton);
         
         // Add spacing between sections
         leftPanel.add(userButton);
-        leftPanel.add(javax.swing.Box.createVerticalStrut(15));
+        leftPanel.add(javax.swing.Box.createVerticalStrut(10));
         leftPanel.add(videogamesPanel);
-        leftPanel.add(javax.swing.Box.createVerticalStrut(15));
+        leftPanel.add(javax.swing.Box.createVerticalStrut(10));
         leftPanel.add(otherPanel);
         leftPanel.add(javax.swing.Box.createVerticalGlue());
         
         // Right panel - User Information / Game Browser
-        rightPanel = new JPanel();
-        rightPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 2), "USER",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 14), new Color(70, 130, 180)
-        ));
+        JPanel rightPanel = new JPanel();
+        rightPanel.setBorder(BorderFactory.createTitledBorder("USER"));
         rightPanel.setLayout(new java.awt.BorderLayout());
         rightPanel.setPreferredSize(new Dimension(600, 600));
-        rightPanel.setBackground(Color.WHITE);
         
         // Create card layout for switching between views
-        cardLayout = new java.awt.CardLayout();
-        cardPanel = new JPanel(cardLayout);
-        cardPanel.setBackground(Color.WHITE);
+        java.awt.CardLayout cardLayout = new java.awt.CardLayout();
+        JPanel cardPanel = new JPanel(cardLayout);
         
         // User Dashboard Panel (original 4-panel layout)
         JPanel userDashboardPanel = new JPanel();
-        userDashboardPanel.setLayout(new java.awt.GridLayout(2, 2, 15, 15));
-        userDashboardPanel.setBackground(Color.WHITE);
-        userDashboardPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        userDashboardPanel.setLayout(new java.awt.GridLayout(2, 2, 10, 10));
         
-        // Info Panel - Blue theme
+        // Info Panel
         JPanel infoPanel = new JPanel();
-        infoPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(70, 130, 180), 2), "INFO PANEL",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 12), new Color(70, 130, 180)
-        ));
+        infoPanel.setBorder(BorderFactory.createTitledBorder("INFO PANEL"));
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(new Color(240, 248, 255)); // Alice blue
         
         JLabel userInfoLabel = new JLabel("User Information");
-        userInfoLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        userInfoLabel.setForeground(new Color(25, 25, 112));
         JTextArea userInfoArea = new JTextArea(5, 20);
         userInfoArea.setEditable(false);
         userInfoArea.setOpaque(false);
         infoPanel.add(userInfoLabel);
         infoPanel.add(userInfoArea);
         
-        // Game Owned Panel - Green theme
+        // Game Owned Panel
         JPanel gameOwnedPanel = new JPanel();
-        gameOwnedPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(34, 139, 34), 2), "GAMES OWNED",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 12), new Color(34, 139, 34)
-        ));
+        gameOwnedPanel.setBorder(BorderFactory.createTitledBorder("GAME OWNED"));
         gameOwnedPanel.setLayout(new BoxLayout(gameOwnedPanel, BoxLayout.Y_AXIS));
-        gameOwnedPanel.setBackground(new Color(240, 255, 240)); // Honeydew
         
-        JButton viewCollectionButton = createStyledButton("View Collection", new Color(34, 139, 34));
+        JButton viewCollectionButton = new JButton("View Collection");
         JTextArea ownedGamesArea = new JTextArea(5, 20);
         ownedGamesArea.setEditable(false);
         ownedGamesArea.setOpaque(false);
-        ownedGamesArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         gameOwnedPanel.add(viewCollectionButton);
-        gameOwnedPanel.add(Box.createVerticalStrut(5));
         gameOwnedPanel.add(ownedGamesArea);
         
-        // Wishlist Panel - Purple theme
+        // Wishlist Panel
         JPanel wishlistPanel = new JPanel();
-        wishlistPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(147, 112, 219), 2), "WISHLIST",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 12), new Color(147, 112, 219)
-        ));
+        wishlistPanel.setBorder(BorderFactory.createTitledBorder("WISHLIST"));
         wishlistPanel.setLayout(new BoxLayout(wishlistPanel, BoxLayout.Y_AXIS));
-        wishlistPanel.setBackground(new Color(248, 248, 255)); // Ghost white
         
-        JButton viewWishlistButton = createStyledButton("View Wishlist", new Color(147, 112, 219));
+        JButton viewWishlistButton = new JButton("View Wishlist");
         JTextArea wishlistArea = new JTextArea(3, 20);
         wishlistArea.setEditable(false);
         wishlistArea.setOpaque(false);
-        wishlistArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         wishlistPanel.add(viewWishlistButton);
-        wishlistPanel.add(Box.createVerticalStrut(5));
         wishlistPanel.add(wishlistArea);
         
-        // Achievements Panel - Orange theme
+        // Achievements Panel
         JPanel achievementsPanel = new JPanel();
-        achievementsPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(255, 140, 0), 2), "ACHIEVEMENTS GOT",
-            TitledBorder.CENTER, TitledBorder.TOP,
-            new Font("Segoe UI", Font.BOLD, 12), new Color(255, 140, 0)
-        ));
+        achievementsPanel.setBorder(BorderFactory.createTitledBorder("ACHIEVEMENTS GOT"));
         achievementsPanel.setLayout(new BoxLayout(achievementsPanel, BoxLayout.Y_AXIS));
-        achievementsPanel.setBackground(new Color(255, 248, 220)); // Cornsilk
         
-        JButton viewAchievementsButton = createStyledButton("View Achievements", new Color(255, 140, 0));
+        JButton viewAchievementsButton = new JButton("View Achievements");
         JTextArea achievementsArea = new JTextArea(3, 20);
         achievementsArea.setEditable(false);
         achievementsArea.setOpaque(false);
-        achievementsArea.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         achievementsPanel.add(viewAchievementsButton);
         achievementsPanel.add(achievementsArea);
         
@@ -418,14 +295,14 @@ public final class View {
         filtersPanel.setLayout(new java.awt.FlowLayout());
         filtersPanel.setBorder(BorderFactory.createTitledBorder("Filters"));
         
-        JButton newestGamesButton = createCompactFilterButton("Newest");
-        JButton oldestGamesButton = createCompactFilterButton("Oldest");
-        JButton highestRatedButton = createCompactFilterButton("Top Rated");
-        JButton lowestRatedButton = createCompactFilterButton("Low Rated");
-        JButton mostExpensiveButton = createCompactFilterButton("Expensive");
-        JButton cheapestButton = createCompactFilterButton("Cheap");
-        JButton mostSoldButton = createCompactFilterButton("Best Selling");
-        JButton allGamesButton = createCompactFilterButton("All Games");
+        JButton newestGamesButton = new JButton("Newest");
+        JButton oldestGamesButton = new JButton("Oldest");
+        JButton highestRatedButton = new JButton("Top Rated");
+        JButton lowestRatedButton = new JButton("Low Rated");
+        JButton mostExpensiveButton = new JButton("Expensive");
+        JButton cheapestButton = new JButton("Cheap");
+        JButton mostSoldButton = new JButton("Best Selling");
+        JButton allGamesButton = new JButton("All Games");
         
         // Genre filter
         JComboBox<String> genreComboBox = new JComboBox<>();
@@ -480,8 +357,19 @@ public final class View {
         
         rightPanel.add(cardPanel, java.awt.BorderLayout.CENTER);
         
-        // Store references for buttons
+        // Store references
+        this.rightPanel = rightPanel;
+        this.cardLayout = cardLayout;
+        this.cardPanel = cardPanel;
         this.gameListPanel = gameListPanel;
+        this.newestGamesButton = newestGamesButton;
+        this.oldestGamesButton = oldestGamesButton;
+        this.highestRatedButton = highestRatedButton;
+        this.lowestRatedButton = lowestRatedButton;
+        this.mostExpensiveButton = mostExpensiveButton;
+        this.cheapestButton = cheapestButton;
+        this.mostSoldButton = mostSoldButton;
+        this.allGamesButton = allGamesButton;
         this.genreComboBox = genreComboBox;
         this.filtersPanel = filtersPanel;
         this.gameDetailPanel = gameDetailPanel;
@@ -556,21 +444,22 @@ public final class View {
     }
 
     private void showMainMenu() {
-        // Hide login panel and show main menu with user dashboard
+        // Hide login panel and show main menu panel
         for (java.awt.Component comp : mainPanel.getComponents()) {
-            comp.setVisible(false);
-        }
-        
-        // Show the main menu panel (navigation + card panel)
-        for (java.awt.Component comp : mainPanel.getComponents()) {
-            if (comp != loginPanel) {
-                comp.setVisible(true);
+            if (comp instanceof JPanel) {
+                JPanel panel = (JPanel) comp;
+                if (panel.getBorder() != null && panel.getBorder() instanceof TitledBorder) {
+                    TitledBorder titledBorder = (TitledBorder) panel.getBorder();
+                    String borderTitle = titledBorder.getTitle();
+                    
+                    if ("Login".equals(borderTitle)) {
+                        panel.setVisible(false);
+                    } else if ("User Dashboard".equals(borderTitle)) {
+                        panel.setVisible(true);
+                    }
+                }
             }
         }
-        
-        // Switch to user dashboard
-        cardLayout.show(cardPanel, "USER_DASHBOARD");
-        rightPanel.setBorder(BorderFactory.createTitledBorder("USER"));
         
         // Load user information into panels
         if (currentUser != null) {
@@ -1615,25 +1504,17 @@ public final class View {
         contentPanel.setOpaque(false);
         
         // Game title with larger, bold font
-        String title = game.getTitle();
-        if (title == null) {
-            title = "Unknown Title";
-        }
-        JLabel titleLabel = new JLabel(title);
+        JLabel titleLabel = new JLabel(game.getTitle());
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         titleLabel.setForeground(new Color(25, 25, 112)); // Midnight blue
         
         // Price with attractive styling
         JLabel priceLabel;
-        String price = game.getPrice();
-        if (price == null) {
-            priceLabel = new JLabel("N/A");
-            priceLabel.setForeground(new Color(128, 128, 128)); // Gray for unknown price
-        } else if (price.equals("0.00")) {
+        if (game.getPrice().equals("0.00")) {
             priceLabel = new JLabel("FREE");
             priceLabel.setForeground(new Color(34, 139, 34)); // Forest green for free games
         } else {
-            priceLabel = new JLabel("$" + price);
+            priceLabel = new JLabel("$" + game.getPrice());
             priceLabel.setForeground(new Color(220, 20, 60)); // Crimson for paid games
         }
         priceLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -1649,9 +1530,7 @@ public final class View {
         
         // Game description (truncated)
         String description = game.getDescription();
-        if (description == null) {
-            description = "No description available";
-        } else if (description.length() > 120) {
+        if (description != null && description.length() > 120) {
             description = description.substring(0, 120) + "...";
         }
         JLabel descLabel = new JLabel("<html><div style='width: 350px'>" + description + "</div></html>");
@@ -1659,11 +1538,7 @@ public final class View {
         descLabel.setForeground(new Color(105, 105, 105)); // Dim gray
         
         // Release date
-        String releaseDate = game.getReleaseDate();
-        if (releaseDate == null) {
-            releaseDate = "Unknown";
-        }
-        JLabel dateLabel = new JLabel("Released: " + releaseDate);
+        JLabel dateLabel = new JLabel("Released: " + game.getReleaseDate());
         dateLabel.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         dateLabel.setForeground(new Color(128, 128, 128)); // Gray
         
@@ -2005,7 +1880,7 @@ public final class View {
                 gameListPanel.add(noGamesLabel);
             } else {
                 for (Optional<db_project.data.VideoGames> gameOpt : games) {
-                                       if (gameOpt.isPresent()) {
+                    if (gameOpt.isPresent()) {
                         db_project.data.VideoGames game = gameOpt.get();
                         JPanel gamePanel = createGameListItem(game);
                         gameListPanel.add(gamePanel);
@@ -2023,58 +1898,5 @@ public final class View {
         
         gameListPanel.revalidate();
         gameListPanel.repaint();
-    }
-    
-    private JButton createStyledButton(String text, Color color) {
-        JButton button = new JButton(text);
-        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-        button.setPreferredSize(new Dimension(200, 35));
-        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        button.setBackground(color);
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        button.setFocusPainted(false);
-        button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        
-        // Hover effect
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                button.setBackground(color.darker());
-            }
-            
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                button.setBackground(color);
-            }
-        });
-        
-        return button;
-    }
-    
-    private JButton createCompactFilterButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-        button.setPreferredSize(new Dimension(70, 25)); // Smaller size
-        button.setBackground(new Color(70, 130, 180));
-        button.setForeground(Color.WHITE);
-        button.setBorder(BorderFactory.createEmptyBorder(3, 6, 3, 6));
-        button.setFocusPainted(false);
-        button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        
-        // Hover effect
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                button.setBackground(new Color(70, 130, 180).darker());
-            }
-            
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                button.setBackground(new Color(70, 130, 180));
-            }
-        });
-        
-        return button;
     }
 }

@@ -650,7 +650,7 @@ FROM (
     UNION ALL
     SELECT 2, 4
     UNION ALL
-    SELECT 5, 6
+    SELECT 3, 5
     UNION ALL
     SELECT 5, 7
     UNION ALL
@@ -1068,7 +1068,7 @@ WHERE EXISTS (
 );
 
 INSERT INTO achievements_user (achievementID, userID, gameID)
-SELECT a.achievementID, u.userID, a.gameID
+SELECT a.achievementID, a.userID, a.gameID
 FROM (
     SELECT 1 AS achievementID, 1 AS userID, 1 AS gameID
     UNION ALL
@@ -1078,7 +1078,7 @@ FROM (
     UNION ALL
     SELECT 1, 2, 3
     UNION ALL
-    SELECT 1 AS achievementID, 17 AS userID, 5 AS gameID
+    SELECT 1, 17, 5
     UNION ALL
     SELECT 2, 17, 5
     UNION ALL
@@ -1229,6 +1229,7 @@ WHERE EXISTS (
     WHERE t.userID = a.userID AND ti.gameID = a.gameID
 );
 
+-- Update average ratings based on the inserted reviews
 UPDATE videogames 
 SET average_rating = (
     SELECT ROUND(AVG(rating), 1)
