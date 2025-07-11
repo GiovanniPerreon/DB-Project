@@ -76,6 +76,9 @@ public class VideoGames {
 
     public double getAverageRating() {
         try {
+            if (averageRating == null || averageRating.trim().isEmpty()) {
+                return 0.0;
+            }
             return Double.parseDouble(averageRating);
         } catch (NumberFormatException e) {
             return 0.0;
