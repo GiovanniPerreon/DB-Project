@@ -22,7 +22,6 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('dev.laura@gmail.com', 'dev2024', 'Laura', 'Bianchi', '1989-08-20', false, false, true, false),
 ('dev.carlos@gmail.com', 'dev2024', 'Carlos', 'Garcia', '1991-05-07', false, false, true, false),
 ('dev.anna@gmail.com', 'dev2024', 'Anna', 'Mueller', '1987-10-25', false, false, true, false),
-
 -- Regular users (32 more to reach 50 total)
 ('gamer.alice@email.com', 'alice2024', 'Alice', 'Smith', '1995-02-14', false, false, false, false),
 ('gamer.bob@email.com', 'bob2024', 'Bob', 'Davis', '1993-07-19', false, false, false, false),
