@@ -155,11 +155,11 @@ public final class ViewManager {
     }
     
     void showMessage(String message) {
-        JOptionPane.showMessageDialog(mainFrame, message, "Information", JOptionPane.INFORMATION_MESSAGE);
+        UIStyler.showStyledMessage(mainFrame, message, "Information");
     }
     
     void showError(String message) {
-        JOptionPane.showMessageDialog(mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
+        UIStyler.showStyledError(mainFrame, message, "Error");
     }
     
     void showRegisterDialog() {

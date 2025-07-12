@@ -26,33 +26,15 @@ public class DialogManager {
     }
     
     public void showRegisterDialog() {
-        JTextField emailField = new JTextField(20);
-        JTextField passwordField = new JTextField(20);
-        JTextField nameField = new JTextField(20);
-        JTextField surnameField = new JTextField(20);
-        JTextField birthDateField = new JTextField(10);
+        UIStyler.RegistrationDialogResult result = UIStyler.showStyledRegistrationDialog(viewManager.getMainFrame());
         
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel("Email:"));
-        panel.add(emailField);
-        panel.add(new JLabel("Password:"));
-        panel.add(passwordField);
-        panel.add(new JLabel("Name:"));
-        panel.add(nameField);
-        panel.add(new JLabel("Surname:"));
-        panel.add(surnameField);
-        panel.add(new JLabel("Birth Date (YYYY-MM-DD):"));
-        panel.add(birthDateField);
-        
-        int result = JOptionPane.showConfirmDialog(viewManager.getMainFrame(), panel, "Register New User", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
+        if (result.submitted) {
             if (viewManager.getController().registerUser(
-                    emailField.getText(),
-                    passwordField.getText(),
-                    nameField.getText(),
-                    surnameField.getText(),
-                    birthDateField.getText())) {
+                    result.email,
+                    result.password,
+                    result.name,
+                    result.surname,
+                    result.birthDate)) {
                 viewManager.showMessage("User registered successfully!");
             } else {
                 viewManager.showError("Registration failed!");
@@ -61,10 +43,16 @@ public class DialogManager {
     }
     
     public void showBuyGameDialog() {
-        String gameIdStr = JOptionPane.showInputDialog(viewManager.getMainFrame(), "Enter Game ID to buy:");
-        if (gameIdStr != null) {
+        String gameIdStr = UIStyler.showStyledInput(
+            viewManager.getMainFrame(), 
+            "Enter the Game ID you wish to purchase:", 
+            "Buy Game", 
+            ""
+        );
+        
+        if (gameIdStr != null && !gameIdStr.trim().isEmpty()) {
             try {
-                int gameId = Integer.parseInt(gameIdStr);
+                int gameId = Integer.parseInt(gameIdStr.trim());
                 if (viewManager.getController().buyGame(viewManager.getCurrentUser(), gameId)) {
                     viewManager.showMessage("Game purchased successfully!");
                 } else {

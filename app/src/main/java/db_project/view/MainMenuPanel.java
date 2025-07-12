@@ -358,7 +358,7 @@ public class MainMenuPanel extends JPanel {
         collectionViewPanel.removeAll();
         
         // Back button
-        JButton backButton = new JButton("Back to Dashboard");
+        JButton backButton = UIStyler.createStyledButton("Back to Dashboard", UIStyler.STEEL_BLUE);
         backButton.addActionListener(e -> showUserDashboard());
         collectionViewPanel.add(backButton, BorderLayout.NORTH);
         
@@ -403,7 +403,7 @@ public class MainMenuPanel extends JPanel {
         wishlistViewPanel.removeAll();
         
         // Back button
-        JButton backButton = new JButton("Back to Dashboard");
+        JButton backButton = UIStyler.createStyledButton("Back to Dashboard", UIStyler.STEEL_BLUE);
         backButton.addActionListener(e -> showUserDashboard());
         wishlistViewPanel.add(backButton, BorderLayout.NORTH);
         
@@ -448,7 +448,7 @@ public class MainMenuPanel extends JPanel {
         achievementsViewPanel.removeAll();
         
         // Back button
-        JButton backButton = new JButton("Back to Dashboard");
+        JButton backButton = UIStyler.createStyledButton("Back to Dashboard", UIStyler.STEEL_BLUE);
         backButton.addActionListener(e -> showUserDashboard());
         achievementsViewPanel.add(backButton, BorderLayout.NORTH);
         
@@ -653,7 +653,7 @@ public class MainMenuPanel extends JPanel {
         gameDetailPanel.setLayout(new BorderLayout());
         
         // Back button
-        JButton backToGamesButton = new JButton("Back to Games");
+        JButton backToGamesButton = UIStyler.createStyledButton("Back to Games", UIStyler.STEEL_BLUE);
         backToGamesButton.addActionListener(e -> showGameBrowser());
         gameDetailPanel.add(backToGamesButton, BorderLayout.NORTH);
         
@@ -709,8 +709,8 @@ public class MainMenuPanel extends JPanel {
         boolean isDeveloper = user != null && viewManager.getController().isDeveloperOfGame(user, game.getGameID());
         if (isAdmin || isDeveloper) {
             JPanel genreButtonPanel = new JPanel(new FlowLayout());
-            JButton addGenreButton = new JButton("Add Genre");
-            JButton removeGenreButton = new JButton("Remove Genre");
+            JButton addGenreButton = UIStyler.createStyledButton("Add Genre", UIStyler.FOREST_GREEN);
+            JButton removeGenreButton = UIStyler.createStyledButton("Remove Genre", UIStyler.CRIMSON);
             
             addGenreButton.addActionListener(e -> showAddGenreDialog(game));
             removeGenreButton.addActionListener(e -> showRemoveGenreDialog(game));
@@ -797,9 +797,7 @@ public class MainMenuPanel extends JPanel {
         if (currentUser != null) {
             // Buy button if user doesn't own the game
             if (!viewManager.getController().userOwnsGame(currentUser, game.getGameID())) {
-                JButton buyButton = new JButton("Buy Game");
-                buyButton.setBackground(new Color(34, 139, 34));
-                buyButton.setForeground(Color.WHITE);
+                JButton buyButton = UIStyler.createStyledButton("Buy Game", UIStyler.FOREST_GREEN);
                 buyButton.addActionListener(e -> {
                     if (viewManager.getController().buyGame(currentUser, game.getGameID())) {
                         viewManager.showMessage("Game purchased successfully!");
@@ -813,9 +811,7 @@ public class MainMenuPanel extends JPanel {
             
             // Wishlist buttons
             if (viewManager.getController().canAddToWishlist(currentUser, game.getGameID())) {
-                JButton addToWishlistButton = new JButton("Add to Wishlist");
-                addToWishlistButton.setBackground(new Color(147, 112, 219));
-                addToWishlistButton.setForeground(Color.WHITE);
+                JButton addToWishlistButton = UIStyler.createStyledButton("Add to Wishlist", UIStyler.MEDIUM_SLATE_BLUE);
                 addToWishlistButton.addActionListener(e -> {
                     if (viewManager.getController().addToWishlist(currentUser, game.getGameID())) {
                         viewManager.showMessage("Added to wishlist!");
@@ -826,9 +822,7 @@ public class MainMenuPanel extends JPanel {
                 });
                 actionButtonPanel.add(addToWishlistButton);
             } else if (viewManager.getController().isGameInWishlist(currentUser, game.getGameID())) {
-                JButton removeFromWishlistButton = new JButton("Remove from Wishlist");
-                removeFromWishlistButton.setBackground(new Color(220, 20, 60));
-                removeFromWishlistButton.setForeground(Color.WHITE);
+                JButton removeFromWishlistButton = UIStyler.createStyledButton("Remove from Wishlist", UIStyler.CRIMSON);
                 removeFromWishlistButton.addActionListener(e -> {
                     if (viewManager.getController().removeFromWishlist(currentUser, game.getGameID())) {
                         viewManager.showMessage("Removed from wishlist!");
@@ -842,51 +836,19 @@ public class MainMenuPanel extends JPanel {
             
             // Review button if user owns the game and can add review
             if (viewManager.getController().canUserAddReview(currentUser, game.getGameID())) {
-                JButton addReviewButton = new JButton("Add Review");
-                addReviewButton.setBackground(new Color(255, 140, 0));
-                addReviewButton.setForeground(Color.WHITE);
+                JButton addReviewButton = UIStyler.createStyledButton("Add Review", UIStyler.DARK_ORANGE);
                 addReviewButton.addActionListener(e -> {
-                    // Show single panel review dialog
-                    javax.swing.JTextField ratingField = new javax.swing.JTextField(10);
-                    javax.swing.JTextArea commentArea = new javax.swing.JTextArea(5, 20);
-                    commentArea.setLineWrap(true);
-                    commentArea.setWrapStyleWord(true);
-                    
-                    javax.swing.JPanel panel = new javax.swing.JPanel();
-                    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-                    panel.add(new javax.swing.JLabel("Rating (1-5):"));
-                    panel.add(ratingField);
-                    panel.add(javax.swing.Box.createVerticalStrut(10));
-                    panel.add(new javax.swing.JLabel("Comment:"));
-                    panel.add(new javax.swing.JScrollPane(commentArea));
-                    
-                    int result = javax.swing.JOptionPane.showConfirmDialog(
+                    UIStyler.ReviewDialogResult result = UIStyler.showStyledReviewDialog(
                         viewManager.getMainFrame(), 
-                        panel, 
-                        "Add Review", 
-                        javax.swing.JOptionPane.OK_CANCEL_OPTION
+                        game.getTitle()
                     );
                     
-                    if (result == javax.swing.JOptionPane.OK_OPTION) {
-                        try {
-                            int rating = Integer.parseInt(ratingField.getText());
-                            if (rating >= 1 && rating <= 5) {
-                                String comment = commentArea.getText().trim();
-                                if (!comment.isEmpty()) {
-                                    if (viewManager.getController().addReview(currentUser, game.getGameID(), rating, comment)) {
-                                        viewManager.showMessage("Review added successfully!");
-                                        showGameDetailsView(game); // Refresh to show the new review
-                                    } else {
-                                        viewManager.showError("Failed to add review!");
-                                    }
-                                } else {
-                                    viewManager.showError("Please enter a comment for your review.");
-                                }
-                            } else {
-                                viewManager.showError("Rating must be between 1 and 5!");
-                            }
-                        } catch (NumberFormatException ex) {
-                            viewManager.showError("Invalid rating! Please enter a number between 1 and 5.");
+                    if (result.submitted) {
+                        if (viewManager.getController().addReview(currentUser, game.getGameID(), result.rating, result.comment)) {
+                            viewManager.showMessage("Review added successfully!");
+                            showGameDetailsView(game); // Refresh to show the new review
+                        } else {
+                            viewManager.showError("Failed to add review!");
                         }
                     }
                 });
@@ -930,12 +892,10 @@ public class MainMenuPanel extends JPanel {
         }
         
         String[] genreArray = availableGenres.toArray(new String[0]);
-        String selectedGenre = (String) javax.swing.JOptionPane.showInputDialog(
+        String selectedGenre = UIStyler.showStyledSelection(
             viewManager.getMainFrame(),
             "Select a genre to add to " + game.getTitle() + ":",
             "Add Genre",
-            javax.swing.JOptionPane.QUESTION_MESSAGE,
-            null,
             genreArray,
             genreArray[0]
         );
@@ -962,12 +922,10 @@ public class MainMenuPanel extends JPanel {
         }
         
         String[] genreArray = currentGenres.toArray(new String[0]);
-        String selectedGenre = (String) javax.swing.JOptionPane.showInputDialog(
+        String selectedGenre = UIStyler.showStyledSelection(
             viewManager.getMainFrame(),
             "Select a genre to remove from " + game.getTitle() + ":",
             "Remove Genre",
-            javax.swing.JOptionPane.QUESTION_MESSAGE,
-            null,
             genreArray,
             genreArray[0]
         );
@@ -989,7 +947,7 @@ public class MainMenuPanel extends JPanel {
         allUsersBrowserPanel.removeAll();
         
         // Back button
-        JButton backButton = new JButton("Back to Dashboard");
+        JButton backButton = UIStyler.createStyledButton("Back to Dashboard", UIStyler.STEEL_BLUE);
         backButton.addActionListener(e -> showUserDashboard());
         
         // User list panel with scroll

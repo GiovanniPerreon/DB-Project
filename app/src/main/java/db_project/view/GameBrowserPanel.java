@@ -11,13 +11,11 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import db_project.data.VideoGames;
-import db_project.data.Users;
 
 /**
  * Panel for browsing and filtering games
@@ -44,7 +42,7 @@ public class GameBrowserPanel extends JPanel {
         gameListScrollPane.setPreferredSize(new Dimension(580, 500));
         
         // Back button
-        JButton backToUserButton = new JButton("Back to User Dashboard");
+        JButton backToUserButton = UIStyler.createStyledButton("Back to User Dashboard", UIStyler.STEEL_BLUE);
         backToUserButton.addActionListener(e -> {
             // This should be handled by MainMenuPanel
             // viewManager.showUserDashboard();
@@ -78,7 +76,7 @@ public class GameBrowserPanel extends JPanel {
         JButton allGamesButton = UIStyler.createCompactFilterButton("All Games");
         
         // Genre filter
-        genreComboBox = new JComboBox<>();
+        genreComboBox = UIStyler.createStyledComboBox();
         genreComboBox.addItem("Select Genre...");
         // Genres will be loaded when controller is set
         
@@ -91,6 +89,12 @@ public class GameBrowserPanel extends JPanel {
         filtersPanel.add(cheapestButton);
         filtersPanel.add(mostSoldButton);
         filtersPanel.add(new JLabel("|"));
+        
+        // Create a styled label for genre filter
+        JLabel genreLabel = new JLabel("Filter by Genre:");
+        genreLabel.setFont(UIStyler.LABEL_FONT);
+        genreLabel.setForeground(UIStyler.MIDNIGHT_BLUE);
+        filtersPanel.add(genreLabel);
         filtersPanel.add(genreComboBox);
         filtersPanel.add(new JLabel("|"));
         filtersPanel.add(allGamesButton);
