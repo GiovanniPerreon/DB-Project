@@ -266,9 +266,9 @@ public final class DBModel implements Model {
             stmt.setDouble(3, price);
             stmt.setString(4, description);
             stmt.setString(5, requirements);
-            stmt.setDouble(6, 2.5); // Use default rating of 2.5
+            stmt.setDouble(6, 2.5);
             stmt.setString(7, releaseDate);
-            stmt.setInt(8, 0); // discount starts at 0
+            stmt.setInt(8, 0);
             
             System.out.println("DEBUG: Executing query: " + Queries.ADD_VIDEOGAME);
             int rowsAffected = stmt.executeUpdate();

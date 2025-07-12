@@ -60,73 +60,73 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 INSERT INTO videogames (publisherID, title, price, description, requirements, release_date, discount)
 SELECT u.userID, v.title, v.price, v.description, v.requirements, v.release_date, v.discount
 FROM (
-    SELECT 1 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'Un gioco di ruolo open-world con una trama avvincente.' AS description,
+    SELECT 1 AS publisherID, 'The Witcher 3: Wild Hunt' AS title, 49.99 AS price, 'An open-world role-playing game with an engaging storyline.' AS description,
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970' AS requirements, '2015-05-19' AS release_date, 0 AS discount
     UNION ALL
-    SELECT 2, 'Among Us', 4.99, 'Un gioco multiplayer di deduzione sociale ambientato nello spazio.',
+    SELECT 2, 'Among Us', 4.99, 'A multiplayer social deduction game set in space.',
            'CPU: Intel Core i3, RAM: 2GB, GPU: NVIDIA GTX 660', '2018-06-15', 0
     UNION ALL
-    SELECT 1, 'Sekiro: Shadows Die Twice', 59.99, 'Un gioco di azione-avventura con combattimenti impegnativi e una trama avvincente.',
+    SELECT 1, 'Sekiro: Shadows Die Twice', 59.99, 'An action-adventure game with challenging combat and an engaging storyline.',
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2019-03-22', 20
     UNION ALL
-    SELECT 1, 'Elden Ring', 59.99, 'Un gioco di ruolo d''azione con un vasto mondo aperto e combattimenti impegnativi.',
+    SELECT 1, 'Elden Ring', 59.99, 'An action role-playing game with a vast open world and challenging combat.',
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2022-02-25', 30
     UNION ALL
-    SELECT 2, 'Dragon Age: Veilguard', 39.99, 'Un gioco di ruolo fantasy con una trama avvincente e personaggi memorabili.',
+    SELECT 2, 'Dragon Age: Veilguard', 39.99, 'A fantasy role-playing game with an engaging storyline and memorable characters.',
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2023-05-10', 90
     UNION ALL
-    SELECT 7, 'Assassin''s Creed Valhalla', 59.99, 'Vivi l''epoca d''oro dei vichinghi e guida Eivor in una saga leggendaria.',
+    SELECT 7, 'Assassin''s Creed Valhalla', 59.99, 'Experience the golden age of Vikings and lead Eivor in a legendary saga.',
            'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', '2020-11-10', 25
     UNION ALL
-    SELECT 8, 'Call of Duty: Modern Warfare II', 69.99, 'Il sequel del rinomato Call of Duty: Modern Warfare con campagna e multiplayer.',
+    SELECT 8, 'Call of Duty: Modern Warfare II', 69.99, 'The sequel to the renowned Call of Duty: Modern Warfare with campaign and multiplayer.',
            'CPU: Intel Core i5-6600K, RAM: 12GB, GPU: NVIDIA GTX 1060', '2022-10-28', 15
     UNION ALL
-    SELECT 9, 'Hollow Knight', 14.99, 'Un classico Metroidvania 2D con atmosfera gotica e gameplay impegnativo.',
+    SELECT 9, 'Hollow Knight', 14.99, 'A classic 2D Metroidvania with gothic atmosphere and challenging gameplay.',
            'CPU: Intel Core 2 Duo E5200, RAM: 4GB, GPU: GeForce 9800GTX', '2017-02-24', 0
     UNION ALL
-    SELECT 10, 'The Last of Us Part II', 39.99, 'Sequel dell''acclamato survival horror post-apocalittico.',
+    SELECT 10, 'The Last of Us Part II', 39.99, 'Sequel to the acclaimed post-apocalyptic survival horror.',
            'CPU: Intel Core i5-8400, RAM: 8GB, GPU: NVIDIA GTX 1060', '2020-06-19', 10
     UNION ALL
-    SELECT 11, 'The Elder Scrolls V: Skyrim', 19.99, 'Il leggendario RPG fantasy open-world ambientato in Skyrim.',
+    SELECT 11, 'The Elder Scrolls V: Skyrim', 19.99, 'The legendary open-world fantasy RPG set in Skyrim.',
            'CPU: Intel Core i5-750, RAM: 4GB, GPU: NVIDIA GTX 470', '2011-11-11', 0
     UNION ALL
-    SELECT 12, 'Half-Life: Alyx', 59.99, 'L''attesissimo ritorno della serie Half-Life in realtà virtuale.',
+    SELECT 12, 'Half-Life: Alyx', 59.99, 'The long-awaited return of the Half-Life series in virtual reality.',
            'CPU: Intel Core i5-7500, RAM: 12GB, GPU: NVIDIA GTX 1060', '2020-03-23', 20
     UNION ALL
-    SELECT 7, 'Far Cry 6', 49.99, 'Combatti la dittatura nell''isola tropicale fittizia di Yara.',
+    SELECT 7, 'Far Cry 6', 49.99, 'Fight dictatorship on the fictional tropical island of Yara.',
            'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', '2021-10-07', 30
     UNION ALL
-    SELECT 8, 'Overwatch 2', 0.00, 'Il sequel free-to-play del famoso hero shooter di Blizzard.',
+    SELECT 8, 'Overwatch 2', 0.00, 'The free-to-play sequel to Blizzard''s famous hero shooter.',
            'CPU: Intel Core i3, RAM: 6GB, GPU: NVIDIA GTX 600', '2022-10-04', 0
     UNION ALL
-    SELECT 9, 'Celeste', 19.99, 'Un platformer challenging con una storia toccante sulla salute mentale.',
+    SELECT 9, 'Celeste', 19.99, 'A challenging platformer with a touching story about mental health.',
            'CPU: Intel Core 2 Duo E5200, RAM: 2GB, GPU: GeForce 9800GTX', '2018-01-25', 0
     UNION ALL
-    SELECT 10, 'Uncharted 4: A Thief''s End', 19.99, 'L''ultima avventura di Nathan Drake piena di azione e scoperte.',
+    SELECT 10, 'Uncharted 4: A Thief''s End', 19.99, 'Nathan Drake''s final adventure full of action and discoveries.',
            'CPU: Intel Core i5-4430, RAM: 8GB, GPU: NVIDIA GTX 960', '2016-05-10', 0
     UNION ALL
-    SELECT 11, 'Fallout 4', 29.99, 'Survival RPG post-apocalittico ambientato nella Boston devastata.',
+    SELECT 11, 'Fallout 4', 29.99, 'Post-apocalyptic survival RPG set in devastated Boston.',
            'CPU: Intel Core i5-2300, RAM: 8GB, GPU: NVIDIA GTX 550 Ti', '2015-11-10', 0
     UNION ALL
-    SELECT 12, 'Portal 2', 9.99, 'Il sequel del rivoluzionario puzzle game con meccaniche innovative.',
+    SELECT 12, 'Portal 2', 9.99, 'The sequel to the revolutionary puzzle game with innovative mechanics.',
            'CPU: Intel Core 2 Duo E6600, RAM: 2GB, GPU: NVIDIA GeForce 7600GS', '2011-04-19', 0
     UNION ALL
-    SELECT 9, 'Hades', 24.99, 'Roguelike isometrico ambientato negli Inferi della mitologia greca.',
+    SELECT 9, 'Hades', 24.99, 'Isometric roguelike set in the Underworld of Greek mythology.',
            'CPU: Dual Core 3.0ghz, RAM: 4GB, GPU: DirectX 10 compatible', '2020-09-17', 0
     UNION ALL
-    SELECT 7, 'Watch Dogs: Legion', 39.99, 'Hacker cyberpunk ambientato in una Londra distopica.',
+    SELECT 7, 'Watch Dogs: Legion', 39.99, 'Cyberpunk hacker game set in dystopian London.',
            'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', '2020-10-29', 40
     UNION ALL
-    SELECT 8, 'Diablo IV', 69.99, 'Il ritorno della leggendaria serie action RPG di Blizzard.',
+    SELECT 8, 'Diablo IV', 69.99, 'The return of Blizzard''s legendary action RPG series.',
            'CPU: Intel Core i5-2500K, RAM: 8GB, GPU: NVIDIA GTX 660', '2023-06-06', 0
     UNION ALL
-    SELECT 12, 'Counter-Strike 2', 0.00, 'Il nuovo capitolo del leggendario FPS competitivo.',
+    SELECT 12, 'Counter-Strike 2', 0.00, 'The new chapter of the legendary competitive FPS.',
            'CPU: Intel Core i5-750, RAM: 8GB, GPU: NVIDIA GTX 1060', '2023-09-27', 0
     UNION ALL
-    SELECT 1, 'Cyberpunk 2077', 59.99, 'Un RPG open-world futuristico con una trama complessa.' AS description,
+    SELECT 1, 'Cyberpunk 2077', 59.99, 'A futuristic open-world RPG with a complex storyline.' AS description,
            'CPU: Intel Core i7, RAM: 16GB, GPU: NVIDIA RTX 2060' AS requirements, '2020-12-10' AS release_date, 10 AS discount
     UNION ALL
-    SELECT 2, 'Stardew Valley', 14.99, 'Un simulatore di vita agricola con elementi RPG.',
+    SELECT 2, 'Stardew Valley', 14.99, 'A farming life simulator with RPG elements.',
            'CPU: Intel Core 2 Duo, RAM: 2GB, GPU: Intel HD Graphics 3000', '2016-02-26', 0
 ) v
 JOIN users u ON u.userID = v.publisherID
@@ -149,109 +149,109 @@ FROM (
     UNION ALL
     SELECT 15, 6
     UNION ALL
-    SELECT 16, 7  -- Anna develops Hollow Knight
+    SELECT 16, 7
     UNION ALL
-    SELECT 9, 7   -- Indie studio also develops Hollow Knight
+    SELECT 9, 7
     UNION ALL
-    SELECT 10, 8  -- Naughty Dog develops The Last of Us Part II
+    SELECT 10, 8
     UNION ALL
-    SELECT 13, 9  -- Marco develops Skyrim
+    SELECT 13, 9
     UNION ALL
-    SELECT 14, 9  -- Laura also develops Skyrim
+    SELECT 14, 9
     UNION ALL
-    SELECT 12, 10 -- Valve develops Half-Life: Alyx
+    SELECT 12, 10
     UNION ALL
-    SELECT 15, 11 -- Carlos develops Far Cry 6
+    SELECT 15, 11
     UNION ALL
-    SELECT 16, 12 -- Anna develops Overwatch 2
+    SELECT 16, 12
     UNION ALL
-    SELECT 9, 13  -- Indie studio develops Celeste
+    SELECT 9, 13
     UNION ALL
-    SELECT 10, 14 -- Naughty Dog develops Uncharted 4
+    SELECT 10, 14
     UNION ALL
-    SELECT 11, 15 -- Bethesda develops Fallout 4
+    SELECT 11, 15
     UNION ALL
-    SELECT 12, 16 -- Valve develops Portal 2
+    SELECT 12, 16
     UNION ALL
-    SELECT 9, 17  -- Indie studio develops Hades
+    SELECT 9, 17
     UNION ALL
-    SELECT 13, 18 -- Marco develops Watch Dogs: Legion
+    SELECT 13, 18
     UNION ALL
-    SELECT 15, 19 -- Carlos develops Diablo IV
+    SELECT 15, 19
     UNION ALL
-    SELECT 12, 20 -- Valve develops Counter-Strike 2
+    SELECT 12, 20
 ) d
 JOIN users u ON d.userID = u.userID
 JOIN videogames g ON d.gameID = g.gameID
 WHERE u.is_developer = TRUE;
 
 INSERT INTO genres (genre, description) VALUES
-('Azione', 'Giochi che enfatizzano il combattimento e l''azione rapida.'),
-('Avventura', 'Giochi che si concentrano sull''esplorazione e la narrazione.'),
-('RPG', 'Giochi di ruolo con elementi di personalizzazione del personaggio.'),
-('Strategia', 'Giochi che richiedono pianificazione e tattica.'),
-('Simulazione', 'Giochi che simulano situazioni reali o immaginarie.'),
-('Sparatutto', 'Giochi che si concentrano sul combattimento con armi da fuoco.'),
-('Survival', 'Giochi che enfatizzano la sopravvivenza in ambienti ostili.'),
-('Horror', 'Giochi progettati per spaventare e creare tensione.'),
-('Sport', 'Simulazioni di sport reali o fantastici.'),
-('Corsa', 'Giochi di corse con veicoli di vario tipo.'),
-('Puzzle', 'Giochi che richiedono risoluzione di enigmi e ragionamento logico.');
+('Action', 'Games that emphasize combat and fast-paced action.'),
+('Adventure', 'Games that focus on exploration and storytelling.'),
+('RPG', 'Role-playing games with character customization elements.'),
+('Strategy', 'Games that require planning and tactics.'),
+('Simulation', 'Games that simulate real or imaginary situations.'),
+('Shooter', 'Games that focus on combat with firearms.'),
+('Survival', 'Games that emphasize survival in hostile environments.'),
+('Horror', 'Games designed to scare and create tension.'),
+('Sports', 'Simulations of real or fantasy sports.'),
+('Racing', 'Racing games with various types of vehicles.'),
+('Puzzle', 'Games that require solving puzzles and logical reasoning.');
 
 INSERT INTO videogame_genres (gameID, genre)
 SELECT g.gameID, v.genre
 FROM (
-    SELECT 1 AS gameID, 'Azione' AS genre
+    SELECT 1 AS gameID, 'Action' AS genre
     UNION ALL
-    SELECT 1, 'Avventura'
+    SELECT 1, 'Adventure'
     UNION ALL
-    SELECT 2, 'Azione'
+    SELECT 2, 'Action'
     UNION ALL
-    SELECT 2, 'Strategia'
+    SELECT 2, 'Strategy'
     UNION ALL
     SELECT 3, 'RPG'
     UNION ALL
     SELECT 4, 'RPG'
     UNION ALL
-    SELECT 5 AS gameID, 'Azione' AS genre
+    SELECT 5 AS gameID, 'Action' AS genre
     UNION ALL
-    SELECT 5, 'Avventura'
+    SELECT 5, 'Adventure'
     UNION ALL
-    SELECT 6, 'Sparatutto'
+    SELECT 6, 'Shooter'
     UNION ALL
-    SELECT 6, 'Azione'
+    SELECT 6, 'Action'
     UNION ALL
-    SELECT 7, 'Avventura'
+    SELECT 7, 'Adventure'
     UNION ALL
-    SELECT 7, 'Azione'
+    SELECT 7, 'Action'
     UNION ALL
-    SELECT 8, 'Azione'
+    SELECT 8, 'Action'
     UNION ALL
     SELECT 8, 'Survival'
     UNION ALL
     SELECT 9, 'RPG'
     UNION ALL
-    SELECT 9, 'Avventura'
+    SELECT 9, 'Adventure'
     UNION ALL
-    SELECT 10, 'Sparatutto'
+    SELECT 10, 'Shooter'
     UNION ALL
-    SELECT 10, 'Azione'
+    SELECT 10, 'Action'
     UNION ALL
-    SELECT 11, 'Azione'
+    SELECT 11, 'Action'
     UNION ALL
-    SELECT 11, 'Avventura'
+    SELECT 11, 'Adventure'
     UNION ALL
-    SELECT 12, 'Sparatutto'
+    SELECT 12, 'Shooter'
     UNION ALL
-    SELECT 12, 'Azione'
+    SELECT 12, 'Action'
     UNION ALL
-    SELECT 13, 'Azione'
+    SELECT 13, 'Action'
     UNION ALL
-    SELECT 13, 'Avventura'
+    SELECT 13, 'Adventure'
     UNION ALL
-    SELECT 14, 'Azione'
+    SELECT 14, 'Action'
     UNION ALL
-    SELECT 14, 'Avventura'
+    SELECT 14, 'Adventure'
     UNION ALL
     SELECT 15, 'RPG'
     UNION ALL
@@ -259,23 +259,23 @@ FROM (
     UNION ALL
     SELECT 16, 'Puzzle'
     UNION ALL
-    SELECT 16, 'Azione'
+    SELECT 16, 'Action'
     UNION ALL
-    SELECT 17, 'Azione'
+    SELECT 17, 'Action'
     UNION ALL
     SELECT 17, 'RPG'
     UNION ALL
-    SELECT 18, 'Azione'
+    SELECT 18, 'Action'
     UNION ALL
-    SELECT 18, 'Avventura'
+    SELECT 18, 'Adventure'
     UNION ALL
     SELECT 19, 'RPG'
     UNION ALL
-    SELECT 19, 'Azione'
+    SELECT 19, 'Action'
     UNION ALL
-    SELECT 20, 'Sparatutto'
+    SELECT 20, 'Shooter'
     UNION ALL
-    SELECT 20, 'Strategia'
+    SELECT 20, 'Strategy'
 ) v
 JOIN videogames g ON v.gameID = g.gameID;
 
@@ -393,53 +393,53 @@ JOIN videogames g ON l.gameID = g.gameID;
 INSERT INTO achievements (achievementID, gameID, title, description)
 SELECT a.achievementID, g.gameID, a.title, a.description
 FROM (
-    SELECT 1 AS achievementID, 1 AS gameID, 'Inizia l''avventura' AS title, 'Completa il tutorial iniziale.' AS description
+    SELECT 1 AS achievementID, 1 AS gameID, 'Start the Adventure' AS title, 'Complete the initial tutorial.' AS description
     UNION ALL
-    SELECT 2, 1, 'Maestro delle spade', 'Sconfiggi 100 nemici con la spada.'
+    SELECT 2, 1, 'Sword Master', 'Defeat 100 enemies with a sword.'
     UNION ALL
-    SELECT 1, 2, 'Stratega Supremo', 'Vinci una partita in modalità strategia senza perdere una torre.'
+    SELECT 1, 2, 'Supreme Strategist', 'Win a strategy mode match without losing a tower.'
     UNION ALL
-    SELECT 1, 3, 'Cacciatore di draghi', 'Sconfiggi un drago leggendario.'
+    SELECT 1, 3, 'Dragon Hunter', 'Defeat a legendary dragon.'
     UNION ALL
-    SELECT 1, 4, 'Eroe del regno', 'Completa la campagna principale.'
+    SELECT 1, 4, 'Hero of the Realm', 'Complete the main campaign.'
     UNION ALL
-    SELECT 1, 5, 'Vichingo Leggendario', 'Completa la storia principale di Valhalla.'
+    SELECT 1, 5, 'Legendary Viking', 'Complete the main story of Valhalla.'
     UNION ALL
-    SELECT 2, 5, 'Esploratore del Nord', 'Scopri tutte le regioni dell''Inghilterra.'
+    SELECT 2, 5, 'Northern Explorer', 'Discover all regions of England.'
     UNION ALL
-    SELECT 1, 6, 'Soldato d''Elite', 'Completa la campagna in difficoltà Veterano.'
+    SELECT 1, 6, 'Elite Soldier', 'Complete the campaign on Veteran difficulty.'
     UNION ALL
-    SELECT 2, 6, 'Operatore Tattico', 'Vinci 50 partite multiplayer.'
+    SELECT 2, 6, 'Tactical Operator', 'Win 50 multiplayer matches.'
     UNION ALL
-    SELECT 1, 7, 'Cavaliere dell''Ombra', 'Completa il gioco senza morire.'
+    SELECT 1, 7, 'Shadow Knight', 'Complete the game without dying.'
     UNION ALL
-    SELECT 1, 8, 'Sopravvissuto', 'Completa la storia di Ellie e Abby.'
+    SELECT 1, 8, 'Survivor', 'Complete the story of Ellie and Abby.'
     UNION ALL
-    SELECT 1, 9, 'Dovahkiin', 'Completa la missione principale di Skyrim.'
+    SELECT 1, 9, 'Dovahkiin', 'Complete the main quest of Skyrim.'
     UNION ALL
-    SELECT 2, 9, 'Maestro di Tutte le Arti', 'Raggiungi il livello 100 in tutte le abilità.'
+    SELECT 2, 9, 'Master of All Arts', 'Reach level 100 in all skills.'
     UNION ALL
-    SELECT 1, 10, 'Benvenuto nella Resistenza', 'Completa il prologo di Half-Life: Alyx.'
+    SELECT 1, 10, 'Welcome to the Resistance', 'Complete the prologue of Half-Life: Alyx.'
     UNION ALL
-    SELECT 1, 11, 'Rivoluzionario', 'Libera Yara dalla dittatura.'
+    SELECT 1, 11, 'Revolutionary', 'Free Yara from dictatorship.'
     UNION ALL
-    SELECT 1, 12, 'Eroe di Overwatch', 'Vinci la tua prima partita competitiva.'
+    SELECT 1, 12, 'Overwatch Hero', 'Win your first competitive match.'
     UNION ALL
-    SELECT 1, 13, 'Scalatore Supremo', 'Completa tutti i livelli di Celeste.'
+    SELECT 1, 13, 'Supreme Climber', 'Complete all levels of Celeste.'
     UNION ALL
-    SELECT 1, 14, 'Cacciatore di Tesori', 'Trova tutti i tesori nascosti.'
+    SELECT 1, 14, 'Treasure Hunter', 'Find all hidden treasures.'
     UNION ALL
-    SELECT 1, 15, 'Generale della Minutemen', 'Diventa il leader della fazione Minutemen.'
+    SELECT 1, 15, 'Minutemen General', 'Become the leader of the Minutemen faction.'
     UNION ALL
-    SELECT 1, 16, 'Genio dei Portali', 'Completa tutti i test di Portal 2.'
+    SELECT 1, 16, 'Portal Genius', 'Complete all Portal 2 tests.'
     UNION ALL
-    SELECT 1, 17, 'Figlio degli Inferi', 'Completa la tua prima fuga da Hades.'
+    SELECT 1, 17, 'Son of the Underworld', 'Complete your first escape from Hades.'
     UNION ALL
-    SELECT 1, 18, 'Hacker Supremo', 'Completa tutte le missioni principali.'
+    SELECT 1, 18, 'Supreme Hacker', 'Complete all main missions.'
     UNION ALL
-    SELECT 1, 19, 'Cacciatore di Demoni', 'Raggiungi il livello massimo.'
+    SELECT 1, 19, 'Demon Hunter', 'Reach maximum level.'
     UNION ALL
-    SELECT 1, 20, 'Leggenda Globale', 'Raggiungi il grado Global Elite.'
+    SELECT 1, 20, 'Global Legend', 'Reach Global Elite rank.'
 ) a
 JOIN videogames g ON a.gameID = g.gameID;
 
@@ -454,71 +454,71 @@ FROM (
     UNION ALL
     SELECT 2, 49.99
     UNION ALL
-    SELECT 17 AS userID, 249.95 AS total_cost  -- Alice buys multiple games
+    SELECT 17 AS userID, 249.95 AS total_cost
     UNION ALL
-    SELECT 17, 69.99  -- Alice buys another game
+    SELECT 17, 69.99
     UNION ALL
-    SELECT 18, 159.97  -- Bob buys games
+    SELECT 18, 159.97
     UNION ALL
-    SELECT 19, 89.98   -- Charlie buys games
+    SELECT 19, 89.98
     UNION ALL
-    SELECT 20, 199.95  -- Diana buys games
+    SELECT 20, 199.95
     UNION ALL
-    SELECT 21, 49.99   -- Ethan buys one game
+    SELECT 21, 49.99
     UNION ALL
-    SELECT 22, 129.97  -- Fiona buys games
+    SELECT 22, 129.97
     UNION ALL
-    SELECT 23, 79.98   -- George buys games
+    SELECT 23, 79.98
     UNION ALL
-    SELECT 24, 39.99   -- Helen buys one game
+    SELECT 24, 39.99
     UNION ALL
-    SELECT 25, 89.97   -- Ivan buys games
+    SELECT 25, 89.97
     UNION ALL
-    SELECT 26, 149.96  -- Julia buys games
+    SELECT 26, 149.96
     UNION ALL
-    SELECT 27, 59.99   -- Kevin buys games
+    SELECT 27, 59.99
     UNION ALL
-    SELECT 28, 99.98   -- Lisa buys games
+    SELECT 28, 99.98
     UNION ALL
-    SELECT 29, 119.97  -- Mike buys games
+    SELECT 29, 119.97
     UNION ALL
-    SELECT 30, 29.99   -- Nina buys one game
+    SELECT 30, 29.99
     UNION ALL
-    SELECT 31, 179.95  -- Oscar buys games
+    SELECT 31, 179.95
     UNION ALL
-    SELECT 32, 89.98   -- Paula buys games
+    SELECT 32, 89.98
     UNION ALL
-    SELECT 33, 69.99   -- Quinn buys games
+    SELECT 33, 69.99
     UNION ALL
-    SELECT 34, 139.96  -- Rachel buys games
+    SELECT 34, 139.96
     UNION ALL
-    SELECT 35, 49.99   -- Steve buys games
+    SELECT 35, 49.99
     UNION ALL
-    SELECT 36, 99.97   -- Tina buys games
+    SELECT 36, 99.97
     UNION ALL
-    SELECT 37, 79.98   -- Victor buys games
+    SELECT 37, 79.98
     UNION ALL
-    SELECT 38, 159.96  -- Wendy buys games
+    SELECT 38, 159.96
     UNION ALL
-    SELECT 39, 19.99   -- Xavier buys games
+    SELECT 39, 19.99
     UNION ALL
-    SELECT 40, 129.97  -- Yara buys games
+    SELECT 40, 129.97
     UNION ALL
-    SELECT 41, 89.98   -- Zack buys games
+    SELECT 41, 89.98
     UNION ALL
-    SELECT 42, 199.95  -- Amy buys games
+    SELECT 42, 199.95
     UNION ALL
-    SELECT 43, 59.99   -- Ben buys games
+    SELECT 43, 59.99
     UNION ALL
-    SELECT 44, 109.98  -- Chloe buys games
+    SELECT 44, 109.98
     UNION ALL
-    SELECT 45, 39.99   -- Dan buys games
+    SELECT 45, 39.99
     UNION ALL
-    SELECT 46, 149.97  -- Eva buys games
+    SELECT 46, 149.97
     UNION ALL
-    SELECT 47, 79.99   -- Finn buys games
+    SELECT 47, 79.99
     UNION ALL
-    SELECT 48, 119.98  -- Grace buys games
+    SELECT 48, 119.98
 ) t
 JOIN users u ON u.userID = t.userID;
 
@@ -589,21 +589,21 @@ FROM (
     UNION ALL
     SELECT 15, 14
     UNION ALL
-    SELECT 16, 6  -- Kevin
+    SELECT 16, 6
     UNION ALL
-    SELECT 17, 10  -- Lisa
+    SELECT 17, 10
     UNION ALL
     SELECT 17, 12
     UNION ALL
-    SELECT 18, 13  -- Mike
+    SELECT 18, 13
     UNION ALL
     SELECT 18, 15
     UNION ALL
     SELECT 18, 17
     UNION ALL
-    SELECT 19, 19  -- Nina
+    SELECT 19, 19
     UNION ALL
-    SELECT 20, 5   -- Oscar
+    SELECT 20, 5
     UNION ALL
     SELECT 20, 8
     UNION ALL
@@ -611,31 +611,31 @@ FROM (
     UNION ALL
     SELECT 20, 18
     UNION ALL
-    SELECT 21, 7   -- Paula
+    SELECT 21, 7
     UNION ALL
     SELECT 21, 14
     UNION ALL
-    SELECT 22, 6   -- Quinn
+    SELECT 22, 6
     UNION ALL
-    SELECT 23, 9   -- Rachel
+    SELECT 23, 9
     UNION ALL
     SELECT 23, 16
     UNION ALL
     SELECT 23, 20
     UNION ALL
-    SELECT 24, 17  -- Steve
+    SELECT 24, 17
     UNION ALL
-    SELECT 25, 5   -- Tina
+    SELECT 25, 5
     UNION ALL
     SELECT 25, 13
     UNION ALL
     SELECT 25, 15
     UNION ALL
-    SELECT 26, 10  -- Victor
+    SELECT 26, 10
     UNION ALL
     SELECT 26, 12
     UNION ALL
-    SELECT 27, 6   -- Wendy
+    SELECT 27, 6
     UNION ALL
     SELECT 27, 8
     UNION ALL
@@ -643,19 +643,19 @@ FROM (
     UNION ALL
     SELECT 27, 18
     UNION ALL
-    SELECT 28, 7   -- Xavier
+    SELECT 28, 7
     UNION ALL
-    SELECT 29, 9   -- Yara
+    SELECT 29, 9
     UNION ALL
     SELECT 29, 14
     UNION ALL
     SELECT 29, 19
     UNION ALL
-    SELECT 30, 13  -- Zack
+    SELECT 30, 13
     UNION ALL
     SELECT 30, 16
     UNION ALL
-    SELECT 31, 5   -- Amy
+    SELECT 31, 5
     UNION ALL
     SELECT 31, 6
     UNION ALL
@@ -665,17 +665,17 @@ FROM (
     UNION ALL
     SELECT 31, 15
     UNION ALL
-    SELECT 32, 17  -- Ben
+    SELECT 32, 17
     UNION ALL
-    SELECT 33, 10  -- Chloe
+    SELECT 33, 10
     UNION ALL
     SELECT 33, 12
     UNION ALL
     SELECT 33, 20
     UNION ALL
-    SELECT 34, 18  -- Dan
+    SELECT 34, 18
     UNION ALL
-    SELECT 35, 5   -- Eva
+    SELECT 35, 5
     UNION ALL
     SELECT 35, 7
     UNION ALL
@@ -683,9 +683,9 @@ FROM (
     UNION ALL
     SELECT 35, 14
     UNION ALL
-    SELECT 36, 19  -- Finn
+    SELECT 36, 19
     UNION ALL
-    SELECT 37, 6   -- Grace
+    SELECT 37, 6
     UNION ALL
     SELECT 37, 11
     UNION ALL
@@ -705,94 +705,93 @@ WHERE w.userID IS NULL;
 INSERT INTO wishlist_items (wishlistID, gameID)
 SELECT w.wishlistID, g.gameID
 FROM (
-    -- Various users with different wishlist preferences
-    SELECT 17 AS wishlistID, 19 AS gameID  -- Alice wants Diablo IV
+    SELECT 17 AS wishlistID, 19 AS gameID
     UNION ALL
-    SELECT 17, 20  -- Alice wants Counter-Strike 2
+    SELECT 17, 20
     UNION ALL
-    SELECT 18, 5   -- Bob wants Assassin's Creed Valhalla
+    SELECT 18, 5
     UNION ALL
-    SELECT 18, 9   -- Bob wants Skyrim
+    SELECT 18, 9
     UNION ALL
-    SELECT 19, 10  -- Charlie wants Half-Life: Alyx
+    SELECT 19, 10
     UNION ALL
-    SELECT 19, 16  -- Charlie wants Portal 2
+    SELECT 19, 16
     UNION ALL
-    SELECT 20, 7   -- Diana wants Hollow Knight
+    SELECT 20, 7
     UNION ALL
-    SELECT 20, 13  -- Diana wants Celeste
+    SELECT 20, 13
     UNION ALL
-    SELECT 21, 6   -- Ethan wants Call of Duty
+    SELECT 21, 6
     UNION ALL
-    SELECT 21, 12  -- Ethan wants Overwatch 2
+    SELECT 21, 12
     UNION ALL
-    SELECT 22, 15  -- Fiona wants Fallout 4
+    SELECT 22, 15
     UNION ALL
-    SELECT 22, 11  -- Fiona wants Far Cry 6
+    SELECT 22, 11
     UNION ALL
-    SELECT 23, 8   -- George wants The Last of Us Part II
+    SELECT 23, 8
     UNION ALL
-    SELECT 23, 14  -- George wants Uncharted 4
+    SELECT 23, 14
     UNION ALL
-    SELECT 24, 19  -- Helen wants Diablo IV
+    SELECT 24, 19
     UNION ALL
-    SELECT 25, 5   -- Ivan wants Assassin's Creed
+    SELECT 25, 5
     UNION ALL
-    SELECT 25, 18  -- Ivan wants Watch Dogs
+    SELECT 25, 18
     UNION ALL
-    SELECT 26, 16  -- Julia wants Portal 2
+    SELECT 26, 16
     UNION ALL
-    SELECT 26, 17  -- Julia wants Hades
+    SELECT 26, 17
     UNION ALL
-    SELECT 27, 20  -- Kevin wants Counter-Strike 2
+    SELECT 27, 20
     UNION ALL
-    SELECT 28, 7   -- Lisa wants Hollow Knight
+    SELECT 28, 7
     UNION ALL
-    SELECT 28, 13  -- Lisa wants Celeste
+    SELECT 28, 13
     UNION ALL
-    SELECT 29, 6   -- Mike wants Call of Duty
+    SELECT 29, 6
     UNION ALL
-    SELECT 29, 8   -- Mike wants The Last of Us
+    SELECT 29, 8
     UNION ALL
-    SELECT 30, 9   -- Nina wants Skyrim
+    SELECT 30, 9
     UNION ALL
-    SELECT 31, 10  -- Oscar wants Half-Life
+    SELECT 31, 10
     UNION ALL
-    SELECT 31, 12  -- Oscar wants Overwatch 2
+    SELECT 31, 12
     UNION ALL
-    SELECT 32, 15  -- Paula wants Fallout 4
+    SELECT 32, 15
     UNION ALL
-    SELECT 33, 17  -- Quinn wants Hades
+    SELECT 33, 17
     UNION ALL
-    SELECT 34, 11  -- Rachel wants Far Cry 6
+    SELECT 34, 11
     UNION ALL
-    SELECT 35, 19  -- Steve wants Diablo IV
+    SELECT 35, 19
     UNION ALL
-    SELECT 36, 7   -- Tina wants Hollow Knight
+    SELECT 36, 7
     UNION ALL
-    SELECT 37, 16  -- Victor wants Portal 2
+    SELECT 37, 16
     UNION ALL
-    SELECT 38, 5   -- Wendy wants Assassin's Creed
+    SELECT 38, 5
     UNION ALL
-    SELECT 39, 13  -- Xavier wants Celeste
+    SELECT 39, 13
     UNION ALL
-    SELECT 40, 20  -- Yara wants Counter-Strike 2
+    SELECT 40, 20
     UNION ALL
-    SELECT 41, 8   -- Zack wants The Last of Us
+    SELECT 41, 8
     UNION ALL
-    SELECT 42, 6   -- Amy wants Call of Duty
+    SELECT 42, 6
     UNION ALL
-    SELECT 43, 14  -- Ben wants Uncharted 4
+    SELECT 43, 14
     UNION ALL
-    SELECT 44, 18  -- Chloe wants Watch Dogs
+    SELECT 44, 18
     UNION ALL
-    SELECT 45, 9   -- Dan wants Skyrim
+    SELECT 45, 9
     UNION ALL
-    SELECT 46, 17  -- Eva wants Hades
+    SELECT 46, 17
     UNION ALL
-    SELECT 47, 10  -- Finn wants Half-Life
+    SELECT 47, 10
     UNION ALL
-    SELECT 48, 15  -- Grace wants Fallout 4
+    SELECT 48, 15
 ) w
 JOIN wishlists wl ON w.wishlistID = wl.wishlistID
 JOIN videogames g ON w.gameID = g.gameID
@@ -807,47 +806,42 @@ WHERE NOT EXISTS (
 INSERT INTO reviews (userID, gameID, rating, comment)
 SELECT r.userID, r.gameID, r.rating, r.comment 
 FROM (
-    SELECT 1 AS userID, 1 AS gameID, 4.9 AS rating, 'Il gioco è stato rilasciato in uno stato incompleto, ma dopo alcuni aggiornamenti è diventato molto divertente' AS comment
+    SELECT 1 AS userID, 1 AS gameID, 4.9 AS rating, 'The game was released in an incomplete state, but after some updates it became very fun' AS comment
     UNION ALL
-    SELECT 17, 6, 4.0, 'Buona campagna ma il multiplayer potrebbe essere migliorato.'
+    SELECT 17, 6, 4.0, 'Good campaign but multiplayer could be improved.'
     UNION ALL
-    SELECT 17, 7, 5.0, 'Capolavoro assoluto! Atmosfera e gameplay perfetti.'
+    SELECT 17, 7, 5.0, 'Absolute masterpiece! Perfect atmosphere and gameplay.'
     UNION ALL
-    SELECT 17, 8, 4.8, 'Storia emotivamente intensa, personaggi incredibili.'
-    UNION ALL
-    
-    -- Reviews from Bob (userID 18)
-    SELECT 18, 10, 4.7, 'Innovativo uso della VR, esperienza incredibile!'
-    UNION ALL
-    SELECT 18, 11, 3.5, 'Bello ma troppo ripetitivo dopo un po''.'
-    UNION ALL
-    SELECT 18, 12, 3.8, 'Divertente ma manca contenuto rispetto al primo.'
+    SELECT 17, 8, 4.8, 'Emotionally intense story, incredible characters.'
     UNION ALL
     
-    -- Reviews from Charlie (userID 19)
-    SELECT 19, 13, 4.9, 'Perfetto bilanciamento tra sfida e divertimento!'
+    SELECT 18, 10, 4.7, 'Innovative use of VR, incredible experience!'
     UNION ALL
-    SELECT 19, 14, 4.6, 'Grafica mozzafiato e gameplay coinvolgente.'
+    SELECT 18, 11, 3.5, 'Beautiful but too repetitive after a while.'
     UNION ALL
-    SELECT 19, 15, 4.1, 'Buon RPG ma con alcuni bug al lancio.'
-    UNION ALL
-    
-    -- Reviews from Diana (userID 20)
-    SELECT 20, 5, 4.2, 'Bell''ambientazione vichinga ma missioni ripetitive.'
-    UNION ALL
-    SELECT 20, 6, 3.9, 'Solido shooter ma niente di rivoluzionario.'
-    UNION ALL
-    SELECT 20, 16, 5.0, 'Geniale! Meccaniche di gioco innovative e divertenti.'
+    SELECT 18, 12, 3.8, 'Fun but lacks content compared to the first.'
     UNION ALL
     
-    -- Reviews from Ethan (userID 21)
-    SELECT 21, 17, 4.8, 'Roguelike perfetto con narrazione eccellente!'
+    SELECT 19, 13, 4.9, 'Perfect balance between challenge and fun!'
+    UNION ALL
+    SELECT 19, 14, 4.6, 'Breathtaking graphics and engaging gameplay.'
+    UNION ALL
+    SELECT 19, 15, 4.1, 'Good RPG but with some bugs at launch.'
     UNION ALL
     
-    -- Reviews from other users
-    SELECT 22, 18, 3.6, 'Concetto interessante ma esecuzione mediocre.'
+    SELECT 20, 5, 4.2, 'Beautiful Viking setting but repetitive missions.'
     UNION ALL
-    SELECT 22, 19, 4.3, 'Ritorno in grande stile per la serie Diablo!'
+    SELECT 20, 6, 3.9, 'Solid shooter but nothing revolutionary.'
+    UNION ALL
+    SELECT 20, 16, 5.0, 'Brilliant! Innovative and fun game mechanics.'
+    UNION ALL
+    
+    SELECT 21, 17, 4.8, 'Perfect roguelike with excellent storytelling!'
+    UNION ALL
+    
+    SELECT 22, 18, 3.6, 'Interesting concept but mediocre execution.'
+    UNION ALL
+    SELECT 22, 19, 4.3, 'Great comeback for the Diablo series!'
     UNION ALL
     SELECT 22, 9, 4.9, 'Il miglior RPG mai creato, infinito da esplorare.'
     UNION ALL
@@ -886,7 +880,7 @@ FROM (
     SELECT 28, 7, 5.0, 'Perfetto in ogni aspetto, un must-have!'
     UNION ALL
     
-    SELECT 29, 9, 4.8, 'Classico intramontabile con infinite possibilità.'
+    SELECT 29, 9, 4.8, 'Timeless classic with infinite possibilities.'
     UNION ALL
     SELECT 29, 14, 4.4, 'Avventura cinematografica ben realizzata.'
     UNION ALL
@@ -898,7 +892,7 @@ FROM (
     SELECT 30, 16, 4.9, 'Puzzle game geniale con dialoghi divertenti.'
     UNION ALL
     
-    SELECT 31, 5, 4.3, 'Ambientazione affascinante, troppo lungo però.'
+    SELECT 31, 5, 4.3, 'Fascinating setting, too long though.'
     UNION ALL
     SELECT 31, 6, 3.8, 'Campagna decente, multiplayer competitivo.'
     UNION ALL
@@ -914,7 +908,7 @@ FROM (
     
     SELECT 33, 10, 4.5, 'Half-Life torna in grande stile in VR.'
     UNION ALL
-    SELECT 33, 12, 3.9, 'Divertente ma manca profondità del primo.'
+    SELECT 33, 12, 3.9, 'Fun but lacks depth of the first one.'
     UNION ALL
     SELECT 33, 20, 4.3, 'Aggiornamento grafico apprezzabile.'
     UNION ALL
@@ -922,7 +916,7 @@ FROM (
     SELECT 34, 18, 3.5, 'Concept promettente ma esecuzione lacunosa.'
     UNION ALL
     
-    SELECT 35, 5, 4.1, 'Vichinghi e azione, cosa volere di più?'
+    SELECT 35, 5, 4.1, 'Vikings and action, what more could you want?'
     UNION ALL
     SELECT 35, 7, 4.8, 'Arte pixelata sublime e gameplay perfetto.'
     UNION ALL
@@ -931,10 +925,10 @@ FROM (
     SELECT 35, 14, 4.3, 'Conclusione degna per Nathan Drake.'
     UNION ALL
     
-    SELECT 36, 19, 4.0, 'Diablo è tornato ma con qualche compromesso.'
+    SELECT 36, 19, 4.0, 'Diablo is back but with some compromises.'
     UNION ALL
     
-    SELECT 37, 6, 4.2, 'Solid FPS con buona varietà di modalità.'
+    SELECT 37, 6, 4.2, 'Solid FPS with good variety of modes.'
     UNION ALL
     SELECT 37, 11, 3.6, 'Visivamente impressionante ma gameplay ripetitivo.'
     UNION ALL
@@ -980,7 +974,6 @@ FROM (
     SELECT 1, 18, 12
     UNION ALL
     
-    -- Charlie's achievements
     SELECT 1, 19, 13
     UNION ALL
     SELECT 1, 19, 14
@@ -988,7 +981,6 @@ FROM (
     SELECT 1, 19, 15
     UNION ALL
     
-    -- Diana's achievements
     SELECT 1, 20, 5
     UNION ALL
     SELECT 1, 20, 6
@@ -996,11 +988,9 @@ FROM (
     SELECT 1, 20, 16
     UNION ALL
     
-    -- Ethan's achievements
     SELECT 1, 21, 17
     UNION ALL
     
-    -- Other users' achievements
     SELECT 1, 22, 18
     UNION ALL
     SELECT 1, 22, 19
