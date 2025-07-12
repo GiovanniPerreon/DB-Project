@@ -6,17 +6,19 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import db_project.model.DBModel;
 
-public final class App {
+public final class App2 {
     public static void main(String[] args) throws SQLException {
         final Connection connection = DAOUtils.localMySQLConnection("tables", "root", "password");
         Model model = new DBModel(connection);
-        View view = new View(() ->   {
+        View2 view2 = new View2(() -> {
             try {
                 connection.close();
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
-        Controller controller = new Controller(model, view);
-        view.setController(controller);
+        Controller controller = new Controller(model, view2.getViewManager());
+        view2.setController(controller);
         controller.testAllTables();
     }
 }

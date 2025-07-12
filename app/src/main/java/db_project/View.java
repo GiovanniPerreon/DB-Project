@@ -2052,8 +2052,6 @@ public final class View {
         button.setBorder(BorderFactory.createEmptyBorder(3, 6, 3, 6));
         button.setFocusPainted(false);
         button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        
-        // Hover effect
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
