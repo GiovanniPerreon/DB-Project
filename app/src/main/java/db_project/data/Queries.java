@@ -260,7 +260,6 @@ public final class Queries {
         )
         ORDER BY avg_rating ASC
         """;
-    
     public static final String UPDATE_GAME_AVERAGE_RATING =
         """
         UPDATE videogames 
@@ -342,7 +341,6 @@ public final class Queries {
         LIMIT 10
         """;
     
-    // Queries for ALL games sorted (not just top 10)
     public static final String ALL_NEWEST_GAMES =
         """
         SELECT gameID, publisherID, title, price, description, requirements, average_rating, release_date, discount

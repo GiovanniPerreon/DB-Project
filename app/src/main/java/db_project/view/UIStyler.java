@@ -548,6 +548,211 @@ public final class UIStyler {
         return section;
     }
     /**
+     * Shows a styled game creation dialog
+     * @param parent parent component for dialog positioning
+     * @return GameCreationResult with the entered data, or null if cancelled
+     */
+    public static GameCreationResult showStyledGameCreationDialog(java.awt.Component parent) {
+        final GameCreationResult[] result = {null};
+        
+        javax.swing.JDialog dialog = new javax.swing.JDialog(
+            javax.swing.SwingUtilities.getWindowAncestor(parent), 
+            "Create New Game", 
+            java.awt.Dialog.ModalityType.APPLICATION_MODAL
+        );
+        
+        dialog.setDefaultCloseOperation(javax.swing.JDialog.DISPOSE_ON_CLOSE);
+        
+        // Main panel
+        javax.swing.JPanel mainPanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        mainPanel.setBackground(ALICE_BLUE);
+        mainPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(FOREST_GREEN, 3),
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        
+        // Title
+        javax.swing.JLabel titleLabel = new javax.swing.JLabel("Create New Game", javax.swing.SwingConstants.CENTER);
+        titleLabel.setFont(TITLE_FONT);
+        titleLabel.setForeground(FOREST_GREEN);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        mainPanel.add(titleLabel, java.awt.BorderLayout.NORTH);
+        
+        // Content panel with scroll
+        javax.swing.JPanel contentPanel = new javax.swing.JPanel();
+        contentPanel.setLayout(new javax.swing.BoxLayout(contentPanel, javax.swing.BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
+        
+        // Game title field
+        javax.swing.JLabel titleFieldLabel = new javax.swing.JLabel("Game Title:");
+        titleFieldLabel.setFont(LABEL_FONT);
+        titleFieldLabel.setForeground(MIDNIGHT_BLUE);
+        javax.swing.JTextField titleField = createStyledTextField("Enter game title");
+        
+        // Price field
+        javax.swing.JLabel priceLabel = new javax.swing.JLabel("Price:");
+        priceLabel.setFont(LABEL_FONT);
+        priceLabel.setForeground(MIDNIGHT_BLUE);
+        javax.swing.JTextField priceField = createStyledTextField("0.00");
+        
+        // Description field
+        javax.swing.JLabel descLabel = new javax.swing.JLabel("Description:");
+        descLabel.setFont(LABEL_FONT);
+        descLabel.setForeground(MIDNIGHT_BLUE);
+        javax.swing.JTextArea descArea = new javax.swing.JTextArea(4, 30);
+        descArea.setFont(TEXT_FONT);
+        descArea.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(STEEL_BLUE, 1),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        descArea.setLineWrap(true);
+        descArea.setWrapStyleWord(true);
+        descArea.setBackground(Color.WHITE);
+        javax.swing.JScrollPane descScrollPane = new javax.swing.JScrollPane(descArea);
+        descScrollPane.setPreferredSize(new java.awt.Dimension(350, 100));
+        descScrollPane.setBorder(BorderFactory.createLineBorder(STEEL_BLUE, 1));
+        
+        // Requirements field
+        javax.swing.JLabel reqLabel = new javax.swing.JLabel("System Requirements:");
+        reqLabel.setFont(LABEL_FONT);
+        reqLabel.setForeground(MIDNIGHT_BLUE);
+        javax.swing.JTextArea reqArea = new javax.swing.JTextArea(4, 30);
+        reqArea.setFont(TEXT_FONT);
+        reqArea.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(STEEL_BLUE, 1),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        reqArea.setLineWrap(true);
+        reqArea.setWrapStyleWord(true);
+        reqArea.setBackground(Color.WHITE);
+        javax.swing.JScrollPane reqScrollPane = new javax.swing.JScrollPane(reqArea);
+        reqScrollPane.setPreferredSize(new java.awt.Dimension(350, 100));
+        reqScrollPane.setBorder(BorderFactory.createLineBorder(STEEL_BLUE, 1));
+        
+        // Release date field
+        javax.swing.JLabel releaseDateLabel = new javax.swing.JLabel("Release Date (YYYY-MM-DD):");
+        releaseDateLabel.setFont(LABEL_FONT);
+        releaseDateLabel.setForeground(MIDNIGHT_BLUE);
+        javax.swing.JTextField releaseDateField = createStyledTextField("2024-01-01");
+        
+        // Add components with spacing
+        contentPanel.add(titleFieldLabel);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(5));
+        contentPanel.add(titleField);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(15));
+        
+        contentPanel.add(priceLabel);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(5));
+        contentPanel.add(priceField);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(15));
+        
+        contentPanel.add(descLabel);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(5));
+        contentPanel.add(descScrollPane);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(15));
+        
+        contentPanel.add(reqLabel);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(5));
+        contentPanel.add(reqScrollPane);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(15));
+        
+        contentPanel.add(releaseDateLabel);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(5));
+        contentPanel.add(releaseDateField);
+        
+        // Scroll pane for content
+        javax.swing.JScrollPane mainScrollPane = new javax.swing.JScrollPane(contentPanel);
+        mainScrollPane.setPreferredSize(new java.awt.Dimension(400, 450));
+        mainScrollPane.setBorder(null);
+        mainScrollPane.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        mainScrollPane.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        
+        // Buttons
+        javax.swing.JButton createButton = createStyledButton("Create Game", FOREST_GREEN);
+        javax.swing.JButton cancelButton = createStyledButton("Cancel", STEEL_BLUE);
+        
+        createButton.addActionListener(e -> {
+            String title = titleField.getText().trim();
+            String description = descArea.getText().trim();
+            String requirements = reqArea.getText().trim();
+            String priceText = priceField.getText().trim();
+            String releaseDate = releaseDateField.getText().trim();
+            
+            // Validation
+            if (title.isEmpty()) {
+                showStyledError(dialog, "Please enter a game title.", "Invalid Input");
+                return;
+            }
+            if (description.isEmpty()) {
+                showStyledError(dialog, "Please enter a game description.", "Invalid Input");
+                return;
+            }
+            if (requirements.isEmpty()) {
+                showStyledError(dialog, "Please enter system requirements.", "Invalid Input");
+                return;
+            }
+            
+            try {
+                double price = Double.parseDouble(priceText);
+                if (price < 0) {
+                    showStyledError(dialog, "Price must be a positive number.", "Invalid Price");
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+                showStyledError(dialog, "Please enter a valid price (e.g., 19.99).", "Invalid Price");
+                return;
+            }
+            
+            // Basic date validation (format check)
+            if (!releaseDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                showStyledError(dialog, "Please enter date in YYYY-MM-DD format.", "Invalid Date");
+                return;
+            }
+            
+            result[0] = new GameCreationResult(title, priceText, description, requirements, releaseDate);
+            dialog.dispose();
+        });
+        
+        cancelButton.addActionListener(e -> dialog.dispose());
+        
+        // Button panel
+        javax.swing.JPanel buttonPanel = new javax.swing.JPanel(new java.awt.FlowLayout());
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(createButton);
+        buttonPanel.add(cancelButton);
+        
+        mainPanel.add(mainScrollPane, java.awt.BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, java.awt.BorderLayout.SOUTH);
+        
+        dialog.add(mainPanel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        
+        return result[0];
+    }
+
+    /**
+     * Result class for game creation dialog
+     */
+    public static class GameCreationResult {
+        public final String title;
+        public final String price;
+        public final String description;
+        public final String requirements;
+        public final String releaseDate;
+        
+        public GameCreationResult(String title, String price, String description, String requirements, String releaseDate) {
+            this.title = title;
+            this.price = price;
+            this.description = description;
+            this.requirements = requirements;
+            this.releaseDate = releaseDate;
+        }
+    }
+
+    /**
      * Result class for registration dialog
      */
     public static class RegistrationDialogResult {

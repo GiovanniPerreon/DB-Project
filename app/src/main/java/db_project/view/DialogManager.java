@@ -147,36 +147,31 @@ public class DialogManager {
     /**
      * Show the create game dialog
      */
+    /**
+     * Shows a styled create game dialog
+     */
     public void showCreateGameDialog() {
-        JTextField titleField = new JTextField(20);
-        JTextField priceField = new JTextField(10);
-        JTextArea descriptionArea = new JTextArea(5, 20);
-        JTextArea requirementsArea = new JTextArea(5, 20);
-        JTextField releaseDateField = new JTextField(10);
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel("Title:"));
-        panel.add(titleField);
-        panel.add(new JLabel("Price:"));
-        panel.add(priceField);
-        panel.add(new JLabel("Description:"));
-        panel.add(new JScrollPane(descriptionArea));
-        panel.add(new JLabel("Requirements:"));
-        panel.add(new JScrollPane(requirementsArea));
-        panel.add(new JLabel("Release Date (YYYY-MM-DD):"));
-        panel.add(releaseDateField);
-        int result = JOptionPane.showConfirmDialog(viewManager.getMainFrame(), panel, "Create New Game", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
+        UIStyler.GameCreationResult result = UIStyler.showStyledGameCreationDialog(viewManager.getMainFrame());
+        
+        if (result != null) {
             try {
-                double price = Double.parseDouble(priceField.getText());
-                if (viewManager.getController().createGame(viewManager.getCurrentUser(), titleField.getText(), price, 
-                        descriptionArea.getText(), requirementsArea.getText(), releaseDateField.getText())) {
+                double price = Double.parseDouble(result.price);
+                if (viewManager.getController().createGame(
+                        viewManager.getCurrentUser(), 
+                        result.title, 
+                        price, 
+                        result.description, 
+                        result.requirements, 
+                        result.releaseDate)) {
                     viewManager.showMessage("Game created successfully!");
                 } else {
                     viewManager.showError("Failed to create game!");
                 }
             } catch (NumberFormatException e) {
                 viewManager.showError("Please enter a valid price");
+            } catch (Exception e) {
+                viewManager.showError("Error creating game: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
