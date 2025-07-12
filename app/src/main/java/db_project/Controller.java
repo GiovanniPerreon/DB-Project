@@ -9,7 +9,6 @@ import db_project.data.Reviews;
 import db_project.data.Wishlists;
 import db_project.data.WishlistItems;
 import db_project.data.Achievements;
-import db_project.view.ViewManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,25 +17,14 @@ import java.util.stream.Stream;
 
 public final class Controller {
     private final Model model;
-    private final View view;
-    private Users currentUser;
-    public Controller(Model model, View view) {
-        Objects.requireNonNull(model, "Controller created with null model");
-        Objects.requireNonNull(view, "Controller created with null view");
-        this.view = view;
-        this.model = model;
-        this.currentUser = null;
-    }
-    
+    private Users currentUser;    
     /**
      * Constructor for View2 architecture
      * @param model The model instance
      * @param viewManager The ViewManager instance
      */
-    public Controller(Model model, ViewManager viewManager) {
+    public Controller(Model model) {
         Objects.requireNonNull(model, "Controller created with null model");
-        Objects.requireNonNull(viewManager, "Controller created with null viewManager");
-        this.view = null; // Not used with ViewManager
         this.model = model;
         this.currentUser = null;
     }

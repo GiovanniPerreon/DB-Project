@@ -10,13 +10,15 @@ public final class App {
     public static void main(String[] args) throws SQLException {
         final Connection connection = DAOUtils.localMySQLConnection("tables", "root", "password");
         Model model = new DBModel(connection);
-        View view = new View(() ->   {
+        View view2 = new View(() -> {
             try {
                 connection.close();
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
-        Controller controller = new Controller(model, view);
-        view.setController(controller);
-        controller.testAllTables();
+        Controller controller = new Controller(model);
+        view2.setController(controller);
+        //controller.testAllTables();
     }
 }
