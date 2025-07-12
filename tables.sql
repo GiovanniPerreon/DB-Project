@@ -141,7 +141,7 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('bethesda@email.com', 'beth2024', 'Mark', 'Anderson', '1983-04-18', false, true, false, false),
 ('valve@email.com', 'valve2024', 'Gabe', 'Newell', '1962-11-03', false, true, true, false),
 -- Developers
-('dev.marco@gmail.com', 'dev2024', 'Marco', 'Rossi', '1992-01-14', false, false, true, false),
+('dev.marco@gmail.com', 'dev2024', 'Marco', 'Rossi', '1992-01-14', false, true, true, false),
 ('dev.laura@gmail.com', 'dev2024', 'Laura', 'Bianchi', '1989-08-20', false, false, true, false),
 ('dev.carlos@gmail.com', 'dev2024', 'Carlos', 'Garcia', '1991-05-07', false, false, true, false),
 ('dev.anna@gmail.com', 'dev2024', 'Anna', 'Mueller', '1987-10-25', false, false, true, false),
@@ -198,8 +198,8 @@ FROM (
     SELECT 2, 'Dragon Age: Veilguard', 39.99, 'Un gioco di ruolo fantasy con una trama avvincente e personaggi memorabili.',
            'CPU: Intel Core i5, RAM: 8GB, GPU: NVIDIA GTX 970', '2023-05-10', 90
     UNION ALL
-    SELECT 7 AS publisherID, 'Assassin''s Creed Valhalla' AS title, 59.99 AS price, 'Vivi l''epoca d''oro dei vichinghi e guida Eivor in una saga leggendaria.' AS description,
-           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960' AS requirements, '2020-11-10' AS release_date, 25 AS discount
+    SELECT 7, 'Assassin''s Creed Valhalla', 59.99, 'Vivi l''epoca d''oro dei vichinghi e guida Eivor in una saga leggendaria.',
+           'CPU: Intel Core i5-4460, RAM: 8GB, GPU: NVIDIA GTX 960', '2020-11-10', 25
     UNION ALL
     SELECT 8, 'Call of Duty: Modern Warfare II', 69.99, 'Il sequel del rinomato Call of Duty: Modern Warfare con campagna e multiplayer.',
            'CPU: Intel Core i5-6600K, RAM: 12GB, GPU: NVIDIA GTX 1060', '2022-10-28', 15
@@ -245,6 +245,12 @@ FROM (
     UNION ALL
     SELECT 12, 'Counter-Strike 2', 0.00, 'Il nuovo capitolo del leggendario FPS competitivo.',
            'CPU: Intel Core i5-750, RAM: 8GB, GPU: NVIDIA GTX 1060', '2023-09-27', 0
+    UNION ALL
+    SELECT 1, 'Cyberpunk 2077', 59.99, 'Un RPG open-world futuristico con una trama complessa.' AS description,
+           'CPU: Intel Core i7, RAM: 16GB, GPU: NVIDIA RTX 2060' AS requirements, '2020-12-10' AS release_date, 10 AS discount
+    UNION ALL
+    SELECT 2, 'Stardew Valley', 14.99, 'Un simulatore di vita agricola con elementi RPG.',
+           'CPU: Intel Core 2 Duo, RAM: 2GB, GPU: Intel HD Graphics 3000', '2016-02-26', 0
 ) v
 JOIN users u ON u.userID = v.publisherID
 WHERE u.is_publisher = TRUE;

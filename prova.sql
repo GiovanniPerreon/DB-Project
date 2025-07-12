@@ -17,6 +17,8 @@ WHERE userID = 1;
 -- Verifica tutti i videogiochi
 SELECT * FROM videogames;
 
+-- Verifica i developers per ogni videogioco
+SELECT * FROM videogame_developers;
 -- Verifica transazioni
 SELECT * FROM transactions;
 
