@@ -816,4 +816,88 @@ public final class UIStyler {
         public String birthDate = "";
         public boolean submitted = false;
     }
+    /**
+     * Shows a styled confirmation dialog
+     * @param parent parent component for dialog positioning
+     * @param message the message to display
+     * @param title the dialog title
+     * @return true if user clicked Yes, false if No or closed
+     */
+    public static boolean showStyledConfirmation(java.awt.Component parent, String message, String title) {
+        final boolean[] result = {false};
+        
+        javax.swing.JDialog dialog = new javax.swing.JDialog(
+            javax.swing.SwingUtilities.getWindowAncestor(parent),
+            title,
+            java.awt.Dialog.ModalityType.APPLICATION_MODAL
+        );
+        
+        dialog.setDefaultCloseOperation(javax.swing.JDialog.DISPOSE_ON_CLOSE);
+        
+        // Main panel
+        javax.swing.JPanel mainPanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        mainPanel.setBackground(ALICE_BLUE);
+        mainPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(STEEL_BLUE, 2),
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
+        
+        // Icon and message panel
+        javax.swing.JPanel messagePanel = new javax.swing.JPanel(new java.awt.BorderLayout());
+        messagePanel.setOpaque(false);
+        
+        // Question icon
+        javax.swing.JLabel iconLabel = new javax.swing.JLabel("?");
+        iconLabel.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 36));
+        iconLabel.setForeground(STEEL_BLUE);
+        iconLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        iconLabel.setPreferredSize(new java.awt.Dimension(60, 60));
+        iconLabel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(STEEL_BLUE, 2),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        iconLabel.setOpaque(true);
+        iconLabel.setBackground(HONEYDEW);
+        
+        // Message label
+        javax.swing.JLabel messageLabel = new javax.swing.JLabel("<html><div style='text-align: center; width: 250px;'>" + message + "</div></html>");
+        messageLabel.setFont(TEXT_FONT);
+        messageLabel.setForeground(MIDNIGHT_BLUE);
+        messageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        
+        messagePanel.add(iconLabel, java.awt.BorderLayout.WEST);
+        messagePanel.add(messageLabel, java.awt.BorderLayout.CENTER);
+        
+        // Button panel
+        javax.swing.JPanel buttonPanel = new javax.swing.JPanel(new java.awt.FlowLayout());
+        buttonPanel.setOpaque(false);
+        
+        javax.swing.JButton yesButton = createStyledButton("Yes", FOREST_GREEN);
+        javax.swing.JButton noButton = createStyledButton("No", new java.awt.Color(220, 20, 60));
+        
+        yesButton.addActionListener(e -> {
+            result[0] = true;
+            dialog.dispose();
+        });
+        
+        noButton.addActionListener(e -> {
+            result[0] = false;
+            dialog.dispose();
+        });
+        
+        buttonPanel.add(yesButton);
+        buttonPanel.add(javax.swing.Box.createHorizontalStrut(10));
+        buttonPanel.add(noButton);
+        
+        mainPanel.add(messagePanel, java.awt.BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, java.awt.BorderLayout.SOUTH);
+        
+        dialog.add(mainPanel);
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        
+        return result[0];
+    }
 }

@@ -56,6 +56,13 @@ public final class View {
     }
     
     /**
+     * Logout the current user - additional API method
+     */
+    public void logout() {
+        viewManager.performLogout();
+    }
+    
+    /**
      * Get the internal ViewManager (for testing or advanced usage)
      * @return the view manager instance
      */

@@ -1,6 +1,7 @@
 package db_project.view;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -50,8 +51,17 @@ public class UserDashboardPanel extends JPanel {
         userInfoArea = new JTextArea(5, 20);
         userInfoArea.setEditable(false);
         userInfoArea.setOpaque(false);
+        
+        // Create logout button
+        JButton logoutButton = UIStyler.createStyledButton("Logout", new Color(220, 20, 60));
+        logoutButton.setMaximumSize(new Dimension(150, 30));
+        logoutButton.setPreferredSize(new Dimension(150, 30));
+        logoutButton.addActionListener(e -> viewManager.performLogout());
+        
         infoPanel.add(userInfoLabel);
         infoPanel.add(userInfoArea);
+        infoPanel.add(Box.createVerticalStrut(10));
+        infoPanel.add(logoutButton);
         JPanel gameOwnedPanel = new JPanel();
         gameOwnedPanel.setBorder(UIStyler.createTitledBorder("GAMES OWNED", UIStyler.FOREST_GREEN));
         gameOwnedPanel.setLayout(new BoxLayout(gameOwnedPanel, BoxLayout.Y_AXIS));

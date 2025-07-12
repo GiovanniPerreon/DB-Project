@@ -229,4 +229,28 @@ public final class ViewManager {
             mainMenuPanel.showGameDetailsView(game);
         }
     }
+    
+    public void performLogout() {
+        boolean confirmed = UIStyler.showStyledConfirmation(
+            mainFrame, 
+            "Are you sure you want to logout?", 
+            "Confirm Logout"
+        );
+        
+        if (confirmed) {
+            // Clear current user session
+            currentUser = null;
+            
+            // Hide main menu and show login panel
+            mainMenuPanel.setVisible(false);
+            loginPanel.setVisible(true);
+            mainFrame.setTitle("SteamDB - Videogames Store");
+            
+            // Show success message using styled dialog
+            showMessage("Logged out successfully!");
+            
+            mainFrame.revalidate();
+            mainFrame.repaint();
+        }
+    }
 }
