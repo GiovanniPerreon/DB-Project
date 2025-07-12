@@ -15,6 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import db_project.data.VideoGames;
+import db_project.data.Users;
 
 /**
  * Manages all dialog boxes and popup interactions
@@ -151,21 +152,43 @@ public class DialogManager {
      * Shows a styled create game dialog
      */
     public void showCreateGameDialog() {
-        UIStyler.GameCreationResult result = UIStyler.showStyledGameCreationDialog(viewManager.getMainFrame());
+        // Create a developer validator that checks if the developer exists and is actually a developer
+        UIStyler.DeveloperValidator validator = (developerID) -> {
+            try {
+                int devID = Integer.parseInt(developerID);
+                Optional<Users> developerUser = viewManager.getController().getModel().find(devID);
+                if (developerUser.isEmpty()) {
+                    return "No user found with ID " + devID + ".";
+                }
+                if (!developerUser.get().isDeveloper()) {
+                    return "User with ID " + devID + " is not a developer.";
+                }
+                return null; // Valid developer
+            } catch (NumberFormatException e) {
+                return "Developer ID must be a valid number.";
+            }
+        };
+        
+        UIStyler.GameCreationResult result = UIStyler.showStyledGameCreationDialog(viewManager.getMainFrame(), validator);
         
         if (result != null) {
             try {
                 double price = Double.parseDouble(result.price);
-                if (viewManager.getController().createGame(
+                
+                // Since Developer ID is now required and validated, use the method with developer ID
+                boolean success = viewManager.getController().createGame(
                         viewManager.getCurrentUser(), 
                         result.title, 
                         price, 
                         result.description, 
                         result.requirements, 
-                        result.releaseDate)) {
-                    viewManager.showMessage("Game created successfully!");
+                        result.releaseDate,
+                        result.developerID);
+                
+                if (success) {
+                    viewManager.showMessage("Game created successfully! Developer ID " + result.developerID + " has been added to the game.");
                 } else {
-                    viewManager.showError("Failed to create game!");
+                    viewManager.showError("Failed to create game! Please try again.");
                 }
             } catch (NumberFormatException e) {
                 viewManager.showError("Please enter a valid price");

@@ -548,11 +548,28 @@ public final class UIStyler {
         return section;
     }
     /**
+     * Functional interface for developer validation
+     */
+    public interface DeveloperValidator {
+        String validateDeveloper(String developerID);
+    }
+
+    /**
      * Shows a styled game creation dialog
      * @param parent parent component for dialog positioning
      * @return GameCreationResult with the entered data, or null if cancelled
      */
     public static GameCreationResult showStyledGameCreationDialog(java.awt.Component parent) {
+        return showStyledGameCreationDialog(parent, null);
+    }
+    
+    /**
+     * Shows a styled game creation dialog with developer validation
+     * @param parent parent component for dialog positioning
+     * @param developerValidator function to validate developer ID, returns null if valid or error message if invalid
+     * @return GameCreationResult with the entered data, or null if cancelled
+     */
+    public static GameCreationResult showStyledGameCreationDialog(java.awt.Component parent, DeveloperValidator developerValidator) {
         final GameCreationResult[] result = {null};
         
         javax.swing.JDialog dialog = new javax.swing.JDialog(
@@ -635,6 +652,12 @@ public final class UIStyler {
         releaseDateLabel.setForeground(MIDNIGHT_BLUE);
         javax.swing.JTextField releaseDateField = createStyledTextField("2024-01-01");
         
+        // Developer ID field
+        javax.swing.JLabel developerIDLabel = new javax.swing.JLabel("Developer ID:");
+        developerIDLabel.setFont(LABEL_FONT);
+        developerIDLabel.setForeground(MIDNIGHT_BLUE);
+        javax.swing.JTextField developerIDField = createStyledTextField("Enter developer user ID");
+        
         // Add components with spacing
         contentPanel.add(titleFieldLabel);
         contentPanel.add(javax.swing.Box.createVerticalStrut(5));
@@ -659,6 +682,11 @@ public final class UIStyler {
         contentPanel.add(releaseDateLabel);
         contentPanel.add(javax.swing.Box.createVerticalStrut(5));
         contentPanel.add(releaseDateField);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(15));
+        
+        contentPanel.add(developerIDLabel);
+        contentPanel.add(javax.swing.Box.createVerticalStrut(5));
+        contentPanel.add(developerIDField);
         
         // Scroll pane for content
         javax.swing.JScrollPane mainScrollPane = new javax.swing.JScrollPane(contentPanel);
@@ -678,6 +706,7 @@ public final class UIStyler {
             String requirements = reqArea.getText().trim();
             String priceText = priceField.getText().trim();
             String releaseDate = releaseDateField.getText().trim();
+            String developerID = developerIDField.getText().trim();
             
             // Validation
             if (title.isEmpty()) {
@@ -710,7 +739,29 @@ public final class UIStyler {
                 return;
             }
             
-            result[0] = new GameCreationResult(title, priceText, description, requirements, releaseDate);
+            // Developer ID validation (required field)
+            if (developerID.isEmpty() || developerID.equals("Enter developer user ID")) {
+                showStyledError(dialog, "Please enter a Developer ID.", "Invalid Developer ID");
+                return;
+            }
+            
+            try {
+                Integer.parseInt(developerID);
+            } catch (NumberFormatException ex) {
+                showStyledError(dialog, "Developer ID must be a valid number.", "Invalid Developer ID");
+                return;
+            }
+            
+            // Additional developer validation if validator is provided
+            if (developerValidator != null) {
+                String validationError = developerValidator.validateDeveloper(developerID);
+                if (validationError != null) {
+                    showStyledError(dialog, validationError, "Invalid Developer");
+                    return;
+                }
+            }
+            
+            result[0] = new GameCreationResult(title, priceText, description, requirements, releaseDate, developerID);
             dialog.dispose();
         });
         
@@ -742,13 +793,15 @@ public final class UIStyler {
         public final String description;
         public final String requirements;
         public final String releaseDate;
+        public final String developerID;
         
-        public GameCreationResult(String title, String price, String description, String requirements, String releaseDate) {
+        public GameCreationResult(String title, String price, String description, String requirements, String releaseDate, String developerID) {
             this.title = title;
             this.price = price;
             this.description = description;
             this.requirements = requirements;
             this.releaseDate = releaseDate;
+            this.developerID = developerID;
         }
     }
 

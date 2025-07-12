@@ -557,4 +557,115 @@ public final class Controller {
     public List<Optional<VideoGames>> getAllGamesByGenre(String genre) {
         return model.getAllGamesByGenre(genre);
     }
+    public boolean createGame(Users user, String title, double price, String description, String requirements, String releaseDate, String developerID) {
+        try {
+            if (!user.isPublisher()) {
+                return false;
+            }
+            
+            // Validate developer ID
+            if (developerID == null || developerID.trim().isEmpty()) {
+                return false;
+            }
+            
+            int devID;
+            try {
+                devID = Integer.parseInt(developerID.trim());
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            
+            // Check if developer user exists and is actually a developer
+            Optional<Users> developerUser = model.find(devID);
+            if (developerUser.isEmpty() || !developerUser.get().isDeveloper()) {
+                return false;
+            }
+            
+            boolean gameCreated = model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
+            
+            // If game was created successfully, add developer
+            if (gameCreated) {
+                int gameID = model.getLastCreatedGameID();
+                if (gameID > 0) {
+                    return model.addDeveloperToGame(devID, gameID);
+                }
+            }
+            
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static class GameCreationResult {
+        public final boolean success;
+        public final String errorMessage;
+        
+        public GameCreationResult(boolean success, String errorMessage) {
+            this.success = success;
+            this.errorMessage = errorMessage;
+        }
+        
+        public static GameCreationResult success() {
+            return new GameCreationResult(true, null);
+        }
+        
+        public static GameCreationResult failure(String errorMessage) {
+            return new GameCreationResult(false, errorMessage);
+        }
+    }
+    
+    public GameCreationResult createGameWithValidation(Users user, String title, double price, String description, String requirements, String releaseDate, String developerID) {
+        try {
+            if (!user.isPublisher()) {
+                return GameCreationResult.failure("Only publishers can create games.");
+            }
+            
+            // Validate developer ID
+            if (developerID == null || developerID.trim().isEmpty()) {
+                return GameCreationResult.failure("Developer ID is required.");
+            }
+            
+            int devID;
+            try {
+                devID = Integer.parseInt(developerID.trim());
+            } catch (NumberFormatException e) {
+                return GameCreationResult.failure("Developer ID must be a valid number.");
+            }
+            
+            // Check if developer user exists and is actually a developer
+            Optional<Users> developerUser = model.find(devID);
+            if (developerUser.isEmpty()) {
+                return GameCreationResult.failure("No user found with ID " + devID + ".");
+            }
+            
+            if (!developerUser.get().isDeveloper()) {
+                return GameCreationResult.failure("User with ID " + devID + " is not a developer.");
+            }
+            
+            boolean gameCreated = model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
+            
+            if (!gameCreated) {
+                return GameCreationResult.failure("Failed to create the game in the database.");
+            }
+            
+            // If game was created successfully, add developer
+            int gameID = model.getLastCreatedGameID();
+            if (gameID <= 0) {
+                return GameCreationResult.failure("Failed to retrieve the created game ID.");
+            }
+            
+            if (!model.addDeveloperToGame(devID, gameID)) {
+                return GameCreationResult.failure("Game was created but failed to associate it with the developer.");
+            }
+            
+            return GameCreationResult.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return GameCreationResult.failure("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+    public Model getModel() {
+        return model;
+    }
 }

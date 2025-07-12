@@ -17,7 +17,6 @@ import db_project.data.Users;
 import db_project.data.VideoGameGenres;
 import db_project.data.VideoGames;
 import db_project.data.Achievements;
-import db_project.data.AchievementsUser;
 import db_project.data.VideogameDevelopers;
 import db_project.data.VideogameLanguages;
 import db_project.data.TransactionItems;
@@ -26,6 +25,7 @@ import db_project.data.Wishlists;
 
 public final class DBModel implements Model {
     private final Connection connection;
+    private int lastCreatedGameID = -1;
 
     public DBModel(Connection connection) {
         Objects.requireNonNull(connection, "Model created with null connection");
@@ -260,7 +260,7 @@ public final class DBModel implements Model {
     @Override
     public boolean createGame(int publisherId, String title, double price, String description, String requirements, String releaseDate) {
         System.out.println("DEBUG: Creating game with publisherId=" + publisherId + ", title=" + title + ", price=" + price + ", releaseDate=" + releaseDate);
-        try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME)) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, publisherId);
             stmt.setString(2, title);
             stmt.setDouble(3, price);
@@ -273,7 +273,18 @@ public final class DBModel implements Model {
             System.out.println("DEBUG: Executing query: " + Queries.ADD_VIDEOGAME);
             int rowsAffected = stmt.executeUpdate();
             System.out.println("DEBUG: Rows affected: " + rowsAffected);
-            return rowsAffected > 0;
+            
+            if (rowsAffected > 0) {
+                // Get the generated game ID
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        lastCreatedGameID = generatedKeys.getInt(1);
+                        System.out.println("DEBUG: Created game with ID: " + lastCreatedGameID);
+                    }
+                }
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
             System.err.println("Error creating game: " + e.getMessage());
             e.printStackTrace();
@@ -406,6 +417,27 @@ public final class DBModel implements Model {
             return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Error updating game average rating: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public int getLastCreatedGameID() {
+        return lastCreatedGameID;
+    }
+    
+    @Override
+    public boolean addDeveloperToGame(int developerID, int gameID) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME_DEVELOPER)) {
+            stmt.setInt(1, developerID);
+            stmt.setInt(2, gameID);
+            
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("DEBUG: Added developer " + developerID + " to game " + gameID + ". Rows affected: " + rowsAffected);
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error adding developer to game: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

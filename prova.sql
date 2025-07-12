@@ -47,7 +47,7 @@ SELECT
 FROM users u
 JOIN reviews r ON u.userID = r.userID
 JOIN videogames vg ON r.gameID = vg.gameID;
----
+-- LEAST RATED PUBLISHERS THAN AVERAGE
 SELECT u.userID, u.name, u.surname, u.email, u.is_publisher, u.is_developer, AVG(v.average_rating) as avg_rating
         FROM users u
         JOIN videogames v ON u.userID = v.publisherID OR u.userID IN (
@@ -59,5 +59,6 @@ SELECT u.userID, u.name, u.surname, u.email, u.is_publisher, u.is_developer, AVG
             SELECT AVG(average_rating) FROM videogames WHERE average_rating IS NOT NULL
         )
         ORDER BY avg_rating ASC;
+-- LEAST RATED PUBLISHERS
 -- Verifica che la struttura delle tabelle sia corretta
 SHOW TABLES;

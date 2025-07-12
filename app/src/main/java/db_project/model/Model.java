@@ -16,7 +16,6 @@ import db_project.data.Wishlists;
 import db_project.data.Achievements;
 import db_project.data.VideogameDevelopers;
 import db_project.data.VideogameLanguages;
-import db_project.data.TransactionItems;
 import db_project.data.WishlistItems;
 
 public interface Model {
@@ -292,4 +291,18 @@ public interface Model {
      * @return all games by genre.
      */
     List<Optional<VideoGames>> getAllGamesByGenre(String genre);
+    
+    /**
+     * Gets the ID of the last created game
+     * @return the game ID of the last created game, or -1 if no game was created
+     */
+    int getLastCreatedGameID();
+    
+    /**
+     * Adds a developer to a videogame.
+     * @param developerID the developer user ID
+     * @param gameID the game ID
+     * @return true if developer was added successfully, false otherwise
+     */
+    boolean addDeveloperToGame(int developerID, int gameID);
 }
