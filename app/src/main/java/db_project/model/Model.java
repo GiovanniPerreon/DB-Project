@@ -305,4 +305,12 @@ public interface Model {
      * @return true if developer was added successfully, false otherwise
      */
     boolean addDeveloperToGame(int developerID, int gameID);
+    
+    /**
+     * Changes the discount of a game
+     * @param gameId the game ID
+     * @param newDiscount the new discount percentage (0-100)
+     * @return true if discount was changed successfully, false otherwise
+     */
+    boolean changeGameDiscount(int gameId, double newDiscount);
 }
