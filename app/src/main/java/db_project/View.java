@@ -136,7 +136,7 @@ public final class View {
             } else {
                 login(email, password);
             }
-        });
+        }); 
         
         registerButton.addActionListener(e -> showRegisterDialog());
         
