@@ -1160,8 +1160,10 @@ public final class View {
         genresArea.setText(genresText.toString());
         genresPanel.add(genresArea);
         
-        // Add admin buttons for genre management
-        if (currentUser != null && currentUser.isAdministrator()) {
+        // Add admin or developer buttons for genre management
+        boolean isAdmin = currentUser != null && currentUser.isAdministrator();
+        boolean isDeveloper = currentUser != null && getController().isDeveloperOfGame(currentUser, game.getGameID());
+        if (isAdmin || isDeveloper) {
             JPanel genreButtonPanel = new JPanel(new FlowLayout());
             JButton addGenreButton = new JButton("Add Genre");
             JButton removeGenreButton = new JButton("Remove Genre");

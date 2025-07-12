@@ -16,15 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-// The controller provides a holistic description of how the outside world can
-// interact with our application: each public method is written as
-//
-//   subject + action + object (e.g. user + clicked + preview)
-//
-// So just by reading all the methods we know of all the possible interactions
-// that can happen in our app. This makes it simpler to track all the possible
-// actions that can take place as the application grows.
-//
 public final class Controller {
     private final Model model;
     private final View view;
@@ -90,6 +81,20 @@ public final class Controller {
 
     public boolean isAdmin(Users user) {
         return user.isAdministrator();
+    }
+
+    /**
+     * Checks if the given user is the developer of the given game.
+     * @param user The user to check
+     * @param gameID The game ID
+     * @return true if user is a developer of the game
+     */
+    public boolean isDeveloperOfGame(Users user, int gameID) {
+        // Check if user is in the VideogameDevelopers table for this game
+        return model.getVideogameDevelopers().stream()
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .anyMatch(dev -> dev.getGameID() == gameID && dev.getDeveloperID() == user.getUserID());
     }
 
     public String getUserTypes(Users user) {
@@ -553,16 +558,16 @@ public final class Controller {
     }
     
     /**
-     * Adds a genre to a game (admin only)
+     * Adds a genre to a game (admin or developer only)
      */
     public boolean addGenreToGame(Users user, int gameId, String genre) {
         try {
-            if (!user.isAdministrator()) {
-                System.out.println("DEBUG: User is not admin, cannot add genre to game");
+            if (!user.isAdministrator() && !isDeveloperOfGame(user, gameId)) {
+                System.out.println("DEBUG: User is not admin or developer, cannot add genre to game");
                 return false;
             }
             
-            System.out.println("DEBUG: Admin adding genre " + genre + " to game " + gameId);
+            System.out.println("DEBUG: Admin or developer adding genre " + genre + " to game " + gameId);
             return model.addGenreToGame(gameId, genre);
         } catch (Exception e) {
             System.err.println("Error adding genre to game: " + e.getMessage());
@@ -571,16 +576,16 @@ public final class Controller {
     }
     
     /**
-     * Removes a genre from a game (admin only)
+     * Removes a genre from a game (admin or developer only)
      */
     public boolean removeGenreFromGame(Users user, int gameId, String genre) {
         try {
-            if (!user.isAdministrator()) {
-                System.out.println("DEBUG: User is not admin, cannot remove genre from game");
+            if (!user.isAdministrator() && !isDeveloperOfGame(user, gameId)) {
+                System.out.println("DEBUG: User is not admin or developer, cannot remove genre from game");
                 return false;
             }
             
-            System.out.println("DEBUG: Admin removing genre " + genre + " from game " + gameId);
+            System.out.println("DEBUG: Admin or developer removing genre " + genre + " from game " + gameId);
             return model.removeGenreFromGame(gameId, genre);
         } catch (Exception e) {
             System.err.println("Error removing genre from game: " + e.getMessage());
