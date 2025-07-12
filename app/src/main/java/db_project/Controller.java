@@ -9,6 +9,7 @@ import db_project.data.Reviews;
 import db_project.data.Wishlists;
 import db_project.data.WishlistItems;
 import db_project.data.Achievements;
+import db_project.data.VideogameDevelopers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -667,5 +668,161 @@ public final class Controller {
     }
     public Model getModel() {
         return model;
+    }
+    /**
+     * Gets the publisher name for a game
+     */
+    public String getGamePublisherName(int gameId) {
+        try {
+            // Find the game first to get publisher ID
+            Optional<VideoGames> gameOpt = model.getVideoGames().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(game -> game.getGameID() == gameId)
+                .findFirst();
+            
+            if (gameOpt.isPresent()) {
+                int publisherId = gameOpt.get().getPublisherID();
+                // Find the publisher user
+                Optional<Users> publisherOpt = model.find(publisherId);
+                if (publisherOpt.isPresent()) {
+                    Users publisher = publisherOpt.get();
+                    return publisher.getName() + " " + publisher.getSurname();
+                }
+            }
+            return "Unknown Publisher";
+        } catch (Exception e) {
+            return "Unknown Publisher";
+        }
+    }
+    
+    /**
+     * Gets the developer names for a game
+     */
+    public List<String> getGameDeveloperNames(int gameId) {
+        try {
+            List<String> developerNames = new ArrayList<>();
+            List<Optional<VideogameDevelopers>> videogameDevelopers = model.getVideogameDevelopers();
+            
+            for (Optional<VideogameDevelopers> devOpt : videogameDevelopers) {
+                if (devOpt.isPresent()) {
+                    VideogameDevelopers dev = devOpt.get();
+                    if (dev.getGameID() == gameId) {
+                        // Find the developer user
+                        Optional<Users> developerUserOpt = model.find(dev.getDeveloperID());
+                        if (developerUserOpt.isPresent()) {
+                            Users developer = developerUserOpt.get();
+                            developerNames.add(developer.getName() + " " + developer.getSurname());
+                        }
+                    }
+                }
+            }
+            
+            if (developerNames.isEmpty()) {
+                developerNames.add("Unknown Developer");
+            }
+            
+            return developerNames;
+        } catch (Exception e) {
+            return List.of("Unknown Developer");
+        }
+    }
+    /**
+     * Class to hold transaction details for display
+     */
+    public static class TransactionDetail {
+        private final int transactionId;
+        private final String gameTitle;
+        private final double finalAmount;
+        
+        public TransactionDetail(int transactionId, String gameTitle, double finalAmount) {
+            this.transactionId = transactionId;
+            this.gameTitle = gameTitle;
+            this.finalAmount = finalAmount;
+        }
+        
+        public int getTransactionId() { return transactionId; }
+        public String getGameTitle() { return gameTitle; }
+        public double getFinalAmount() { return finalAmount; }
+    }
+
+    /**
+     * Gets the user's transaction history with game details
+     */
+    public List<TransactionDetail> getUserTransactions(Users user) {
+        try {
+            List<TransactionDetail> transactionDetails = new ArrayList<>();
+            List<Optional<Transactions>> transactions = model.getTransactions();
+            List<Optional<TransactionItems>> transactionItems = model.getTransactionItems();
+            List<Optional<VideoGames>> allGames = model.getVideoGames();
+            
+            // Get all user transactions
+            for (Optional<Transactions> transactionOpt : transactions) {
+                if (transactionOpt.isPresent() && transactionOpt.get().getUserID() == user.getUserID()) {
+                    Transactions transaction = transactionOpt.get();
+                    int transactionId = transaction.getTransactionID();
+                    
+                    // Find transaction items for this transaction
+                    for (Optional<TransactionItems> itemOpt : transactionItems) {
+                        if (itemOpt.isPresent()) {
+                            TransactionItems item = itemOpt.get();
+                            if (item.getTransactionID() == transactionId) {
+                                // Find the game details
+                                for (Optional<VideoGames> gameOpt : allGames) {
+                                    if (gameOpt.isPresent() && gameOpt.get().getGameID() == item.getGameID()) {
+                                        VideoGames game = gameOpt.get();
+                                        
+                                        // Calculate final amount (price with discount applied)
+                                        double originalPrice = Double.parseDouble(game.getPrice());
+                                        double discountPercent = game.getDiscount() != null ? 
+                                            Double.parseDouble(game.getDiscount()) : 0.0;
+                                        double finalAmount = originalPrice * (1.0 - discountPercent / 100.0);
+                                        
+                                        transactionDetails.add(new TransactionDetail(
+                                            transactionId, 
+                                            game.getTitle() != null ? game.getTitle() : "Unknown Game", 
+                                            finalAmount
+                                        ));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return transactionDetails;
+        } catch (Exception e) {
+            System.err.println("Error getting user transactions: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    /**
+     * Changes the discount of a game
+     */
+    public boolean changeGameDiscount(int gameId, double newDiscount) {
+        try {
+            return model.changeGameDiscount(gameId, newDiscount);
+        } catch (Exception e) {
+            System.err.println("Error changing game discount: " + e.getMessage());
+            return false;
+        }
+    }
+    /**
+     * Reloads a specific game from the database
+     */
+    public Optional<VideoGames> reloadGame(int gameId) {
+        try {
+            List<Optional<VideoGames>> allGames = model.getVideoGames();
+            return allGames.stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(game -> game.getGameID() == gameId)
+                .findFirst();
+        } catch (Exception e) {
+            System.err.println("Error reloading game: " + e.getMessage());
+            return Optional.empty();
+        }
     }
 }

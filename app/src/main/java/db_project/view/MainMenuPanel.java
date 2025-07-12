@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import db_project.data.Achievements;
 import db_project.data.Reviews;
 import db_project.data.Users;
 import db_project.data.VideoGames;
+import db_project.Controller;
 
 /**
  * Main menu panel that contains navigation and content areas
@@ -34,6 +36,7 @@ public class MainMenuPanel extends JPanel {
     private JPanel rightPanel;
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private JButton transactionsButton;
     private JButton publisherOpsButton;
     private JButton adminOpsButton;
     private UserDashboardPanel userDashboardPanel;
@@ -42,6 +45,7 @@ public class MainMenuPanel extends JPanel {
     private JPanel collectionViewPanel;
     private JPanel wishlistViewPanel;
     private JPanel achievementsViewPanel;
+    private JPanel transactionsViewPanel;
     private JPanel allUsersBrowserPanel;
     private JPanel userListPanel;
     /**
@@ -113,10 +117,13 @@ public class MainMenuPanel extends JPanel {
             UIStyler.SMALL_FONT, UIStyler.CRIMSON
         ));
         otherPanel.setLayout(new BoxLayout(otherPanel, BoxLayout.Y_AXIS));
-        otherPanel.setPreferredSize(new Dimension(200, 140));
+        otherPanel.setPreferredSize(new Dimension(200, 180));
         otherPanel.setBackground(UIStyler.LAVENDER_BLUSH);
+        transactionsButton = UIStyler.createStyledButton("View Transactions", UIStyler.CRIMSON);
         publisherOpsButton = UIStyler.createStyledButton("Publish Game", UIStyler.CRIMSON);
         adminOpsButton = UIStyler.createStyledButton("View All Users", UIStyler.CRIMSON);
+        otherPanel.add(transactionsButton);
+        otherPanel.add(Box.createVerticalStrut(8));
         otherPanel.add(publisherOpsButton);
         otherPanel.add(Box.createVerticalStrut(8));
         otherPanel.add(adminOpsButton);
@@ -131,6 +138,7 @@ public class MainMenuPanel extends JPanel {
         topGamesButton.addActionListener(e -> showTopGamesBrowser());
         mostBoughtButton.addActionListener(e -> showMostBoughtBrowser());
         leastRatedButton.addActionListener(e -> showLeastRatedBrowser());
+        transactionsButton.addActionListener(e -> showTransactionsView());
         publisherOpsButton.addActionListener(e -> showPublisherOperations());
         adminOpsButton.addActionListener(e -> showAllUsersBrowser());
         add(leftPanel, BorderLayout.WEST);
@@ -161,6 +169,8 @@ public class MainMenuPanel extends JPanel {
         wishlistViewPanel.setLayout(new BorderLayout());
         achievementsViewPanel = new JPanel();
         achievementsViewPanel.setLayout(new BorderLayout());
+        transactionsViewPanel = new JPanel();
+        transactionsViewPanel.setLayout(new BorderLayout());
         allUsersBrowserPanel = new JPanel();
         allUsersBrowserPanel.setLayout(new BorderLayout());
         cardPanel.add(userDashboardPanel, "USER_DASHBOARD");
@@ -169,6 +179,7 @@ public class MainMenuPanel extends JPanel {
         cardPanel.add(collectionViewPanel, "USER_COLLECTION");
         cardPanel.add(wishlistViewPanel, "USER_WISHLIST");
         cardPanel.add(achievementsViewPanel, "ACHIEVEMENTS");
+        cardPanel.add(transactionsViewPanel, "TRANSACTIONS");
         cardPanel.add(allUsersBrowserPanel, "ALL_USERS");
         rightPanel.add(cardPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.CENTER);
@@ -564,11 +575,64 @@ public class MainMenuPanel extends JPanel {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         JTextArea infoArea = new JTextArea(5, 20);
         infoArea.setEditable(false);
-        infoArea.setText("Title: " + game.getTitle() + "\n" +
-                        "Price: $" + game.getPrice() + "\n" +
-                        "Rating: " + game.getAverageRating() + "/5\n" +
-                        "Release Date: " + game.getReleaseDate());
-        infoPanel.add(infoArea);
+        
+        // Get publisher and developer information
+        String publisherName = viewManager.getController().getGamePublisherName(game.getGameID());
+        List<String> developerNames = viewManager.getController().getGameDeveloperNames(game.getGameID());
+        String developersText = String.join(", ", developerNames);
+        
+        // Calculate price with discount
+        double originalPrice = Double.parseDouble(game.getPrice());
+        double discountPercent = game.getDiscount() != null ? Double.parseDouble(game.getDiscount()) : 0.0;
+        String priceText;
+        if (discountPercent > 0) {
+            double discountedPrice = originalPrice * (1.0 - discountPercent / 100.0);
+            priceText = String.format("Price: $%.2f (Original: $%.2f, Discount: %.0f%%)", 
+                                    discountedPrice, originalPrice, discountPercent);
+        } else {
+            priceText = "Price: $" + game.getPrice();
+        }
+        
+        // Create info text with all basic information
+        StringBuilder infoText = new StringBuilder();
+        infoText.append("Title: ").append(game.getTitle()).append("\n");
+        infoText.append("Publisher: ").append(publisherName).append("\n");
+        infoText.append("Developer(s): ").append(developersText).append("\n");
+        infoText.append(priceText).append("\n");
+        infoText.append("Rating: ").append(game.getAverageRating()).append("/5\n");
+        infoText.append("Release Date: ").append(game.getReleaseDate()).append("\n\n");
+        
+        // Add description
+        String description = game.getDescription();
+        if (description != null && !description.trim().isEmpty()) {
+            infoText.append("Description:\n").append(description).append("\n\n");
+        }
+        
+        // Add requirements
+        String requirements = game.getRequirements();
+        if (requirements != null && !requirements.trim().isEmpty()) {
+            infoText.append("System Requirements:\n").append(requirements);
+        }
+        
+        infoArea.setText(infoText.toString());
+        infoArea.setLineWrap(true);
+        infoArea.setWrapStyleWord(true);
+        
+        // Make info area scrollable
+        JScrollPane infoScrollPane = new JScrollPane(infoArea);
+        infoScrollPane.setPreferredSize(new Dimension(300, 200));
+        infoScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        infoScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        infoPanel.add(infoScrollPane);
+        
+        // Add discount button for publisher
+        Users currentUser = viewManager.getCurrentUser();
+        if (currentUser != null && currentUser.getUserID() == game.getPublisherID()) {
+            JButton changeDiscountButton = UIStyler.createStyledButton("Change Discount", UIStyler.DARK_ORANGE);
+            changeDiscountButton.addActionListener(e -> showChangeDiscountDialog(game));
+            infoPanel.add(Box.createVerticalStrut(10));
+            infoPanel.add(changeDiscountButton);
+        }
         JPanel genresPanel = new JPanel();
         genresPanel.setBorder(BorderFactory.createTitledBorder("GENRES & LANGUAGES"));
         genresPanel.setLayout(new BoxLayout(genresPanel, BoxLayout.Y_AXIS));
@@ -656,7 +720,6 @@ public class MainMenuPanel extends JPanel {
         contentPanel.add(reviewsPanel);
         gameDetailPanel.add(contentPanel, BorderLayout.CENTER);
         JPanel actionButtonPanel = new JPanel(new FlowLayout());
-        Users currentUser = viewManager.getCurrentUser();
         if (currentUser != null) {
             if (!viewManager.getController().userOwnsGame(currentUser, game.getGameID())) {
                 JButton buyButton = UIStyler.createStyledButton("Buy Game", UIStyler.FOREST_GREEN);
@@ -902,5 +965,152 @@ public class MainMenuPanel extends JPanel {
      */
     public GameBrowserPanel getGameBrowserPanel() {
         return gameBrowserPanel;
+    }
+
+    /**
+     * Shows the transactions view
+     */
+    public void showTransactionsView() {
+        cardLayout.show(cardPanel, "TRANSACTIONS");
+        rightPanel.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(UIStyler.STEEL_BLUE, 2), "YOUR TRANSACTIONS",
+            TitledBorder.CENTER, TitledBorder.TOP,
+            UIStyler.LABEL_FONT, UIStyler.STEEL_BLUE
+        ));
+        loadTransactionsContent();
+        viewManager.refreshFrame();
+    }
+
+    /**
+     * Loads the user's transaction content
+     */
+    private void loadTransactionsContent() {
+        transactionsViewPanel.removeAll();
+        
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        Users currentUser = viewManager.getCurrentUser();
+        if (currentUser == null) {
+            JLabel noUserLabel = new JLabel("Please log in to view transactions");
+            UIStyler.centerAlign(noUserLabel);
+            contentPanel.add(noUserLabel);
+        } else {
+            List<Controller.TransactionDetail> transactions = viewManager.getController().getUserTransactions(currentUser);
+            
+            if (transactions.isEmpty()) {
+                JLabel noTransactionsLabel = new JLabel("No transactions found");
+                UIStyler.centerAlign(noTransactionsLabel);
+                contentPanel.add(noTransactionsLabel);
+            } else {
+                // Title
+                JLabel titleLabel = new JLabel("Transaction History");
+                titleLabel.setFont(UIStyler.TITLE_FONT);
+                titleLabel.setForeground(UIStyler.STEEL_BLUE);
+                UIStyler.centerAlign(titleLabel);
+                contentPanel.add(titleLabel);
+                contentPanel.add(Box.createVerticalStrut(20));
+                
+                // Header
+                JPanel headerPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+                headerPanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(UIStyler.STEEL_BLUE, 2),
+                    BorderFactory.createEmptyBorder(10, 15, 10, 15)
+                ));
+                headerPanel.setBackground(UIStyler.ALICE_BLUE);
+                
+                JLabel idHeaderLabel = new JLabel("Transaction ID");
+                idHeaderLabel.setFont(UIStyler.LABEL_FONT);
+                idHeaderLabel.setForeground(UIStyler.MIDNIGHT_BLUE);
+                
+                JLabel titleHeaderLabel = new JLabel("Game Title");
+                titleHeaderLabel.setFont(UIStyler.LABEL_FONT);
+                titleHeaderLabel.setForeground(UIStyler.MIDNIGHT_BLUE);
+                
+                JLabel amountHeaderLabel = new JLabel("Final Amount");
+                amountHeaderLabel.setFont(UIStyler.LABEL_FONT);
+                amountHeaderLabel.setForeground(UIStyler.MIDNIGHT_BLUE);
+                
+                headerPanel.add(idHeaderLabel);
+                headerPanel.add(titleHeaderLabel);
+                headerPanel.add(amountHeaderLabel);
+                contentPanel.add(headerPanel);
+                contentPanel.add(Box.createVerticalStrut(5));
+                
+                // Transaction items
+                for (Controller.TransactionDetail transaction : transactions) {
+                    JPanel transactionPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+                    transactionPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                        BorderFactory.createEmptyBorder(10, 15, 10, 15)
+                    ));
+                    transactionPanel.setBackground(Color.WHITE);
+                    
+                    JLabel idLabel = new JLabel(String.valueOf(transaction.getTransactionId()));
+                    idLabel.setFont(UIStyler.TEXT_FONT);
+                    
+                    JLabel titleLabel2 = new JLabel(transaction.getGameTitle());
+                    titleLabel2.setFont(UIStyler.TEXT_FONT);
+                    
+                    JLabel amountLabel = new JLabel(String.format("$%.2f", transaction.getFinalAmount()));
+                    amountLabel.setFont(UIStyler.TEXT_FONT);
+                    amountLabel.setForeground(UIStyler.FOREST_GREEN);
+                    
+                    transactionPanel.add(idLabel);
+                    transactionPanel.add(titleLabel2);
+                    transactionPanel.add(amountLabel);
+                    
+                    contentPanel.add(transactionPanel);
+                    contentPanel.add(Box.createVerticalStrut(2));
+                }
+            }
+        }
+        
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        
+        transactionsViewPanel.add(scrollPane, BorderLayout.CENTER);
+        transactionsViewPanel.revalidate();
+        transactionsViewPanel.repaint();
+    }
+    /**
+     * Shows the change discount dialog for publishers
+     */
+    private void showChangeDiscountDialog(VideoGames game) {
+        String currentDiscount = game.getDiscount() != null ? game.getDiscount() : "0";
+        String newDiscountStr = UIStyler.showStyledInput(
+            viewManager.getMainFrame(),
+            "Enter new discount percentage (0-100):\nCurrent discount: " + currentDiscount + "%",
+            "Change Discount",
+            currentDiscount
+        );
+        
+        if (newDiscountStr != null && !newDiscountStr.trim().isEmpty()) {
+            try {
+                double newDiscount = Double.parseDouble(newDiscountStr.trim());
+                if (newDiscount < 0 || newDiscount > 100) {
+                    viewManager.showError("Discount must be between 0 and 100");
+                    return;
+                }
+                
+                if (viewManager.getController().changeGameDiscount(game.getGameID(), newDiscount)) {
+                    viewManager.showMessage("Discount updated successfully!");
+                    // Reload the game with updated data and refresh the view
+                    Optional<VideoGames> updatedGameOpt = viewManager.getController().reloadGame(game.getGameID());
+                    if (updatedGameOpt.isPresent()) {
+                        showGameDetailsView(updatedGameOpt.get());
+                    } else {
+                        showGameDetailsView(game); // Fallback to original game if reload fails
+                    }
+                } else {
+                    viewManager.showError("Failed to update discount");
+                }
+            } catch (NumberFormatException e) {
+                viewManager.showError("Please enter a valid number");
+            }
+        }
     }
 }

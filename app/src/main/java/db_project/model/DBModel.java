@@ -441,4 +441,21 @@ public final class DBModel implements Model {
             return false;
         }
     }
+    
+    @Override
+    public boolean changeGameDiscount(int gameId, double newDiscount) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+            "UPDATE videogames SET discount = ? WHERE gameID = ?")) {
+            stmt.setDouble(1, newDiscount);
+            stmt.setInt(2, gameId);
+            
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("DEBUG: Changed discount for game " + gameId + " to " + newDiscount + "%. Rows affected: " + rowsAffected);
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error changing game discount: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
