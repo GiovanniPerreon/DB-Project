@@ -25,23 +25,25 @@ public class UserDashboardPanel extends JPanel {
     private JTextArea ownedGamesArea;
     private JTextArea wishlistArea;
     private JTextArea achievementsArea;
-    
+    /**
+     * Constructor for UserDashboardPanel
+     * @param viewManager the main view manager instance
+     */
     public UserDashboardPanel(ViewManager viewManager) {
         this.viewManager = viewManager;
         setupDashboard();
     }
-    
+    /**
+     * Setup the dashboard layout and components
+     */
     private void setupDashboard() {
         setLayout(new GridLayout(2, 2, 15, 15));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Info Panel - Blue theme
         JPanel infoPanel = new JPanel();
         infoPanel.setBorder(UIStyler.createTitledBorder("INFO PANEL", UIStyler.STEEL_BLUE));
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(UIStyler.ALICE_BLUE);
-        
         JLabel userInfoLabel = new JLabel("User Information");
         userInfoLabel.setFont(UIStyler.LABEL_FONT);
         userInfoLabel.setForeground(UIStyler.MIDNIGHT_BLUE);
@@ -50,13 +52,10 @@ public class UserDashboardPanel extends JPanel {
         userInfoArea.setOpaque(false);
         infoPanel.add(userInfoLabel);
         infoPanel.add(userInfoArea);
-        
-        // Game Owned Panel - Green theme
         JPanel gameOwnedPanel = new JPanel();
         gameOwnedPanel.setBorder(UIStyler.createTitledBorder("GAMES OWNED", UIStyler.FOREST_GREEN));
         gameOwnedPanel.setLayout(new BoxLayout(gameOwnedPanel, BoxLayout.Y_AXIS));
         gameOwnedPanel.setBackground(UIStyler.HONEYDEW);
-        
         JButton viewCollectionButton = UIStyler.createStyledButton("View Collection", UIStyler.FOREST_GREEN);
         ownedGamesArea = new JTextArea(5, 20);
         ownedGamesArea.setEditable(false);
@@ -65,13 +64,10 @@ public class UserDashboardPanel extends JPanel {
         gameOwnedPanel.add(viewCollectionButton);
         gameOwnedPanel.add(Box.createVerticalStrut(5));
         gameOwnedPanel.add(ownedGamesArea);
-        
-        // Wishlist Panel - Purple theme
         JPanel wishlistPanel = new JPanel();
         wishlistPanel.setBorder(UIStyler.createTitledBorder("WISHLIST", UIStyler.MEDIUM_SLATE_BLUE));
         wishlistPanel.setLayout(new BoxLayout(wishlistPanel, BoxLayout.Y_AXIS));
         wishlistPanel.setBackground(UIStyler.GHOST_WHITE);
-        
         JButton viewWishlistButton = UIStyler.createStyledButton("View Wishlist", UIStyler.MEDIUM_SLATE_BLUE);
         wishlistArea = new JTextArea(3, 20);
         wishlistArea.setEditable(false);
@@ -80,13 +76,10 @@ public class UserDashboardPanel extends JPanel {
         wishlistPanel.add(viewWishlistButton);
         wishlistPanel.add(Box.createVerticalStrut(5));
         wishlistPanel.add(wishlistArea);
-        
-        // Achievements Panel - Orange theme
         JPanel achievementsPanel = new JPanel();
         achievementsPanel.setBorder(UIStyler.createTitledBorder("ACHIEVEMENTS GOT", UIStyler.DARK_ORANGE));
         achievementsPanel.setLayout(new BoxLayout(achievementsPanel, BoxLayout.Y_AXIS));
         achievementsPanel.setBackground(UIStyler.CORNSILK);
-        
         JButton viewAchievementsButton = UIStyler.createStyledButton("View Achievements", UIStyler.DARK_ORANGE);
         achievementsArea = new JTextArea(3, 20);
         achievementsArea.setEditable(false);
@@ -94,14 +87,10 @@ public class UserDashboardPanel extends JPanel {
         achievementsArea.setFont(UIStyler.SMALL_FONT);
         achievementsPanel.add(viewAchievementsButton);
         achievementsPanel.add(achievementsArea);
-        
-        // Add panels to dashboard
         add(infoPanel);
         add(gameOwnedPanel);
         add(wishlistPanel);
         add(achievementsPanel);
-        
-        // Add action listeners
         viewCollectionButton.addActionListener(e -> {
             viewManager.showUserCollectionView();
         });
@@ -112,7 +101,6 @@ public class UserDashboardPanel extends JPanel {
             viewManager.showAchievementsView();
         });
     }
-    
     /**
      * Load user data into the dashboard panels
      */
@@ -124,7 +112,10 @@ public class UserDashboardPanel extends JPanel {
             loadUserAchievements(user);
         }
     }
-    
+    /**
+     * Load user information into the info panel
+     * @param user the user to load data for
+     */
     private void loadUserInfo(Users user) {
         if (userInfoArea != null) {
             userInfoArea.setText("Name: " + user.getName() + " " + user.getSurname() + 
@@ -133,7 +124,10 @@ public class UserDashboardPanel extends JPanel {
                                 "\nPermissions: " + viewManager.getController().getUserTypes(user));
         }
     }
-    
+    /**
+     * Load user's owned games into the owned games panel
+     * @param user the user to load data for
+     */
     private void loadUserCollection(Users user) {
         List<VideoGames> collection = viewManager.getController().getUserCollection(user);
         StringBuilder sb = new StringBuilder();
@@ -146,7 +140,10 @@ public class UserDashboardPanel extends JPanel {
         }
         ownedGamesArea.setText(sb.toString());
     }
-    
+    /**
+     * Load user's wishlist into the wishlist panel
+     * @param user the user to load data for
+     */
     private void loadUserWishlist(Users user) {
         List<VideoGames> wishlist = viewManager.getController().getUserWishlist(user);
         StringBuilder sb = new StringBuilder();
@@ -159,30 +156,27 @@ public class UserDashboardPanel extends JPanel {
         }
         wishlistArea.setText(sb.toString());
     }
-    
+    /**
+     * Load user's achievements into the achievements panel
+     * @param user the user to load data for
+     */
     private void loadUserAchievements(Users user) {
         List<Achievements> achievements = viewManager.getController().getUserAchievements(user);
-        
         if (achievements.isEmpty()) {
             achievementsArea.setText("No achievements unlocked yet.\nPlay some games to earn achievements!");
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("Achievements: ").append(achievements.size()).append("\n");
-            
-            // Show first few achievements
             int maxToShow = Math.min(achievements.size(), 3);
             for (int i = 0; i < maxToShow; i++) {
                 sb.append("• ").append(achievements.get(i).getTitle()).append("\n");
             }
-            
             if (achievements.size() > 3) {
                 sb.append("... and ").append(achievements.size() - 3).append(" more");
             }
-            
             achievementsArea.setText(sb.toString());
         }
     }
-    
     /**
      * Refresh the dashboard with latest data
      */

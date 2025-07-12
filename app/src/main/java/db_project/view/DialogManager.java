@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,14 +22,18 @@ import db_project.data.VideoGames;
 public class DialogManager {
     
     private final ViewManager viewManager;
-    
+    /**
+     * Constructor for DialogManager
+     * @param viewManager the main view manager instance
+     */
     public DialogManager(ViewManager viewManager) {
         this.viewManager = viewManager;
     }
-    
+    /**
+     * Show the registration dialog
+     */
     public void showRegisterDialog() {
         UIStyler.RegistrationDialogResult result = UIStyler.showStyledRegistrationDialog(viewManager.getMainFrame());
-        
         if (result.submitted) {
             if (viewManager.getController().registerUser(
                     result.email,
@@ -41,7 +47,9 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the buy game dialog
+     */
     public void showBuyGameDialog() {
         String gameIdStr = UIStyler.showStyledInput(
             viewManager.getMainFrame(), 
@@ -49,7 +57,6 @@ public class DialogManager {
             "Buy Game", 
             ""
         );
-        
         if (gameIdStr != null && !gameIdStr.trim().isEmpty()) {
             try {
                 int gameId = Integer.parseInt(gameIdStr.trim());
@@ -63,12 +70,11 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the add to wishlist dialog
+     */
     public void showAddToWishlistDialog() {
-        // Get all available games
-        List<java.util.Optional<VideoGames>> allGames = viewManager.getController().getAllGames();
-        
-        // Create a list of game titles
+        List<Optional<VideoGames>> allGames = viewManager.getController().getAllGames();
         List<String> gameTitles = new ArrayList<>();
         Map<String, Integer> titleToIdMap = new HashMap<>();
         
@@ -80,13 +86,10 @@ public class DialogManager {
                 titleToIdMap.put(displayText, game.getGameID());
             }
         }
-        
         if (gameTitles.isEmpty()) {
             viewManager.showError("No games available to add to wishlist");
             return;
         }
-        
-        // Create dropdown selection
         String[] gameArray = gameTitles.toArray(new String[0]);
         String selectedGame = (String) JOptionPane.showInputDialog(
             viewManager.getMainFrame(),
@@ -97,7 +100,6 @@ public class DialogManager {
             gameArray,
             gameArray[0]
         );
-        
         if (selectedGame != null) {
             int gameId = titleToIdMap.get(selectedGame);
             if (viewManager.getController().addToWishlist(viewManager.getCurrentUser(), gameId)) {
@@ -107,7 +109,9 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the add review dialog
+     */
     public void showAddReviewDialog() {
         JTextField gameIdField = new JTextField(10);
         JTextField ratingField = new JTextField(10);
@@ -121,7 +125,6 @@ public class DialogManager {
         panel.add(ratingField);
         panel.add(new JLabel("Comment:"));
         panel.add(new JScrollPane(commentArea));
-        
         int result = JOptionPane.showConfirmDialog(viewManager.getMainFrame(), panel, "Add Review", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
@@ -141,14 +144,15 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the create game dialog
+     */
     public void showCreateGameDialog() {
         JTextField titleField = new JTextField(20);
         JTextField priceField = new JTextField(10);
         JTextArea descriptionArea = new JTextArea(5, 20);
         JTextArea requirementsArea = new JTextArea(5, 20);
         JTextField releaseDateField = new JTextField(10);
-        
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(new JLabel("Title:"));
@@ -161,7 +165,6 @@ public class DialogManager {
         panel.add(new JScrollPane(requirementsArea));
         panel.add(new JLabel("Release Date (YYYY-MM-DD):"));
         panel.add(releaseDateField);
-        
         int result = JOptionPane.showConfirmDialog(viewManager.getMainFrame(), panel, "Create New Game", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
@@ -177,7 +180,9 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the block user dialog
+     */
     public void showBlockUserDialog() {
         String userIdStr = JOptionPane.showInputDialog(viewManager.getMainFrame(), "Enter User ID to block:");
         if (userIdStr != null) {
@@ -193,7 +198,9 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the unblock user dialog
+     */
     public void showUnblockUserDialog() {
         String userIdStr = JOptionPane.showInputDialog(viewManager.getMainFrame(), "Enter User ID to unblock:");
         if (userIdStr != null) {
@@ -209,16 +216,16 @@ public class DialogManager {
             }
         }
     }
-    
+    /**
+     * Show the admin operations dialog
+     */
     public void showAdminOperations() {
         if (viewManager.getCurrentUser() != null && viewManager.getController().isAdmin(viewManager.getCurrentUser())) {
-            // Show admin menu
             String[] options = {"Block User", "Unblock User", "View All Users"};
             int choice = JOptionPane.showOptionDialog(viewManager.getMainFrame(), 
                 "Select Admin Operation", "Admin Operations",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, 
                 null, options, options[0]);
-            
             switch (choice) {
                 case 0: showBlockUserDialog(); break;
                 case 1: showUnblockUserDialog(); break;

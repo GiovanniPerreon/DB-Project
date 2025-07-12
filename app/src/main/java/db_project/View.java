@@ -14,8 +14,6 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -53,14 +51,6 @@ public final class View {
     private JButton adminOpsButton;
     
     // Filter buttons for game browser
-    private JButton newestGamesButton;
-    private JButton oldestGamesButton;
-    private JButton highestRatedButton;
-    private JButton lowestRatedButton;
-    private JButton mostExpensiveButton;
-    private JButton cheapestButton;
-    private JButton mostSoldButton;
-    private JButton allGamesButton;
     private JComboBox<String> genreComboBox;
     
     // UI panels
@@ -627,106 +617,6 @@ public final class View {
             }
         }
     }
-
-    private void showBuyGameDialog() {
-        String gameIdStr = JOptionPane.showInputDialog(mainFrame, "Enter Game ID to buy:");
-        if (gameIdStr != null) {
-            try {
-                int gameId = Integer.parseInt(gameIdStr);
-                if (getController().buyGame(currentUser, gameId)) {
-                    showMessage("Game purchased successfully!");
-                } else {
-                    showError("Purchase failed!");
-                }
-            } catch (NumberFormatException e) {
-                showError("Please enter a valid Game ID");
-            }
-        }
-    }
-
-    private void showAddToWishlistDialog() {
-        // Get all available games
-        List<Optional<VideoGames>> allGames = getController().getAllGames();
-        
-        // Create a list of game titles
-        List<String> gameTitles = new ArrayList<>();
-        Map<String, Integer> titleToIdMap = new HashMap<>();
-        
-        for (Optional<VideoGames> gameOpt : allGames) {
-            if (gameOpt.isPresent()) {
-                VideoGames game = gameOpt.get();
-                String displayText = game.getTitle() + " - $" + game.getPrice();
-                gameTitles.add(displayText);
-                titleToIdMap.put(displayText, game.getGameID());
-            }
-        }
-        
-        if (gameTitles.isEmpty()) {
-            showError("No games available to add to wishlist");
-            return;
-        }
-        
-        // Create dropdown selection
-        String[] gameArray = gameTitles.toArray(new String[0]);
-        String selectedGame = (String) JOptionPane.showInputDialog(
-            mainFrame,
-            "Select a game to add to your wishlist:",
-            "Add to Wishlist",
-            JOptionPane.QUESTION_MESSAGE,
-            null,
-            gameArray,
-            gameArray[0]
-        );
-        
-        if (selectedGame != null) {
-            int gameId = titleToIdMap.get(selectedGame);
-            if (getController().addToWishlist(currentUser, gameId)) {
-                showMessage("Game added to wishlist!");
-                // Refresh wishlist display if currently showing user dashboard
-                if (rightPanel.getBorder() != null && 
-                    rightPanel.getBorder().toString().contains("USER")) {
-                    loadUserWishlist(wishlistArea);
-                }
-            } else {
-                showError("Failed to add to wishlist! Game may already be in your wishlist.");
-            }
-        }
-    }
-
-    private void showAddReviewDialog() {
-        JTextField gameIdField = new JTextField(10);
-        JTextField ratingField = new JTextField(10);
-        JTextArea commentArea = new JTextArea(5, 20);
-        
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JLabel("Game ID:"));
-        panel.add(gameIdField);
-        panel.add(new JLabel("Rating (1-5):"));
-        panel.add(ratingField);
-        panel.add(new JLabel("Comment:"));
-        panel.add(new JScrollPane(commentArea));
-        
-        int result = JOptionPane.showConfirmDialog(mainFrame, panel, "Add Review", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            try {
-                int gameId = Integer.parseInt(gameIdField.getText());
-                int rating = Integer.parseInt(ratingField.getText());
-                if (rating < 1 || rating > 5) {
-                    showError("Rating must be between 1 and 5!");
-                    return;
-                }
-                if (getController().addReview(currentUser, gameId, rating, commentArea.getText())) {
-                    showMessage("Review added successfully!");
-                } else {
-                    showError("Failed to add review!");
-                }
-            } catch (NumberFormatException e) {
-                showError("Please enter valid numbers for Game ID and Rating");
-            }
-        }
-    }
-
     private void showCreateGameDialog() {
         JTextField titleField = new JTextField(20);
         JTextField priceField = new JTextField(10);
@@ -763,39 +653,6 @@ public final class View {
         }
     }
 
-    private void showBlockUserDialog() {
-        String userIdStr = JOptionPane.showInputDialog(mainFrame, "Enter User ID to block:");
-        if (userIdStr != null) {
-            try {
-                int userId = Integer.parseInt(userIdStr);
-                if (getController().blockUser(userId)) {
-                    showMessage("User blocked successfully!");
-                } else {
-                    showError("Failed to block user!");
-                }
-            } catch (NumberFormatException e) {
-                showError("Please enter a valid User ID");
-            }
-        }
-    }
-
-    private void showUnblockUserDialog() {
-        String userIdStr = JOptionPane.showInputDialog(mainFrame, "Enter User ID to unblock:");
-        if (userIdStr != null) {
-            try {
-                int userId = Integer.parseInt(userIdStr);
-                if (getController().unblockUser(userId)) {
-                    showMessage("User unblocked successfully!");
-                } else {
-                    showError("Failed to unblock user!");
-                }
-            } catch (NumberFormatException e) {
-                showError("Please enter a valid User ID");
-            }
-        }
-    }
-
-    // Dynamic loading methods for info panels
     private void loadUserInfo() {
         if (userInfoArea != null && currentUser != null) {
             userInfoArea.setText("Name: " + currentUser.getName() + " " + currentUser.getSurname() + 
@@ -867,27 +724,6 @@ public final class View {
             showError("Publisher access required!");
         }
     }
-    
-    private void showAdminOperations() {
-        if (currentUser != null && getController().isAdmin(currentUser)) {
-            // Show admin menu
-            String[] options = {"Block User", "Unblock User", "View All Users"};
-            int choice = JOptionPane.showOptionDialog(mainFrame, 
-                "Select Admin Operation", "Admin Operations",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, 
-                null, options, options[0]);
-            
-            switch (choice) {
-                case 0: showBlockUserDialog(); break;
-                case 1: showUnblockUserDialog(); break;
-                case 2: showAllUsersBrowser(); break;
-            }
-        } else {
-            showError("Admin access required!");
-        }
-    }
-
-    // Utility methods
     private void showMessage(String message) {
         JOptionPane.showMessageDialog(mainFrame, message, "Information", JOptionPane.INFORMATION_MESSAGE);
     }

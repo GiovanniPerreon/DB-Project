@@ -9,7 +9,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import db_project.Controller;
@@ -89,11 +88,6 @@ public final class ViewManager {
     public void setController(Controller controller) {
         Objects.requireNonNull(controller, "Set null controller in view");
         this.controller = Optional.of(controller);
-        
-        // Initialize components that need the controller
-        if (mainMenuPanel != null) {
-            mainMenuPanel.initializeWithController();
-        }
         if (mainMenuPanel.getGameBrowserPanel() != null) {
             mainMenuPanel.getGameBrowserPanel().initializeWithController();
         }
@@ -142,7 +136,7 @@ public final class ViewManager {
         }
     }
     
-    void showMainMenu() {
+    public void showMainMenu() {
         // Hide login panel and show main menu
         loginPanel.setVisible(false);
         mainMenuPanel.setVisible(true);
@@ -197,6 +191,15 @@ public final class ViewManager {
     public void showAchievementsView() {
         if (mainMenuPanel != null) {
             mainMenuPanel.showAchievementsView();
+        }
+    }
+    
+    /**
+     * Shows the main dashboard view
+     */
+    public void showDashboardView() {
+        if (mainMenuPanel != null) {
+            mainMenuPanel.showUserDashboard();
         }
     }
     
