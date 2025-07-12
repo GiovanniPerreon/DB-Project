@@ -325,8 +325,17 @@ public final class View {
         JTextArea userInfoArea = new JTextArea(5, 20);
         userInfoArea.setEditable(false);
         userInfoArea.setOpaque(false);
+        
+        // Logout button
+        JButton logoutButton = createStyledButton("Logout", new Color(220, 20, 60));
+        logoutButton.setMaximumSize(new Dimension(150, 30));
+        logoutButton.setPreferredSize(new Dimension(150, 30));
+        logoutButton.addActionListener(e -> logout());
+        
         infoPanel.add(userInfoLabel);
         infoPanel.add(userInfoArea);
+        infoPanel.add(Box.createVerticalStrut(10));
+        infoPanel.add(logoutButton);
         
         // Game Owned Panel - Green theme
         JPanel gameOwnedPanel = new JPanel();
@@ -542,6 +551,31 @@ public final class View {
             showMainMenu();
         } else {
             showError("Invalid email or password!");
+        }
+    }
+
+    private void logout() {
+        int result = JOptionPane.showConfirmDialog(
+            mainFrame, 
+            "Are you sure you want to logout?", 
+            "Confirm Logout",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+        
+        if (result == JOptionPane.YES_OPTION) {
+            // Clear current user session
+            currentUser = null;
+            
+            // Return to login panel
+            for (java.awt.Component comp : mainPanel.getComponents()) {
+                comp.setVisible(false);
+            }
+            loginPanel.setVisible(true);
+            mainFrame.setTitle("SteamDB - Videogames Store");
+            
+            // Show success message
+            JOptionPane.showMessageDialog(mainFrame, "Logged out successfully!", "Logout", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
