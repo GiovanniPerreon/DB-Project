@@ -60,6 +60,12 @@ public interface Model {
      * @return all the transactions in the database.
      */
     List<Optional<Transactions>> getTransactions();
+    
+    /**
+     * @return all the transactions for a specific user in the database.
+     */
+    List<Optional<Transactions>> getTransactionsByUser(int userID);
+    
     /**
      * @return all the reviews in the database.
      */

@@ -133,6 +133,12 @@ public final class Queries {
         from   TRANSACTIONS
         where  transactionID = ?
         """;
+    public static final String FIND_TRANSACTIONS_BY_USER =
+        """
+        select transactionID, userID, total_cost
+        from   TRANSACTIONS
+        where  userID = ?
+        """;
     public static final String ADD_TRANSACTION =
         """
         insert into TRANSACTIONS (userID, total_cost)
