@@ -254,10 +254,10 @@ public class MainMenuPanel extends JPanel {
      */
     private void showPublisherOperations() {
         Users currentUser = viewManager.getCurrentUser();
-        if (currentUser != null && viewManager.getController().isPublisher(currentUser)) {
+        if (currentUser != null && (viewManager.getController().isPublisher(currentUser) || viewManager.getController().isAdmin(currentUser))) {
             viewManager.getDialogManager().showCreateGameDialog();
         } else {
-            viewManager.showError("Publisher access required!");
+            viewManager.showError("Publisher or administrator access required!");
         }
     }
     /**
@@ -322,7 +322,7 @@ public class MainMenuPanel extends JPanel {
     public void loadUserData(Users user) {
         if (user != null) {
             if (publisherOpsButton != null) {
-                publisherOpsButton.setEnabled(user.isPublisher());
+                publisherOpsButton.setEnabled(user.isPublisher() || user.isAdministrator());
             }
             if (adminOpsButton != null) {
                 adminOpsButton.setVisible(user.isAdministrator());
@@ -625,9 +625,9 @@ public class MainMenuPanel extends JPanel {
         infoScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         infoPanel.add(infoScrollPane);
         
-        // Add discount button for publisher
+        // Add discount button for publisher or administrator
         Users currentUser = viewManager.getCurrentUser();
-        if (currentUser != null && currentUser.getUserID() == game.getPublisherID()) {
+        if (currentUser != null && (currentUser.getUserID() == game.getPublisherID() || currentUser.isAdministrator())) {
             JButton changeDiscountButton = UIStyler.createStyledButton("Change Discount", UIStyler.DARK_ORANGE);
             changeDiscountButton.addActionListener(e -> showChangeDiscountDialog(game));
             infoPanel.add(Box.createVerticalStrut(10));

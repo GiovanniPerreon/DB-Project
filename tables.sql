@@ -1,5 +1,5 @@
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
-FLUSH PRIVILEGES;
+-- ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
+-- FLUSH PRIVILEGES;
 -- Database Deletion -------------------------------------------------------------
 DROP DATABASE IF EXISTS tables;
 

@@ -4,7 +4,7 @@ USE tables;
 
 INSERT INTO users (email, password, name, surname, birth_date, is_administrator, is_publisher, is_developer, is_blocked) VALUES
 -- Testing Users
-('a', 'a', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
+('a', 'a', 'Testing', 'User', '1990-05-15', true, true, true, false),
 ('MichaelSaves03@gmail.com', 'password123', 'Michael', 'Saves', '1990-05-15', true, true, true, false),
 ('blocked.user@email.com', 'blocked123', 'Blocked', 'User', '1995-03-20', false, false, false, true),
 -- Additional Administrators
@@ -54,8 +54,13 @@ INSERT INTO users (email, password, name, surname, birth_date, is_administrator,
 ('gamer.dan@email.com', 'dan2024', 'Dan', 'Baker', '1987-04-09', false, false, false, false),
 ('gamer.eva@email.com', 'eva2024', 'Eva', 'Gonzalez', '1990-09-26', false, false, false, false),
 ('gamer.finn@email.com', 'finn2024', 'Finn', 'Nelson', '1994-01-13', false, false, false, false),
-('gamer.grace@email.com', 'grace2024', 'Grace', 'Carter', '1992-06-30', false, false, false, false);
-
+('gamer.grace@email.com', 'grace2024', 'Grace', 'Carter', '1992-06-30', false, false, false, false),
+-- More accounts for testing
+('user@db.test' , 'user', 'Test', 'User', '1990-01-01', false, false, false, false),
+('dev@db.test', 'dev', 'Test', 'Dev', '1990-01-01', false, false, true, false),
+('pub@db.test', 'pub', 'Test', 'Publisher', '1990-01-01', false, true, false, false),
+('admin@db.test', 'admin', 'Test', 'Admin', '1990-01-01', true, false, false, false),
+('blocked@db.test', 'blocked', 'Test', 'Blocked', '1990-01-01', false, false, false, true);
 INSERT INTO videogames (publisherID, title, price, description, requirements, release_date, discount)
 SELECT u.userID, v.title, v.price, v.description, v.requirements, v.release_date, v.discount
 FROM (
@@ -179,6 +184,8 @@ FROM (
     SELECT 15, 19
     UNION ALL
     SELECT 12, 20
+    UNION ALL
+    SELECT 49, 1
 ) d
 JOIN users u ON d.userID = u.userID
 JOIN videogames g ON d.gameID = g.gameID
@@ -453,7 +460,7 @@ FROM (
     UNION ALL
     SELECT 2, 49.99
     UNION ALL
-    SELECT 17 AS userID, 249.95 AS total_cost
+    SELECT 17, 249.95
     UNION ALL
     SELECT 17, 69.99
     UNION ALL
@@ -683,8 +690,6 @@ FROM (
     SELECT 35, 14
     UNION ALL
     SELECT 36, 19
-    UNION ALL
-    SELECT 37, 6
     UNION ALL
     SELECT 37, 11
     UNION ALL

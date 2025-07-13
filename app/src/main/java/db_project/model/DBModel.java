@@ -152,12 +152,9 @@ public final class DBModel implements Model {
     @Override
     public boolean addToWishlist(int userId, int gameId) {
         try {
-            System.out.println("DEBUG: DBModel.addToWishlist called with userId=" + userId + ", gameId=" + gameId);
             boolean result = WishlistItems.DAO.addToWishlist(this.connection, userId, gameId);
-            System.out.println("DEBUG: DBModel.addToWishlist result: " + result);
             return result;
         } catch (Exception e) {
-            System.err.println("DEBUG: DBModel.addToWishlist exception: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -184,12 +181,9 @@ public final class DBModel implements Model {
     @Override
     public int addTransaction(int userId, double totalCost) {
         try {
-            // Actually insert the transaction into the database
             int transactionId = Transactions.DAO.add(connection, userId, totalCost);
-            System.out.println("DEBUG: Transaction created with ID: " + transactionId);
             return transactionId;
         } catch (Exception e) {
-            System.out.println("DEBUG: Failed to create transaction: " + e.getMessage());
             return -1;
         }
     }
@@ -199,10 +193,8 @@ public final class DBModel implements Model {
         try {
             // Actually insert the transaction item into the database
             TransactionItems.DAO.addItem(connection, transactionId, gameId);
-            System.out.println("DEBUG: Transaction item added - transaction " + transactionId + ", game " + gameId);
             return true;
         } catch (Exception e) {
-            System.out.println("DEBUG: Failed to add transaction item: " + e.getMessage());
             return false;
         }
     }
@@ -223,7 +215,6 @@ public final class DBModel implements Model {
             }
             return false;
         } catch (SQLException e) {
-            System.err.println("Error adding review: " + e.getMessage());
             return false;
         }
     }
@@ -238,7 +229,6 @@ public final class DBModel implements Model {
                 return rs.next(); // Returns true if a review exists
             }
         } catch (SQLException e) {
-            System.err.println("Error checking if user has reviewed game: " + e.getMessage());
             return false;
         }
     }
@@ -252,14 +242,12 @@ public final class DBModel implements Model {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error updating user blocked status: " + e.getMessage());
             return false;
         }
     }
     
     @Override
     public boolean createGame(int publisherId, String title, double price, String description, String requirements, String releaseDate) {
-        System.out.println("DEBUG: Creating game with publisherId=" + publisherId + ", title=" + title + ", price=" + price + ", releaseDate=" + releaseDate);
         try (PreparedStatement stmt = connection.prepareStatement(Queries.ADD_VIDEOGAME, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, publisherId);
             stmt.setString(2, title);
@@ -269,24 +257,17 @@ public final class DBModel implements Model {
             stmt.setDouble(6, 2.5);
             stmt.setString(7, releaseDate);
             stmt.setInt(8, 0);
-            
-            System.out.println("DEBUG: Executing query: " + Queries.ADD_VIDEOGAME);
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("DEBUG: Rows affected: " + rowsAffected);
-            
             if (rowsAffected > 0) {
-                // Get the generated game ID
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         lastCreatedGameID = generatedKeys.getInt(1);
-                        System.out.println("DEBUG: Created game with ID: " + lastCreatedGameID);
                     }
                 }
                 return true;
             }
             return false;
         } catch (SQLException e) {
-            System.err.println("Error creating game: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -301,7 +282,6 @@ public final class DBModel implements Model {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error adding genre to game: " + e.getMessage());
             return false;
         }
     }
@@ -315,7 +295,6 @@ public final class DBModel implements Model {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error removing genre from game: " + e.getMessage());
             return false;
         }
     }
@@ -411,12 +390,9 @@ public final class DBModel implements Model {
         try (PreparedStatement stmt = connection.prepareStatement(Queries.UPDATE_GAME_AVERAGE_RATING)) {
             stmt.setInt(1, gameId);
             stmt.setInt(2, gameId);
-            
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("DEBUG: Updated average rating for game " + gameId + ", rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error updating game average rating: " + e.getMessage());
             return false;
         }
     }
@@ -433,10 +409,8 @@ public final class DBModel implements Model {
             stmt.setInt(2, gameID);
             
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("DEBUG: Added developer " + developerID + " to game " + gameID + ". Rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error adding developer to game: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -450,10 +424,8 @@ public final class DBModel implements Model {
             stmt.setInt(2, gameId);
             
             int rowsAffected = stmt.executeUpdate();
-            System.out.println("DEBUG: Changed discount for game " + gameId + " to " + newDiscount + "%. Rows affected: " + rowsAffected);
             return rowsAffected > 0;
         } catch (SQLException e) {
-            System.err.println("Error changing game discount: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

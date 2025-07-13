@@ -93,7 +93,7 @@ public final class Controller {
     }
     public boolean createGame(Users user, String title, double price, String description, String requirements, String releaseDate) {
         try {
-            if (!user.isPublisher()) {
+            if (!user.isPublisher() && !user.isAdministrator()) {
                 return false;
             }
             return model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
@@ -157,19 +157,15 @@ public final class Controller {
     }
     public boolean blockUser(int userId) {
         try {
-            System.out.println("DEBUG: Blocking user " + userId);
             return model.updateUserBlockedStatus(userId, true);
         } catch (Exception e) {
-            System.err.println("Error blocking user: " + e.getMessage());
             return false;
         }
     }
     public boolean unblockUser(int userId) {
         try {
-            System.out.println("DEBUG: Unblocking user " + userId);
             return model.updateUserBlockedStatus(userId, false);
         } catch (Exception e) {
-            System.err.println("Error unblocking user: " + e.getMessage());
             return false;
         }
     }
@@ -267,7 +263,6 @@ public final class Controller {
             }
             return collectionGames;
         } catch (Exception e) {
-            System.err.println("Error getting user collection: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -295,31 +290,26 @@ public final class Controller {
      */
     public boolean buyGame(Users user, int gameId) {
         try {
-            System.out.println("DEBUG: Buying game " + gameId + " for user " + user.getUserID());
             Optional<VideoGames> gameOpt = model.getVideoGames().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(game -> game.getGameID() == gameId)
                 .findFirst();
             if (!gameOpt.isPresent()) {
-                System.out.println("DEBUG: Game not found");
                 return false;
             }
             VideoGames game = gameOpt.get();
             double gamePrice = Double.parseDouble(game.getPrice());
             int transactionId = model.addTransaction(user.getUserID(), gamePrice);
             if (transactionId == -1) {
-                System.out.println("DEBUG: Failed to create transaction");
                 return false;
             }
             boolean itemAdded = model.addTransactionItem(transactionId, gameId);
             if (itemAdded && isGameInWishlist(user, gameId)) {
-                boolean removedFromWishlist = removeFromWishlist(user, gameId);
-                System.out.println("DEBUG: Removed game from wishlist after purchase: " + removedFromWishlist);
+                removeFromWishlist(user, gameId);
             }
             return itemAdded;
         } catch (Exception e) {
-            System.err.println("Error buying game: " + e.getMessage());
             return false;
         }
     }
@@ -340,21 +330,16 @@ public final class Controller {
     public boolean addReview(Users user, int gameId, int rating, String comment) {
         try {
             if (user.isBlocked()) {
-                System.out.println("DEBUG: User is blocked, cannot add review");
                 return false;
             }
             if (!userOwnsGame(user, gameId)) {
-                System.out.println("DEBUG: User does not own game " + gameId + ", cannot add review");
                 return false;
             }
             if (hasUserReviewedGame(user, gameId)) {
-                System.out.println("DEBUG: User has already reviewed game " + gameId);
                 return false;
             }  
-            System.out.println("DEBUG: Adding review for game " + gameId + " by user " + user.getUserID());
             return model.addReview(user.getUserID(), gameId, rating, comment);   
         } catch (Exception e) {
-            System.err.println("Error adding review: " + e.getMessage());
             return false;
         }
     }
@@ -365,7 +350,6 @@ public final class Controller {
         try {
             return model.hasUserReviewedGame(user.getUserID(), gameId);
         } catch (Exception e) {
-            System.err.println("Error checking if user has reviewed game: " + e.getMessage());
             return false;
         }
     }
@@ -441,14 +425,10 @@ public final class Controller {
     public boolean addGenreToGame(Users user, int gameId, String genre) {
         try {
             if (!user.isAdministrator() && !isDeveloperOfGame(user, gameId)) {
-                System.out.println("DEBUG: User is not admin or developer, cannot add genre to game");
                 return false;
             }
-            
-            System.out.println("DEBUG: Admin or developer adding genre " + genre + " to game " + gameId);
             return model.addGenreToGame(gameId, genre);
         } catch (Exception e) {
-            System.err.println("Error adding genre to game: " + e.getMessage());
             return false;
         }
     }
@@ -458,14 +438,10 @@ public final class Controller {
     public boolean removeGenreFromGame(Users user, int gameId, String genre) {
         try {
             if (!user.isAdministrator() && !isDeveloperOfGame(user, gameId)) {
-                System.out.println("DEBUG: User is not admin or developer, cannot remove genre from game");
                 return false;
             }
-            
-            System.out.println("DEBUG: Admin or developer removing genre " + genre + " from game " + gameId);
             return model.removeGenreFromGame(gameId, genre);
         } catch (Exception e) {
-            System.err.println("Error removing genre from game: " + e.getMessage());
             return false;
         }
     }
@@ -490,7 +466,6 @@ public final class Controller {
         try {
             return model.getLeastRatedUsers();
         } catch (Exception e) {
-            System.err.println("Error getting least rated users: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -560,11 +535,9 @@ public final class Controller {
     }
     public boolean createGame(Users user, String title, double price, String description, String requirements, String releaseDate, String developerID) {
         try {
-            if (!user.isPublisher()) {
+            if (!user.isPublisher() && !user.isAdministrator()) {
                 return false;
             }
-            
-            // Validate developer ID
             if (developerID == null || developerID.trim().isEmpty()) {
                 return false;
             }
@@ -583,8 +556,6 @@ public final class Controller {
             }
             
             boolean gameCreated = model.createGame(user.getUserID(), title, price, description, requirements, releaseDate);
-            
-            // If game was created successfully, add developer
             if (gameCreated) {
                 int gameID = model.getLastCreatedGameID();
                 if (gameID > 0) {
@@ -618,8 +589,8 @@ public final class Controller {
     
     public GameCreationResult createGameWithValidation(Users user, String title, double price, String description, String requirements, String releaseDate, String developerID) {
         try {
-            if (!user.isPublisher()) {
-                return GameCreationResult.failure("Only publishers can create games.");
+            if (!user.isPublisher() && !user.isAdministrator()) {
+                return GameCreationResult.failure("Only publishers and administrators can create games.");
             }
             
             // Validate developer ID
@@ -794,7 +765,6 @@ public final class Controller {
             
             return transactionDetails;
         } catch (Exception e) {
-            System.err.println("Error getting user transactions: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -805,7 +775,6 @@ public final class Controller {
         try {
             return model.changeGameDiscount(gameId, newDiscount);
         } catch (Exception e) {
-            System.err.println("Error changing game discount: " + e.getMessage());
             return false;
         }
     }
@@ -821,7 +790,6 @@ public final class Controller {
                 .filter(game -> game.getGameID() == gameId)
                 .findFirst();
         } catch (Exception e) {
-            System.err.println("Error reloading game: " + e.getMessage());
             return Optional.empty();
         }
     }
