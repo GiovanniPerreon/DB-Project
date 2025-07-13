@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ArrayList;
 
 import db_project.data.Genres;
 import db_project.data.Languages;
@@ -456,6 +457,27 @@ public final class DBModel implements Model {
             System.err.println("Error changing game discount: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public List<Optional<Transactions>> getTransactionsByUser(int userID) {
+        try (PreparedStatement stmt = connection.prepareStatement(Queries.FIND_TRANSACTIONS_BY_USER)) {
+            stmt.setInt(1, userID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Optional<Transactions>> transactions = new ArrayList<>();
+                while (rs.next()) {
+                    transactions.add(Optional.of(new Transactions(
+                        rs.getInt("transactionID"),
+                        rs.getInt("userID"),
+                        rs.getDouble("total_cost")
+                    )));
+                }
+                return transactions;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting transactions by user: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 }

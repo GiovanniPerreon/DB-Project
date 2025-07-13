@@ -752,13 +752,13 @@ public final class Controller {
     public List<TransactionDetail> getUserTransactions(Users user) {
         try {
             List<TransactionDetail> transactionDetails = new ArrayList<>();
-            List<Optional<Transactions>> transactions = model.getTransactions();
+            List<Optional<Transactions>> transactions = model.getTransactionsByUser(user.getUserID());
             List<Optional<TransactionItems>> transactionItems = model.getTransactionItems();
             List<Optional<VideoGames>> allGames = model.getVideoGames();
             
-            // Get all user transactions
+            // Get all user transactions (already filtered by userID)
             for (Optional<Transactions> transactionOpt : transactions) {
-                if (transactionOpt.isPresent() && transactionOpt.get().getUserID() == user.getUserID()) {
+                if (transactionOpt.isPresent()) {
                     Transactions transaction = transactionOpt.get();
                     int transactionId = transaction.getTransactionID();
                     
