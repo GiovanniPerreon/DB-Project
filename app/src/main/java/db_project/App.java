@@ -10,7 +10,7 @@ public final class App {
     public static void main(String[] args) throws SQLException {
         final Connection connection = DAOUtils.localMySQLConnection("tables", "root", "password");
         Model model = new DBModel(connection);
-        View view2 = new View(() -> {
+        View view = new View(() -> {
             try {
                 connection.close();
             } catch (Exception e) {
@@ -18,7 +18,7 @@ public final class App {
             }
         });
         Controller controller = new Controller(model);
-        view2.setController(controller);
+        view.setController(controller);
         //controller.testAllTables();
     }
 }
