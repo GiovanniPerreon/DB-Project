@@ -41,9 +41,10 @@ Per facilitare il test del comportamento dell'applicazione, sono stati predispos
      - Vedere la cronologia delle transazioni (View Transactions)
      - Sfogliare tutti i videogiochi, con possibilità di ordinare e filtrare (Browse Games)
      - Accedere alle funzioni da Admin / Developer / Publisher se abilitati (Publish Game, View All Users)
+     - Fare il logout.
 
 3. **Wishlist**
-   - Aggiungi o rimuovi giochi che non hai ancora acquistato dalla tua lista dei desideri, direttamente dalla pagina del gioco interessato.
+   - Aggiungi o rimuovi giochi che non hai ancora acquistato dalla tua lista dei desideri, direttamente dalla pagina del gioco interessato, cliccando su "Add to Wishlist" o "Remove from Wishlist".
 
 4. **Acquisto di giochi**
    - Clicca su un gioco e seleziona "Buy Game" per aggiungerlo alla collezione. Eventuali sconti saranno applicati automaticamente.
